@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, mount } from "vitest"
+import { describe, it, expect, beforeEach } from "vitest"
+import { mount } from "@vue/test-utils"
 import FileExplorer from "../src/components/FileExplorer.vue"
 
 // Mock du fetch pour simuler le chargement du file-system.json
