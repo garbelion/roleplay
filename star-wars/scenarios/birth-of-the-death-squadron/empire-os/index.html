@@ -3,8 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Empire OS</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/5.3.0/xterm.min.css" />
+  <title>Empire OS - Terminal de Hacking</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; background-color: #000; font-family: monospace; color: #0f0; }
+    #app { height: 100%; display: flex; flex-direction: column; }
+    .dos-window { background-color: #000; color: #0f0; border: 2px solid #555; box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); }
+    .dos-title-bar { background: linear-gradient(to right, #111, #333); color: #fff; padding: 4px 8px; font-size: 14px; border-bottom: 2px solid #555; display: flex; justify-content: space-between; align-items: center; }
+    .dos-title { font-weight: bold; }
+    .dos-close-button { background: #555; color: #fff; border: none; width: 20px; height: 20px; font-size: 12px; cursor: pointer; }
+    .terminal-container { flex: 1; padding: 8px; }
+    .file-explorer { color: #0f0; font-family: monospace; font-size: 14px; line-height: 1.5; }
+    .terminal-header { margin-bottom: 10px; color: #0f0; }
+    .file-list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+    .file-item { padding: 6px 12px; background-color: transparent; border: 1px solid #000; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .file-item:hover { background-color: rgba(0, 255, 0, 0.1); }
+    .file-item.selected { background-color: rgba(0, 255, 0, 0.3); border-color: #0f0; }
+  </style>
 </head>
 <body>
   <div id="app"></div>
