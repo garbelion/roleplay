@@ -1,0 +1,1 @@
+empire-os est un mini os qui doit afficher les dossiers du terminal d'une station de communication de l'empire (Star Wars) infiltrée par des  PJs rebelles qui recherchent des informations
