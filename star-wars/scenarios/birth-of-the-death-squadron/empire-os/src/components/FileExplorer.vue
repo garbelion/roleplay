@@ -27,26 +27,26 @@ export default {
         { name: "protocole_secret.docx", size: 4096, type: "docx" }
       ],
       selectedFiles: []
-    };[
-]  },[
-]  methods: {[
-]    toggleFileSelection(index) {[
-]      const selectedIndex = this.selectedFiles.indexOf(index);[
-]      if (selectedIndex === -1) {[
-]        this.selectedFiles.push(index);[
-]      } else {[
-]        this.selectedFiles.splice(selectedIndex, 1);[
-]      }[
-]      this.$emit("files-selected", this.selectedFiles);[
-]    },[
-]    getFiles() {[
-]      return this.files;[
-]    },[
-]    setFiles(newFiles) {[
-]      this.files = newFiles;[
-]    }[
-]  }[
-]};
+    }
+  },
+  methods: {
+    toggleFileSelection(index) {
+      const selectedIndex = this.selectedFiles.indexOf(index);
+      if (selectedIndex === -1) {
+        this.selectedFiles.push(index);
+      } else {
+        this.selectedFiles.splice(selectedIndex, 1);
+      }
+      this.$emit("files-selected", this.selectedFiles);
+    },
+    getFiles() {
+      return this.files;
+    },
+    setFiles(newFiles) {
+      this.files = newFiles;
+    }
+  }
+}
 </script>
 
 <style scoped>
