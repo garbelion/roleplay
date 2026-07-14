@@ -1,0 +1,38 @@
+{
+  "name": "root",
+  "path": "/",
+  "type": "directory",
+  "children": [
+    {
+      "name": "Fichiers",
+      "path": "/Fichiers",
+      "type": "directory",
+      "children": [
+        { "name": "rapport_mission.docx", "path": "/Fichiers/rapport_mission.docx", "type": "file" },
+        { "name": "ordre_executor.docx", "path": "/Fichiers/ordre_executor.docx", "type": "file" },
+        { "name": "liste_cibles.docx", "path": "/Fichiers/liste_cibles.docx", "type": "file" }
+      ]
+    },
+    {
+      "name": "Dossiers",
+      "path": "/Dossiers",
+      "type": "directory",
+      "children": [
+        {
+          "name": "Secrets",
+          "path": "/Dossiers/Secrets",
+          "type": "directory",
+          "children": [
+            { "name": "protocole_secret.docx", "path": "/Dossiers/Secrets/protocole_secret.docx", "type": "file" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Archives",
+      "path": "/Archives",
+      "type": "directory",
+      "children": []
+    }
+  ]
+}
