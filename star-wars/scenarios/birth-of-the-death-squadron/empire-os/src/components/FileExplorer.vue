@@ -1,7 +1,7 @@
 <template>
   <div class="file-explorer">
     <div class="terminal-header">
-      <span>> C:\EmpireOS\{{ currentPath.replace(/\//g, '\\\') }}> </span>
+      <span>> C:\EmpireOS{{ currentPath.replace(/\//g, '\\') }}> </span>
     </div>
     <div class="file-list-container">
       <div
