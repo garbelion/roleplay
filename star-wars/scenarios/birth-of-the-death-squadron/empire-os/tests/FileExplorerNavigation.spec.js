@@ -1,8 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest"
-import { mount } from "@vue/test-utils"
+import { describe, it, expect, beforeEach, vi, mount } from "vitest"
 import FileExplorer from "../src/components/FileExplorer.vue"
 
-// Mock du fetch pour simuler le chargement du file-system.json
+// Mock global.fetch pour simuler le chargement du file-system.json
 global.fetch = vi.fn(() => 
   Promise.resolve({
     ok: true,
@@ -51,9 +50,9 @@ describe("FileExplorer - Feature 2: Naviguer dans les répertoires", () => {
   let wrapper
 
   beforeEach(async () => {
-    fetch.mockClear()
+    vi.clearAllMocks()
     wrapper = mount(FileExplorer)
-    await wrapper.vm.loadFileSystem() // Charge la structure
+    await wrapper.vm.loadFileSystem()
   })
 
   it("devrait charger la structure des répertoires depuis file-system.json", async () => {
@@ -68,7 +67,7 @@ describe("FileExplorer - Feature 2: Naviguer dans les répertoires", () => {
 
   it("devrait lister le contenu du répertoire courant", () => {
     const currentDir = wrapper.vm.getCurrentDirectory()
-    expect(currentDir.children.length).toBe(3) // 3 fichiers dans /Fichiers
+    expect(currentDir.children.length).toBe(3)
     expect(currentDir.children[0].name).toBe("rapport_mission.docx")
   })
 
@@ -113,6 +112,6 @@ describe("FileExplorer - Feature 2: Naviguer dans les répertoires", () => {
   it("devrait gérer les chemins invalides en restant dans le répertoire courant", async () => {
     const initialPath = wrapper.vm.currentPath
     await wrapper.vm.changeDirectory("/Inexistant")
-    expect(wrapper.vm.currentPath).toBe(initialPath) // Doit rester sur le même chemin
+    expect(wrapper.vm.currentPath).toBe(initialPath)
   })
 });
