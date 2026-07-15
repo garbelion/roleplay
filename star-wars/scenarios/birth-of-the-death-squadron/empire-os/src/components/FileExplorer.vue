@@ -5,7 +5,7 @@
     </div>
     <div class="file-list-container">
       <div
-        v-for="(item, index) in currentDirectory.children"
+        v-for="(item, index) in currentDirectoryItems"
         :key="index"
         class="file-item"
         :class="{ selected: selectedFiles.includes(index), directory: item.type === 'directory' }"
@@ -34,6 +34,17 @@ export default {
       if (!this.fileSystem) return { children: [] }
       const dir = this.findDirectoryByPath(this.currentPath)
       return dir || this.fileSystem
+    },
+    currentDirectoryItems() {
+      const items = [...this.currentDirectory.children]
+      if (this.currentPath !== '/') {
+        items.unshift({
+          name: '..',
+          path: '..',
+          type: 'directory'
+        })
+      }
+      return items
     }
   },
   async created() {
@@ -118,7 +129,7 @@ export default {
       }
     },
     updateCurrentDirectory() {
-      this.files = this.currentDirectory.children || []
+      this.files = this.currentDirectoryItems
     },
     handleItemClick(item, index) {
       if (item.type === 'directory') {

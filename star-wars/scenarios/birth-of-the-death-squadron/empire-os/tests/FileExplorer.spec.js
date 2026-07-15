@@ -32,13 +32,14 @@ describe("FileExplorer.vue - Feature 1: Afficher une liste de fichiers .docx", (
   it("devrait afficher une liste de fichiers .docx", async () => {
     await wrapper.vm.loadFileSystem()
     const fileItems = wrapper.findAll(".file-item")
-    expect(fileItems.length).toBe(4)
+    expect(fileItems.length).toBe(5) // 4 fichiers + 1 ".."
   })
 
   it("devrait afficher les noms de fichiers corrects", async () => {
     await wrapper.vm.loadFileSystem()
     const fileNames = wrapper.findAll(".file-item").map(item => item.text())
     expect(fileNames).toEqual([
+      "../",
       "rapport_mission.docx",
       "ordre_executor.docx",
       "liste_cibles.docx",
@@ -60,33 +61,33 @@ describe("FileExplorer.vue - Feature 1: Afficher une liste de fichiers .docx", (
 
   it("devrait permettre la selection de fichiers", async () => {
     await wrapper.vm.loadFileSystem()
-    const firstFile = wrapper.findAll(".file-item")[0]
+    const firstFile = wrapper.findAll(".file-item")[1] // Skip ".."
     await firstFile.trigger("click")
-    expect(wrapper.vm.selectedFiles).toContain(0)
+    expect(wrapper.vm.selectedFiles).toContain(1)
   })
 
   it("devrait deselectionner un fichier deja selectionne", async () => {
     await wrapper.vm.loadFileSystem()
-    const firstFile = wrapper.findAll(".file-item")[0]
+    const firstFile = wrapper.findAll(".file-item")[1] // Skip ".."
     await firstFile.trigger("click")
-    expect(wrapper.vm.selectedFiles).toContain(0)
+    expect(wrapper.vm.selectedFiles).toContain(1)
     await firstFile.trigger("click")
-    expect(wrapper.vm.selectedFiles).not.toContain(0)
+    expect(wrapper.vm.selectedFiles).not.toContain(1)
   })
 
   it("devrait emettre un evenement lors de la selection de fichiers", async () => {
     await wrapper.vm.loadFileSystem()
-    const firstFile = wrapper.findAll(".file-item")[0]
+    const firstFile = wrapper.findAll(".file-item")[1] // Skip ".."
     await firstFile.trigger("click")
     expect(wrapper.emitted("files-selected")).toBeTruthy()
-    expect(wrapper.emitted("files-selected")[0]).toEqual([[0]])
+    expect(wrapper.emitted("files-selected")[0]).toEqual([[1]])
   })
 
   it("devrait avoir une methode getFiles qui retourne la liste des fichiers", async () => {
     await wrapper.vm.loadFileSystem()
     const files = wrapper.vm.getFiles()
-    expect(files.length).toBe(4)
-    expect(files[0].name).toBe("rapport_mission.docx")
+    expect(files.length).toBe(5) // 4 fichiers + 1 ".."
+    expect(files[1].name).toBe("rapport_mission.docx")
   })
 
   it("devrait avoir une methode setFiles qui met a jour la liste", () => {
@@ -138,6 +139,13 @@ describe("FileExplorer.vue - Feature 2: Naviguer dans les répertoires", () => {
     wrapper = mount(FileExplorer)
   })
 
+  it("devrait afficher un element .. pour remonter d'un niveau", async () => {
+    await wrapper.vm.loadFileSystem()
+    const items = wrapper.findAll(".file-item")
+    const parentDir = items[0]
+    expect(parentDir.text()).toBe("../")
+  })
+
   it("devrait changer de répertoire avec un chemin relatif valide", async () => {
     await wrapper.vm.loadFileSystem()
     await wrapper.vm.changeDirectory("Fichiers")
@@ -182,7 +190,7 @@ describe("FileExplorer.vue - Feature 2: Naviguer dans les répertoires", () => {
     await wrapper.vm.loadFileSystem()
     await wrapper.vm.changeDirectory("/Fichiers")
     expect(wrapper.vm.currentDirectory.name).toBe("Fichiers")
-    expect(wrapper.vm.currentDirectory.children.length).toBe(4)
+    expect(wrapper.vm.currentDirectory.children.length).toBe(4) // 4 fichiers (sans "..")
   })
 
   it("devrait gérer les chemins avec des barres obliques multiples", async () => {
@@ -195,7 +203,7 @@ describe("FileExplorer.vue - Feature 2: Naviguer dans les répertoires", () => {
     await wrapper.vm.loadFileSystem()
     await wrapper.vm.changeDirectory("Fichiers")
     expect(wrapper.vm.currentPath).toBe("/Fichiers")
-    expect(wrapper.vm.currentDirectory.children.length).toBe(4)
+    expect(wrapper.vm.currentDirectory.children.length).toBe(4) // 4 fichiers (sans "..")
   })
 
   it("devrait naviguer vers la racine avec '/'", async () => {
@@ -204,5 +212,21 @@ describe("FileExplorer.vue - Feature 2: Naviguer dans les répertoires", () => {
     await wrapper.vm.changeDirectory("/")
     expect(wrapper.vm.currentPath).toBe("/")
     expect(wrapper.vm.currentDirectory.name).toBe("root")
+  })
+
+  it("devrait permettre de cliquer sur .. pour remonter d'un niveau", async () => {
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.changeDirectory("Fichiers")
+    const parentDir = wrapper.findAll(".file-item")[0]
+    await parentDir.trigger("click")
+    expect(wrapper.vm.currentPath).toBe("/")
+  })
+
+  it("ne devrait pas afficher .. à la racine", async () => {
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.changeDirectory("/")
+    const items = wrapper.findAll(".file-item")
+    const itemNames = items.map(item => item.text())
+    expect(itemNames).not.toContain("../")
   })
 })
