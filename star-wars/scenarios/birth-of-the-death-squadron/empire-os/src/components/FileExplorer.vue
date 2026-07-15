@@ -1,7 +1,7 @@
 <template>
   <div class="file-explorer">
     <div class="terminal-header">
-      <span>> C:\EmpireOS\{{ currentPath.replace(/\//g, '\\') }}> </span>
+      <span>> C:\EmpireOS\{{ currentPath.replace(/\//g, '\\\') }}> </span>
     </div>
     <div class="file-list-container">
       <div
@@ -26,7 +26,14 @@ export default {
       fileSystem: null,
       currentPath: '/Fichiers',
       selectedFiles: [],
-      files: [] // Gardé pour compatibilité avec les tests Feature 1
+      files: []
+    }
+  },
+  computed: {
+    currentDirectory() {
+      if (!this.fileSystem) return { children: [] }
+      const dir = this.findDirectoryByPath(this.currentPath)
+      return dir || this.fileSystem
     }
   },
   async created() {
@@ -40,7 +47,6 @@ export default {
         this.fileSystem = await response.json()
       } catch (error) {
         console.error('Erreur lors du chargement du file system:', error)
-        // Fallback : structure par défaut si le fichier n est pas trouvé
         this.fileSystem = {
           name: 'root',
           path: '/',
@@ -61,10 +67,6 @@ export default {
         }
       }
     },
-    getCurrentDirectory() {
-      if (!this.fileSystem) return { children: [] }
-      return this.findDirectoryByPath(this.currentPath) || this.fileSystem
-    },
     findDirectoryByPath(path) {
       if (path === '/') return this.fileSystem
       const pathParts = path.split('/').filter(p => p)
@@ -79,36 +81,30 @@ export default {
     async changeDirectory(path) {
       if (path === '..') {
         const parts = this.currentPath.split('/').filter(p => p)
-        if (parts.length === 0) return // Déjà à la racine
+        if (parts.length === 0) return
         this.currentPath = '/' + parts.slice(0, -1).join('/')
         if (this.currentPath === '/') this.currentPath = '/'
-        this.updateCurrentDirectory()
         return
       }
       if (path === '/') {
         this.currentPath = '/'
-        this.updateCurrentDirectory()
         return
       }
       if (path.startsWith('/')) {
         const dir = this.findDirectoryByPath(path)
         if (dir) {
           this.currentPath = path
-          this.updateCurrentDirectory()
         }
         return
       }
-      // Chemin relatif
-      const currentDir = this.getCurrentDirectory()
+      const currentDir = this.currentDirectory
       const target = currentDir.children.find(child => child.name === path && child.type === 'directory')
       if (target) {
         this.currentPath = target.path
-        this.updateCurrentDirectory()
       }
     },
     updateCurrentDirectory() {
-      const currentDir = this.getCurrentDirectory()
-      this.files = currentDir.children || []
+      this.files = this.currentDirectory.children || []
     },
     handleItemClick(item) {
       if (item.type === 'directory') {
@@ -137,6 +133,14 @@ export default {
     },
     setFiles(newFiles) {
       this.files = newFiles
+    }
+  },
+  watch: {
+    currentPath: {
+      handler() {
+        this.updateCurrentDirectory()
+      },
+      immediate: true
     }
   }
 }
