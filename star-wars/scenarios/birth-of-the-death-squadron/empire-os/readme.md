@@ -23,7 +23,11 @@ Cette application web simule un terminal MS-DOS permettant aux joueurs de:
 
 empire-os/
 ├── public/
-│   ├── fichiers/          # Dossier pour les fichiers .docx
+│   ├── fichiers/          # Dossier pour les fichiers .docx (contenu réel)
+│   │   ├── rapport_mission.docx
+│   │   ├── ordre_executor.docx
+│   │   ├── liste_cibles.docx
+│   │   └── protocole_secret.docx
 │   └── file-system.json   # Structure des répertoires et fichiers
 ├── src/
 │   ├── components/
@@ -58,7 +62,7 @@ npm run test:unit
 
 - [x] Feature 1: Afficher une liste de fichiers .docx
 - [x] Feature 2: Naviguer dans les répertoires (avec support de `..` pour remonter)
-- [x] Feature 3: Ouvrir les fichiers pour consultation (avec icônes 📄)
+- [x] Feature 3: Ouvrir les fichiers pour consultation (avec icônes 📄 et contenu réel)
 - [ ] Feature 4: Sélectionner des fichiers pour téléchargement
 - [ ] Feature 5: Télécharger les fichiers en .zip avec progression
 
@@ -84,9 +88,12 @@ npm run test:unit
   - Une icône 📄 est affichée à côté de chaque fichier (pas des dossiers).
   - Clic sur l'icône ouvre le fichier dans une modale.
   - Prêt pour les futures icônes (téléchargement, etc.).
+- **Chargement du contenu réel** :
+  - Les fichiers `.docx` sont stockés dans `/public/fichiers/` avec un contenu en Lorem Ipsum + détails thématiques Star Wars.
+  - Le contenu est chargé dynamiquement via `fetch` et affiché dans la modale.
 - Affichage d'une **modale** avec :
   - Le nom du fichier.
-  - Le contenu du fichier (ou un message par défaut si non disponible).
+  - Le contenu du fichier (chargé depuis le fichier réel).
   - Un bouton de fermeture (X).
 - Fermeture de la modale en cliquant à l'extérieur ou sur le bouton X.
 - **Les dossiers ne s'ouvrent pas en double-cliquant** (navigation via `changeDirectory`).
@@ -110,3 +117,13 @@ Le projet est déployable sur n'importe quel hébergement statique (Netlify, Ver
 npm run build
 # Puis uploader le contenu du dossier dist/
 ```
+
+## Contenu des fichiers
+
+Les fichiers `.docx` dans `/public/fichiers/` contiennent un mélange de **Lorem Ipsum** et de **contenu thématique Star Wars** pour une immersion totale dans l'univers du scénario "Birth of the Death Squadron".
+
+Exemples de contenu :
+- **rapport_mission.docx** : Rapport d'une mission impériale avec objectifs et résultats.
+- **ordre_executor.docx** : Ordre direct de l'Exécuteur (Lord Dark Vador).
+- **liste_cibles.docx** : Liste des cibles prioritaires de l'Empire (Luke Skywalker, Leia, etc.).
+- **protocole_secret.docx** : Protocole secret de l'Empire avec instructions et codes d'urgence.

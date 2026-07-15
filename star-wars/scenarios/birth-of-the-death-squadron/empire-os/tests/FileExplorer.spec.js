@@ -2,30 +2,60 @@ import { describe, it, expect, beforeEach, vi } from "vitest"
 import { mount } from "@vue/test-utils"
 import FileExplorer from "../src/components/FileExplorer.vue"
 
+const mockFileSystem = {
+  name: 'root',
+  path: '/',
+  type: 'directory',
+  children: [
+    {
+      name: 'Fichiers',
+      path: '/Fichiers',
+      type: 'directory',
+      children: [
+        { name: 'rapport_mission.docx', path: '/Fichiers/rapport_mission.docx', type: 'file' },
+        { name: 'ordre_executor.docx', path: '/Fichiers/ordre_executor.docx', type: 'file' },
+        { name: 'liste_cibles.docx', path: '/Fichiers/liste_cibles.docx', type: 'file' },
+        { name: 'protocole_secret.docx', path: '/Fichiers/protocole_secret.docx', type: 'file' }
+      ]
+    },
+    {
+      name: 'Dossiers',
+      path: '/Dossiers',
+      type: 'directory',
+      children: [
+        {
+          name: 'Secrets',
+          path: '/Dossiers/Secrets',
+          type: 'directory',
+          children: [
+            { name: 'protocole_secret.docx', path: '/Dossiers/Secrets/protocole_secret.docx', type: 'file' }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+// Mock global pour fetch
+beforeEach(() => {
+  global.fetch = vi.fn((url) => {
+    if (url === '/file-system.json') {
+      return Promise.resolve({
+        json: () => Promise.resolve(mockFileSystem)
+      })
+    }
+    // Pour tous les autres appels (fichiers), retourner un contenu par défaut
+    return Promise.resolve({
+      ok: true,
+      text: () => Promise.resolve('=== RAPPORT DE MISSION IMPÉRIALE ===\n\nContenu du rapport de mission...')
+    })
+  })
+})
+
 describe("FileExplorer.vue - Feature 1: Afficher une liste de fichiers .docx", () => {
   let wrapper
 
   beforeEach(() => {
-    global.fetch = vi.fn(() => Promise.resolve({
-      json: () => Promise.resolve({
-        name: 'root',
-        path: '/',
-        type: 'directory',
-        children: [
-          {
-            name: 'Fichiers',
-            path: '/Fichiers',
-            type: 'directory',
-            children: [
-              { name: 'rapport_mission.docx', path: '/Fichiers/rapport_mission.docx', type: 'file', content: 'Contenu du rapport de mission' },
-              { name: 'ordre_executor.docx', path: '/Fichiers/ordre_executor.docx', type: 'file', content: 'Ordre de l\'Exécuteur' },
-              { name: 'liste_cibles.docx', path: '/Fichiers/liste_cibles.docx', type: 'file', content: 'Liste des cibles prioritaires' },
-              { name: 'protocole_secret.docx', path: '/Fichiers/protocole_secret.docx', type: 'file', content: 'Protocole secret de l\'Empire' }
-            ]
-          }
-        ]
-      })
-    }))
     wrapper = mount(FileExplorer)
   })
 
@@ -105,41 +135,6 @@ describe("FileExplorer.vue - Feature 2: Naviguer dans les répertoires", () => {
   let wrapper
 
   beforeEach(() => {
-    global.fetch = vi.fn(() => Promise.resolve({
-      json: () => Promise.resolve({
-        name: 'root',
-        path: '/',
-        type: 'directory',
-        children: [
-          {
-            name: 'Fichiers',
-            path: '/Fichiers',
-            type: 'directory',
-            children: [
-              { name: 'rapport_mission.docx', path: '/Fichiers/rapport_mission.docx', type: 'file', content: 'Contenu du rapport de mission' },
-              { name: 'ordre_executor.docx', path: '/Fichiers/ordre_executor.docx', type: 'file', content: 'Ordre de l\'Exécuteur' },
-              { name: 'liste_cibles.docx', path: '/Fichiers/liste_cibles.docx', type: 'file', content: 'Liste des cibles prioritaires' },
-              { name: 'protocole_secret.docx', path: '/Fichiers/protocole_secret.docx', type: 'file', content: 'Protocole secret de l\'Empire' }
-            ]
-          },
-          {
-            name: 'Dossiers',
-            path: '/Dossiers',
-            type: 'directory',
-            children: [
-              {
-                name: 'Secrets',
-                path: '/Dossiers/Secrets',
-                type: 'directory',
-                children: [
-                  { name: 'protocole_secret.docx', path: '/Dossiers/Secrets/protocole_secret.docx', type: 'file', content: 'Protocole secret' }
-                ]
-              }
-            ]
-          }
-        ]
-      })
-    }))
     wrapper = mount(FileExplorer)
   })
 
@@ -243,26 +238,6 @@ describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", 
   let wrapper
 
   beforeEach(() => {
-    global.fetch = vi.fn(() => Promise.resolve({
-      json: () => Promise.resolve({
-        name: 'root',
-        path: '/',
-        type: 'directory',
-        children: [
-          {
-            name: 'Fichiers',
-            path: '/Fichiers',
-            type: 'directory',
-            children: [
-              { name: 'rapport_mission.docx', path: '/Fichiers/rapport_mission.docx', type: 'file', content: 'Contenu du rapport de mission' },
-              { name: 'ordre_executor.docx', path: '/Fichiers/ordre_executor.docx', type: 'file', content: 'Ordre de l\'Exécuteur' },
-              { name: 'liste_cibles.docx', path: '/Fichiers/liste_cibles.docx', type: 'file', content: 'Liste des cibles prioritaires' },
-              { name: 'protocole_secret.docx', path: '/Fichiers/protocole_secret.docx', type: 'file', content: 'Protocole secret de l\'Empire' }
-            ]
-          }
-        ]
-      })
-    }))
     wrapper = mount(FileExplorer)
   })
 
@@ -285,6 +260,15 @@ describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", 
     expect(wrapper.vm.showFileModal).toBe(true)
   })
 
+  it("devrait charger le contenu du fichier dans fileContent", async () => {
+    await wrapper.vm.loadFileSystem()
+    const file = wrapper.vm.currentDirectoryItems[1]
+    await wrapper.vm.openFile(file)
+    // Attendre que le contenu soit chargé
+    await new Promise(resolve => setTimeout(resolve, 50))
+    expect(wrapper.vm.fileContent).toContain("RAPPORT DE MISSION IMPÉRIALE")
+  })
+
   it("devrait fermer la modale avec closeFileModal", async () => {
     await wrapper.vm.loadFileSystem()
     const file = wrapper.vm.currentDirectoryItems[1]
@@ -292,6 +276,7 @@ describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", 
     expect(wrapper.vm.showFileModal).toBe(true)
     wrapper.vm.closeFileModal()
     expect(wrapper.vm.showFileModal).toBe(false)
+    expect(wrapper.vm.fileContent).toBe('')
   })
 
   it("devrait ouvrir un fichier en double-cliquant dessus", async () => {
@@ -310,14 +295,6 @@ describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", 
     const modal = wrapper.find(".file-modal")
     expect(modal.exists()).toBe(true)
     expect(modal.text()).toContain("rapport_mission.docx")
-  })
-
-  it("devrait afficher le contenu du fichier dans la modale", async () => {
-    await wrapper.vm.loadFileSystem()
-    const file = wrapper.vm.currentDirectoryItems[1]
-    await wrapper.vm.openFile(file)
-    const modal = wrapper.find(".file-modal")
-    expect(modal.text()).toContain("Contenu du rapport de mission")
   })
 
   it("ne devrait pas ouvrir un dossier en double-cliquant", async () => {

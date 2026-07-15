@@ -35,7 +35,7 @@
           <button class="close-button" @click="closeFileModal">X</button>
         </div>
         <div class="modal-content">
-          <pre>{{ openedFile?.content || 'Contenu non disponible' }}</pre>
+          <pre>{{ fileContent || 'Contenu non disponible' }}</pre>
         </div>
       </div>
     </div>
@@ -52,7 +52,8 @@ export default {
       selectedFiles: [],
       files: [],
       showFileModal: false,
-      openedFile: null
+      openedFile: null,
+      fileContent: ''
     }
   },
   computed: {
@@ -98,10 +99,10 @@ export default {
               path: '/Fichiers',
               type: 'directory',
               children: [
-                { name: 'rapport_mission.docx', path: '/Fichiers/rapport_mission.docx', type: 'file', content: 'Contenu du rapport de mission' },
-                { name: 'ordre_executor.docx', path: '/Fichiers/ordre_executor.docx', type: 'file', content: 'Ordre de l\'Exécuteur' },
-                { name: 'liste_cibles.docx', path: '/Fichiers/liste_cibles.docx', type: 'file', content: 'Liste des cibles prioritaires' },
-                { name: 'protocole_secret.docx', path: '/Fichiers/protocole_secret.docx', type: 'file', content: 'Protocole secret de l\'Empire' }
+                { name: 'rapport_mission.docx', path: '/Fichiers/rapport_mission.docx', type: 'file' },
+                { name: 'ordre_executor.docx', path: '/Fichiers/ordre_executor.docx', type: 'file' },
+                { name: 'liste_cibles.docx', path: '/Fichiers/liste_cibles.docx', type: 'file' },
+                { name: 'protocole_secret.docx', path: '/Fichiers/protocole_secret.docx', type: 'file' }
               ]
             }
           ]
@@ -154,13 +155,32 @@ export default {
         this.currentPath = target.path
       }
     },
-    openFile(file) {
+    async openFile(file) {
       this.openedFile = file
       this.showFileModal = true
+      await this.loadFileContent(file)
+    },
+    async loadFileContent(file) {
+      try {
+        // Extraire le nom du fichier du chemin (ex: /Fichiers/rapport_mission.docx -> rapport_mission.docx)
+        const filename = file.path.split('/').pop()
+        // Charger le fichier depuis /fichiers/nom.docx
+        const response = await fetch(`/fichiers/${filename}`)
+        if (response.ok) {
+          this.fileContent = await response.text()
+        } else {
+          // Si le fichier n'existe pas, afficher un message par défaut
+          this.fileContent = 'Contenu non disponible'
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement du fichier:', error)
+        this.fileContent = 'Contenu non disponible'
+      }
     },
     closeFileModal() {
       this.showFileModal = false
       this.openedFile = null
+      this.fileContent = ''
     },
     updateCurrentDirectory() {
       this.files = this.currentDirectoryItems
