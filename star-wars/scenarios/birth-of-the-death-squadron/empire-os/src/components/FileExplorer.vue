@@ -15,6 +15,19 @@
         {{ item.name }}{{ item.type === 'directory' ? '/' : '' }}
       </div>
     </div>
+    
+    <!-- Modale pour afficher le contenu des fichiers -->
+    <div v-if="showFileModal" class="file-modal-overlay" @click="closeFileModal">
+      <div class="file-modal" @click.stop>
+        <div class="modal-header">
+          <span>Fichier: {{ openedFile?.name }}</span>
+          <button class="close-button" @click="closeFileModal">X</button>
+        </div>
+        <div class="modal-content">
+          <pre>{{ openedFile?.content || 'Contenu non disponible' }}</pre>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -26,7 +39,9 @@ export default {
       fileSystem: null,
       currentPath: '/Fichiers',
       selectedFiles: [],
-      files: []
+      files: [],
+      showFileModal: false,
+      openedFile: null
     }
   },
   computed: {
@@ -72,10 +87,10 @@ export default {
               path: '/Fichiers',
               type: 'directory',
               children: [
-                { name: 'rapport_mission.docx', path: '/Fichiers/rapport_mission.docx', type: 'file' },
-                { name: 'ordre_executor.docx', path: '/Fichiers/ordre_executor.docx', type: 'file' },
-                { name: 'liste_cibles.docx', path: '/Fichiers/liste_cibles.docx', type: 'file' },
-                { name: 'protocole_secret.docx', path: '/Fichiers/protocole_secret.docx', type: 'file' }
+                { name: 'rapport_mission.docx', path: '/Fichiers/rapport_mission.docx', type: 'file', content: 'Contenu du rapport de mission' },
+                { name: 'ordre_executor.docx', path: '/Fichiers/ordre_executor.docx', type: 'file', content: 'Ordre de l\'Exécuteur' },
+                { name: 'liste_cibles.docx', path: '/Fichiers/liste_cibles.docx', type: 'file', content: 'Liste des cibles prioritaires' },
+                { name: 'protocole_secret.docx', path: '/Fichiers/protocole_secret.docx', type: 'file', content: 'Protocole secret de l\'Empire' }
               ]
             }
           ]
@@ -128,6 +143,14 @@ export default {
         this.currentPath = target.path
       }
     },
+    openFile(file) {
+      this.openedFile = file
+      this.showFileModal = true
+    },
+    closeFileModal() {
+      this.showFileModal = false
+      this.openedFile = null
+    },
     updateCurrentDirectory() {
       this.files = this.currentDirectoryItems
     },
@@ -141,6 +164,8 @@ export default {
     handleItemDoubleClick(item) {
       if (item.type === 'directory') {
         this.changeDirectory(item.path)
+      } else {
+        this.openFile(item)
       }
     },
     toggleFileSelection(index) {
@@ -179,4 +204,61 @@ export default {
 .file-item.selected { background-color: rgba(0, 255, 0, 0.3); border-color: #0f0; }
 .file-item.directory { color: #0ff; }
 .file-item.directory:hover { background-color: rgba(0, 255, 255, 0.1); }
+
+/* Styles pour la modale */
+.file-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.file-modal {
+  background-color: #111;
+  border: 2px solid #0f0;
+  border-radius: 4px;
+  width: 80%;
+  max-width: 600px;
+  max-height: 80%;
+  overflow: auto;
+  color: #0f0;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  border-bottom: 1px solid #0f0;
+  background-color: #000;
+}
+
+.modal-content {
+  padding: 15px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.close-button {
+  background: none;
+  border: 1px solid #0f0;
+  color: #0f0;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.close-button:hover {
+  background-color: #0f0;
+  color: #000;
+}
 </style>

@@ -58,7 +58,7 @@ npm run test:unit
 
 - [x] Feature 1: Afficher une liste de fichiers .docx
 - [x] Feature 2: Naviguer dans les répertoires (avec support de `..` pour remonter)
-- [ ] Feature 3: Ouvrir les fichiers pour consultation
+- [x] Feature 3: Ouvrir les fichiers pour consultation
 - [ ] Feature 4: Sélectionner des fichiers pour téléchargement
 - [ ] Feature 5: Télécharger les fichiers en .zip avec progression
 
@@ -77,6 +77,17 @@ npm run test:unit
 - Normalisation des chemins (suppression des `/` multiples et finaux).
 - **L'élément `..` est affiché dans tous les sous-dossiers pour permettre de remonter à la racine.**
 - Tests: 13 tests unitaires (dont 10 spécifiques à la Feature 2).
+
+### Feature 3: Ouvrir les fichiers pour consultation
+- Ouverture des fichiers `.docx` en double-cliquant dessus.
+- Affichage d'une **modale** avec :
+  - Le nom du fichier.
+  - Le contenu du fichier (ou un message par défaut si non disponible).
+  - Un bouton de fermeture (X).
+- Fermeture de la modale en cliquant à l'extérieur ou sur le bouton X.
+- **Les dossiers ne s'ouvrent pas en double-cliquant** (navigation via `changeDirectory`).
+- Style DOS-like pour la modale (fond noir, bordures vertes).
+- Tests: 8 tests unitaires.
 
 ## TDD
 

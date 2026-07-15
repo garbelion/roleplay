@@ -230,3 +230,92 @@ describe("FileExplorer.vue - Feature 2: Naviguer dans les répertoires", () => {
     expect(itemNames).not.toContain("../")
   })
 })
+
+describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", () => {
+  let wrapper
+
+  beforeEach(() => {
+    global.fetch = vi.fn(() => Promise.resolve({
+      json: () => Promise.resolve({
+        name: 'root',
+        path: '/',
+        type: 'directory',
+        children: [
+          {
+            name: 'Fichiers',
+            path: '/Fichiers',
+            type: 'directory',
+            children: [
+              { name: 'rapport_mission.docx', path: '/Fichiers/rapport_mission.docx', type: 'file', content: 'Contenu du rapport de mission' },
+              { name: 'ordre_executor.docx', path: '/Fichiers/ordre_executor.docx', type: 'file', content: 'Ordre de l\'Exécuteur' },
+              { name: 'liste_cibles.docx', path: '/Fichiers/liste_cibles.docx', type: 'file', content: 'Liste des cibles prioritaires' },
+              { name: 'protocole_secret.docx', path: '/Fichiers/protocole_secret.docx', type: 'file', content: 'Protocole secret de l\'Empire' }
+            ]
+          }
+        ]
+      })
+    }))
+    wrapper = mount(FileExplorer)
+  })
+
+  it("devrait avoir une méthode openFile", async () => {
+    await wrapper.vm.loadFileSystem()
+    expect(typeof wrapper.vm.openFile).toBe('function')
+  })
+
+  it("devrait ouvrir un fichier et mettre à jour openedFile", async () => {
+    await wrapper.vm.loadFileSystem()
+    const file = wrapper.vm.currentDirectoryItems[1] // Premier fichier (rapport_mission.docx)
+    await wrapper.vm.openFile(file)
+    expect(wrapper.vm.openedFile).toEqual(file)
+  })
+
+  it("devrait afficher une modale lors de l'ouverture d'un fichier", async () => {
+    await wrapper.vm.loadFileSystem()
+    const file = wrapper.vm.currentDirectoryItems[1]
+    await wrapper.vm.openFile(file)
+    expect(wrapper.vm.showFileModal).toBe(true)
+  })
+
+  it("devrait fermer la modale avec closeFileModal", async () => {
+    await wrapper.vm.loadFileSystem()
+    const file = wrapper.vm.currentDirectoryItems[1]
+    await wrapper.vm.openFile(file)
+    expect(wrapper.vm.showFileModal).toBe(true)
+    wrapper.vm.closeFileModal()
+    expect(wrapper.vm.showFileModal).toBe(false)
+  })
+
+  it("devrait ouvrir un fichier en double-cliquant dessus", async () => {
+    await wrapper.vm.loadFileSystem()
+    const fileItems = wrapper.findAll(".file-item")
+    const firstFile = fileItems[1] // Skip ".."
+    await firstFile.trigger("dblclick")
+    expect(wrapper.vm.showFileModal).toBe(true)
+    expect(wrapper.vm.openedFile.name).toBe("rapport_mission.docx")
+  })
+
+  it("devrait afficher le nom du fichier dans la modale", async () => {
+    await wrapper.vm.loadFileSystem()
+    const file = wrapper.vm.currentDirectoryItems[1]
+    await wrapper.vm.openFile(file)
+    const modal = wrapper.find(".file-modal")
+    expect(modal.exists()).toBe(true)
+    expect(modal.text()).toContain("rapport_mission.docx")
+  })
+
+  it("devrait afficher le contenu du fichier dans la modale", async () => {
+    await wrapper.vm.loadFileSystem()
+    const file = wrapper.vm.currentDirectoryItems[1]
+    await wrapper.vm.openFile(file)
+    const modal = wrapper.find(".file-modal")
+    expect(modal.text()).toContain("Contenu du rapport de mission")
+  })
+
+  it("ne devrait pas ouvrir un dossier en double-cliquant", async () => {
+    await wrapper.vm.loadFileSystem()
+    const dirItem = wrapper.findAll(".file-item")[0] // ".."
+    await dirItem.trigger("dblclick")
+    expect(wrapper.vm.showFileModal).toBe(false)
+  })
+})
