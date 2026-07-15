@@ -1,7 +1,7 @@
 <template>
   <div class="file-explorer">
     <div class="terminal-header">
-      <span>> C:\EmpireOS{{ currentPath.replace(/\//g, '\\') }}> </span>
+      <span>> C:\EmpireOS{{ currentPath.replace(/\//g, '\\') }}></span>
     </div>
     <div class="file-list-container">
       <div
@@ -9,7 +9,7 @@
         :key="index"
         class="file-item"
         :class="{ selected: selectedFiles.includes(index), directory: item.type === 'directory' }"
-        @click="handleItemClick(item)"
+        @click="handleItemClick(item, index)"
         @dblclick="handleItemDoubleClick(item)"
       >
         {{ item.name }}{{ item.type === 'directory' ? '/' : '' }}
@@ -38,9 +38,13 @@ export default {
   },
   async created() {
     await this.loadFileSystem()
-    this.updateCurrentDirectory()
   },
   methods: {
+    normalizePath(path) {
+      if (!path) return '/'
+      let normalized = path.replace(/\/+/g, '/').replace(/^\//, '/').replace(/\/$/, '')
+      return normalized === '' ? '/' : normalized
+    },
     async loadFileSystem() {
       try {
         const response = await fetch('/file-system.json')
@@ -66,10 +70,12 @@ export default {
           ]
         }
       }
+      this.updateCurrentDirectory()
     },
     findDirectoryByPath(path) {
-      if (path === '/') return this.fileSystem
-      const pathParts = path.split('/').filter(p => p)
+      const normalizedPath = this.normalizePath(path)
+      if (normalizedPath === '/') return this.fileSystem
+      const pathParts = normalizedPath.split('/').filter(p => p)
       let current = this.fileSystem
       for (const part of pathParts) {
         const found = current.children.find(child => child.name === part && child.type === 'directory')
@@ -79,26 +85,34 @@ export default {
       return current
     },
     async changeDirectory(path) {
-      if (path === '..') {
-        const parts = this.currentPath.split('/').filter(p => p)
-        if (parts.length === 0) return
+      const normalizedPath = this.normalizePath(path)
+      
+      if (normalizedPath === '..') {
+        const parts = this.normalizePath(this.currentPath).split('/').filter(p => p)
+        if (parts.length === 0) {
+          this.currentPath = '/'
+          return
+        }
         this.currentPath = '/' + parts.slice(0, -1).join('/')
         if (this.currentPath === '/') this.currentPath = '/'
         return
       }
-      if (path === '/') {
+      
+      if (normalizedPath === '/') {
         this.currentPath = '/'
         return
       }
-      if (path.startsWith('/')) {
-        const dir = this.findDirectoryByPath(path)
+      
+      if (normalizedPath.startsWith('/')) {
+        const dir = this.findDirectoryByPath(normalizedPath)
         if (dir) {
-          this.currentPath = path
+          this.currentPath = this.normalizePath(normalizedPath)
         }
         return
       }
+      
       const currentDir = this.currentDirectory
-      const target = currentDir.children.find(child => child.name === path && child.type === 'directory')
+      const target = currentDir.children.find(child => child.name === normalizedPath && child.type === 'directory')
       if (target) {
         this.currentPath = target.path
       }
@@ -106,11 +120,10 @@ export default {
     updateCurrentDirectory() {
       this.files = this.currentDirectory.children || []
     },
-    handleItemClick(item) {
+    handleItemClick(item, index) {
       if (item.type === 'directory') {
         this.changeDirectory(item.path)
       } else {
-        const index = this.files.indexOf(item)
         this.toggleFileSelection(index)
       }
     },

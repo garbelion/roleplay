@@ -10,7 +10,8 @@
       "children": [
         { "name": "rapport_mission.docx", "path": "/Fichiers/rapport_mission.docx", "type": "file" },
         { "name": "ordre_executor.docx", "path": "/Fichiers/ordre_executor.docx", "type": "file" },
-        { "name": "liste_cibles.docx", "path": "/Fichiers/liste_cibles.docx", "type": "file" }
+        { "name": "liste_cibles.docx", "path": "/Fichiers/liste_cibles.docx", "type": "file" },
+        { "name": "protocole_secret.docx", "path": "/Fichiers/protocole_secret.docx", "type": "file" }
       ]
     },
     {
