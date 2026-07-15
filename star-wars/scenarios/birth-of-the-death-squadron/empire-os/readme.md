@@ -23,7 +23,8 @@ Cette application web simule un terminal MS-DOS permettant aux joueurs de:
 
 empire-os/
 ├── public/
-│   └── fichiers/          # Dossier pour les fichiers .docx
+│   ├── fichiers/          # Dossier pour les fichiers .docx
+│   └── file-system.json   # Structure des répertoires et fichiers
 ├── src/
 │   ├── components/
 │   │   └── FileExplorer.vue
@@ -56,10 +57,26 @@ npm run test:unit
 ## Features
 
 - [x] Feature 1: Afficher une liste de fichiers .docx
-- [ ] Feature 2: Naviguer dans les répertoires
+- [x] Feature 2: Naviguer dans les répertoires (avec support de `..` pour remonter)
 - [ ] Feature 3: Ouvrir les fichiers pour consultation
 - [ ] Feature 4: Sélectionner des fichiers pour téléchargement
 - [ ] Feature 5: Télécharger les fichiers en .zip avec progression
+
+## Détails des Features
+
+### Feature 1: Afficher une liste de fichiers .docx
+- Affiche les fichiers `.docx` dans le répertoire courant.
+- Style DOS-like appliqué (couleurs vertes, police monospace).
+- Tests: 9 tests unitaires.
+
+### Feature 2: Naviguer dans les répertoires
+- Navigation via chemins relatifs (`cd Fichiers`).
+- Navigation via chemins absolus (`cd /Fichiers`).
+- Remontée d'un niveau avec `..` (bouton cliquable dans l'interface).
+- Gestion des chemins invalides (ignore et reste dans le répertoire courant).
+- Normalisation des chemins (suppression des `/` multiples et finaux).
+- **L'élément `..` est affiché dans tous les sous-dossiers pour permettre de remonter à la racine.**
+- Tests: 13 tests unitaires (dont 10 spécifiques à la Feature 2).
 
 ## TDD
 
@@ -74,5 +91,7 @@ Chaque feature est développée en suivant la méthodologie TDD:
 
 Le projet est déployable sur n'importe quel hébergement statique (Netlify, Vercel, GitHub Pages).
 
+```bash
 npm run build
 # Puis uploader le contenu du dossier dist/
+```
