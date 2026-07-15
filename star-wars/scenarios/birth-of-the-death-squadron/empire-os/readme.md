@@ -58,7 +58,7 @@ npm run test:unit
 
 - [x] Feature 1: Afficher une liste de fichiers .docx
 - [x] Feature 2: Naviguer dans les répertoires (avec support de `..` pour remonter)
-- [x] Feature 3: Ouvrir les fichiers pour consultation
+- [x] Feature 3: Ouvrir les fichiers pour consultation (avec icônes 📄)
 - [ ] Feature 4: Sélectionner des fichiers pour téléchargement
 - [ ] Feature 5: Télécharger les fichiers en .zip avec progression
 
@@ -79,7 +79,11 @@ npm run test:unit
 - Tests: 13 tests unitaires (dont 10 spécifiques à la Feature 2).
 
 ### Feature 3: Ouvrir les fichiers pour consultation
-- Ouverture des fichiers `.docx` en double-cliquant dessus.
+- Ouverture des fichiers `.docx` en double-cliquant dessus **ou via une icône 📄**.
+- **Icônes d'action** :
+  - Une icône 📄 est affichée à côté de chaque fichier (pas des dossiers).
+  - Clic sur l'icône ouvre le fichier dans une modale.
+  - Prêt pour les futures icônes (téléchargement, etc.).
 - Affichage d'une **modale** avec :
   - Le nom du fichier.
   - Le contenu du fichier (ou un message par défaut si non disponible).
@@ -87,7 +91,7 @@ npm run test:unit
 - Fermeture de la modale en cliquant à l'extérieur ou sur le bouton X.
 - **Les dossiers ne s'ouvrent pas en double-cliquant** (navigation via `changeDirectory`).
 - Style DOS-like pour la modale (fond noir, bordures vertes).
-- Tests: 8 tests unitaires.
+- Tests: 11 tests unitaires (8 pour la Feature 3 + 2 pour les icônes).
 
 ## TDD
 

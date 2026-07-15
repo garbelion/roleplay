@@ -12,7 +12,18 @@
         @click="handleItemClick(item, index)"
         @dblclick="handleItemDoubleClick(item)"
       >
-        {{ item.name }}{{ item.type === 'directory' ? '/' : '' }}
+        <span class="file-name">
+          {{ item.name }}{{ item.type === 'directory' ? '/' : '' }}
+        </span>
+        <!-- Icône d'ouverture pour les fichiers (pas les dossiers) -->
+        <span
+          v-if="item.type === 'file'"
+          class="open-icon"
+          @click.stop="openFile(item)"
+          title="Ouvrir le fichier"
+        >
+          📄
+        </span>
       </div>
     </div>
     
@@ -199,11 +210,35 @@ export default {
 .file-explorer { color: #0f0; font-family: monospace; font-size: 14px; line-height: 1.5; }
 .terminal-header { margin-bottom: 10px; color: #0f0; }
 .file-list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
-.file-item { padding: 6px 12px; background-color: transparent; border: 1px solid #000; cursor: pointer; }
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  background-color: transparent;
+  border: 1px solid #000;
+  cursor: pointer;
+}
 .file-item:hover { background-color: rgba(0, 255, 0, 0.1); }
 .file-item.selected { background-color: rgba(0, 255, 0, 0.3); border-color: #0f0; }
 .file-item.directory { color: #0ff; }
 .file-item.directory:hover { background-color: rgba(0, 255, 255, 0.1); }
+
+.file-name {
+  flex: 1;
+}
+
+/* Icône d'ouverture pour les fichiers */
+.open-icon {
+  cursor: pointer;
+  margin-left: 8px;
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+.open-icon:hover {
+  opacity: 1;
+}
 
 /* Styles pour la modale */
 .file-modal-overlay {

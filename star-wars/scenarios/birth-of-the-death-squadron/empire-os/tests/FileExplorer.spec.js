@@ -17,10 +17,10 @@ describe("FileExplorer.vue - Feature 1: Afficher une liste de fichiers .docx", (
             path: '/Fichiers',
             type: 'directory',
             children: [
-              { name: 'rapport_mission.docx', path: '/Fichiers/rapport_mission.docx', type: 'file' },
-              { name: 'ordre_executor.docx', path: '/Fichiers/ordre_executor.docx', type: 'file' },
-              { name: 'liste_cibles.docx', path: '/Fichiers/liste_cibles.docx', type: 'file' },
-              { name: 'protocole_secret.docx', path: '/Fichiers/protocole_secret.docx', type: 'file' }
+              { name: 'rapport_mission.docx', path: '/Fichiers/rapport_mission.docx', type: 'file', content: 'Contenu du rapport de mission' },
+              { name: 'ordre_executor.docx', path: '/Fichiers/ordre_executor.docx', type: 'file', content: 'Ordre de l\'Exécuteur' },
+              { name: 'liste_cibles.docx', path: '/Fichiers/liste_cibles.docx', type: 'file', content: 'Liste des cibles prioritaires' },
+              { name: 'protocole_secret.docx', path: '/Fichiers/protocole_secret.docx', type: 'file', content: 'Protocole secret de l\'Empire' }
             ]
           }
         ]
@@ -37,7 +37,11 @@ describe("FileExplorer.vue - Feature 1: Afficher une liste de fichiers .docx", (
 
   it("devrait afficher les noms de fichiers corrects", async () => {
     await wrapper.vm.loadFileSystem()
-    const fileNames = wrapper.findAll(".file-item").map(item => item.text())
+    const fileItems = wrapper.findAll(".file-item")
+    const fileNames = fileItems.map(item => {
+      const fileNameElement = item.find(".file-name")
+      return fileNameElement ? fileNameElement.text() : item.text()
+    })
     expect(fileNames).toEqual([
       "../",
       "rapport_mission.docx",
@@ -112,10 +116,10 @@ describe("FileExplorer.vue - Feature 2: Naviguer dans les répertoires", () => {
             path: '/Fichiers',
             type: 'directory',
             children: [
-              { name: 'rapport_mission.docx', path: '/Fichiers/rapport_mission.docx', type: 'file' },
-              { name: 'ordre_executor.docx', path: '/Fichiers/ordre_executor.docx', type: 'file' },
-              { name: 'liste_cibles.docx', path: '/Fichiers/liste_cibles.docx', type: 'file' },
-              { name: 'protocole_secret.docx', path: '/Fichiers/protocole_secret.docx', type: 'file' }
+              { name: 'rapport_mission.docx', path: '/Fichiers/rapport_mission.docx', type: 'file', content: 'Contenu du rapport de mission' },
+              { name: 'ordre_executor.docx', path: '/Fichiers/ordre_executor.docx', type: 'file', content: 'Ordre de l\'Exécuteur' },
+              { name: 'liste_cibles.docx', path: '/Fichiers/liste_cibles.docx', type: 'file', content: 'Liste des cibles prioritaires' },
+              { name: 'protocole_secret.docx', path: '/Fichiers/protocole_secret.docx', type: 'file', content: 'Protocole secret de l\'Empire' }
             ]
           },
           {
@@ -128,7 +132,7 @@ describe("FileExplorer.vue - Feature 2: Naviguer dans les répertoires", () => {
                 path: '/Dossiers/Secrets',
                 type: 'directory',
                 children: [
-                  { name: 'protocole_secret.docx', path: '/Dossiers/Secrets/protocole_secret.docx', type: 'file' }
+                  { name: 'protocole_secret.docx', path: '/Dossiers/Secrets/protocole_secret.docx', type: 'file', content: 'Protocole secret' }
                 ]
               }
             ]
@@ -143,7 +147,8 @@ describe("FileExplorer.vue - Feature 2: Naviguer dans les répertoires", () => {
     await wrapper.vm.loadFileSystem()
     const items = wrapper.findAll(".file-item")
     const parentDir = items[0]
-    expect(parentDir.text()).toBe("../")
+    const fileNameElement = parentDir.find(".file-name")
+    expect(fileNameElement.text()).toBe("../")
   })
 
   it("devrait changer de répertoire avec un chemin relatif valide", async () => {
@@ -226,7 +231,10 @@ describe("FileExplorer.vue - Feature 2: Naviguer dans les répertoires", () => {
     await wrapper.vm.loadFileSystem()
     await wrapper.vm.changeDirectory("/")
     const items = wrapper.findAll(".file-item")
-    const itemNames = items.map(item => item.text())
+    const itemNames = items.map(item => {
+      const fileNameElement = item.find(".file-name")
+      return fileNameElement ? fileNameElement.text() : item.text()
+    })
     expect(itemNames).not.toContain("../")
   })
 })
@@ -317,5 +325,30 @@ describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", 
     const dirItem = wrapper.findAll(".file-item")[0] // ".."
     await dirItem.trigger("dblclick")
     expect(wrapper.vm.showFileModal).toBe(false)
+  })
+
+  it("devrait afficher une icône d'ouverture pour les fichiers", async () => {
+    await wrapper.vm.loadFileSystem()
+    const fileItems = wrapper.findAll(".file-item")
+    const firstFile = fileItems[1] // Premier fichier
+    const openIcon = firstFile.find(".open-icon")
+    expect(openIcon.exists()).toBe(true)
+  })
+
+  it("devrait ouvrir un fichier en cliquant sur l'icône", async () => {
+    await wrapper.vm.loadFileSystem()
+    const fileItems = wrapper.findAll(".file-item")
+    const firstFile = fileItems[1] // Premier fichier
+    const openIcon = firstFile.find(".open-icon")
+    await openIcon.trigger("click")
+    expect(wrapper.vm.showFileModal).toBe(true)
+    expect(wrapper.vm.openedFile.name).toBe("rapport_mission.docx")
+  })
+
+  it("ne devrait pas afficher d'icône d'ouverture pour les dossiers", async () => {
+    await wrapper.vm.loadFileSystem()
+    const dirItem = wrapper.findAll(".file-item")[0] // ".."
+    const openIcon = dirItem.find(".open-icon")
+    expect(openIcon.exists()).toBe(false)
   })
 })
