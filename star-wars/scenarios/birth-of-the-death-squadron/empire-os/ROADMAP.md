@@ -87,6 +87,13 @@ Deux publics :
      disque : **non prioritaire**, on garde un seul `file-system.json`.
 3. **Aiguilleur d'affichage par type + mode `summary`** — texte brut pour les configs, « aperçu
    impossible » pour les binaires, **`summary` pour (d)**.
+   - ✅ **Livré** : `previewKindFor` aiguille l'ouverture — `.md`→Markdown, texte système
+     (`.json/.ini/.config/.log/.txt`)→brut (échappé, pas de `v-html`), docs riches
+     (`.docx…`)/`previewMode:'summary'`→résumé + invite au téléchargement, binaire→« impossible
+     de prévisualiser ». Métadonnées `previewMode`/`summary` dans la config. Mode summary
+     vérifié en live. 57 tests, build OK.
+   - ⏳ **Ouvert** : aperçu **image** inline (décision) ; rendu **mammoth.js** inline des `.docx`
+     (parqué, point 8).
 4. **Correctif téléchargement en blob + download `.docx` réel** — *voir §6 (must-fix)*.
 
 **Immersion & tension**

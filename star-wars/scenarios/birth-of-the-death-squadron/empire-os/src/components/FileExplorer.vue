@@ -53,8 +53,14 @@
           <button class="close-button" @click="closeFileModal">X</button>
         </div>
         <div class="modal-content">
-          <!-- Afficher le contenu HTML (pas de texte brut) -->
-          <div v-if="fileContent" v-html="fileContent"></div>
+          <!-- Aiguilleur d'affichage selon le type / previewMode du fichier -->
+          <div v-if="previewKind === 'summary'" class="summary-preview">
+            <p class="summary-text">{{ openedFile?.summary || 'Aperçu non disponible pour ce document.' }}</p>
+            <p class="download-hint">Téléchargez le fichier pour consulter son contenu complet.</p>
+          </div>
+          <div v-else-if="previewKind === 'binary'" class="error">Impossible de prévisualiser ce contenu.</div>
+          <pre v-else-if="previewKind === 'text'" class="raw-text">{{ fileContent }}</pre>
+          <div v-else-if="fileContent" v-html="fileContent"></div>
           <div v-else class="error">Contenu non disponible</div>
         </div>
       </div>
@@ -77,7 +83,9 @@ export default {
       selectedFiles: [],
       showFileModal: false,
       openedFile: null,
-      fileContent: ''
+      fileContent: '',
+      // Mode d'aperçu résolu à l'ouverture : 'markdown' | 'text' | 'summary' | 'binary'.
+      previewKind: ''
     }
   },
   computed: {
@@ -187,10 +195,27 @@ export default {
         this.currentPath = target.path
       }
     },
+    // Aiguilleur d'affichage : décide COMMENT prévisualiser un fichier.
+    // `previewMode: 'summary'` (métadonnée MJ) prime sur l'extension.
+    previewKindFor(file) {
+      if (file.previewMode === 'summary') return 'summary'
+      const ext = (file.name.split('.').pop() || '').toLowerCase()
+      if (ext === 'md') return 'markdown'
+      if (['json', 'ini', 'config', 'log', 'txt'].includes(ext)) return 'text'
+      // Documents riches (Office/PDF) : téléchargement forcé via résumé.
+      // Un rendu fidèle inline (mammoth.js) pourra venir plus tard.
+      if (['docx', 'doc', 'xlsx', 'pptx', 'pdf'].includes(ext)) return 'summary'
+      return 'binary'
+    },
     async openFile(file) {
       this.openedFile = file
+      this.previewKind = this.previewKindFor(file)
+      this.fileContent = ''
       this.showFileModal = true
-      await this.loadFileContent(file)
+      // Seuls les modes textuels chargent le contenu ; summary/binaire ne fetchent rien.
+      if (this.previewKind === 'markdown' || this.previewKind === 'text') {
+        await this.loadFileContent(file)
+      }
     },
     async loadFileContent(file) {
       try {
@@ -201,24 +226,28 @@ export default {
         const filename = file.path.split('/').pop()
         const response = await fetch(`/fichiers/${filename}`)
         if (response.ok) {
-          const markdownContent = await response.text()
-          // Contenu Markdown local et maîtrisé par l'auteur du scénario, rendu via
-          // v-html. Si un jour ce contenu devient éditable/externe, il faudra
-          // assainir la sortie (ex: DOMPurify) avant injection.
-          this.fileContent = marked.parse(markdownContent)
+          const raw = await response.text()
+          // Markdown : rendu HTML via v-html (contenu local maîtrisé par l'auteur ;
+          // assainir — ex. DOMPurify — s'il devient éditable/externe).
+          // Texte système : affiché brut (échappé) dans un <pre>, jamais interprété.
+          this.fileContent = this.previewKind === 'markdown' ? marked.parse(raw) : raw
         } else {
-          // Si le fichier n'existe pas, afficher un message d'erreur
-          this.fileContent = '<div class="error">Fichier introuvable</div>'
+          this.fileContent = this.previewKind === 'markdown'
+            ? '<div class="error">Fichier introuvable</div>'
+            : 'Fichier introuvable'
         }
       } catch (error) {
         console.error('Erreur lors du chargement du fichier:', error)
-        this.fileContent = '<div class="error">Fichier introuvable</div>'
+        this.fileContent = this.previewKind === 'markdown'
+          ? '<div class="error">Fichier introuvable</div>'
+          : 'Fichier introuvable'
       }
     },
     closeFileModal() {
       this.showFileModal = false
       this.openedFile = null
       this.fileContent = ''
+      this.previewKind = ''
     },
     handleItemClick(item, index) {
       if (this.isContainer(item)) {
@@ -419,6 +448,19 @@ export default {
   color: #f00;
   font-weight: bold;
 }
+
+/* Aperçu texte brut (fichiers système : .config/.ini/.json/.log/.txt) */
+.raw-text {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: monospace;
+  color: #0f0;
+}
+
+/* Aperçu « résumé » (docs riches / previewMode summary : lecture = téléchargement) */
+.summary-text { margin: 0 0 12px; }
+.download-hint { color: #0ff; font-style: italic; opacity: 0.85; }
 
 .close-button {
   background: none;

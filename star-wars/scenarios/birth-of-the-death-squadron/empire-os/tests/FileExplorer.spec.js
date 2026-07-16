@@ -649,3 +649,71 @@ describe("FileExplorer.vue - Point 2: Multi-disques", () => {
     expect(reseau.find('input[type=checkbox]').exists()).toBe(false)
   })
 })
+
+describe("FileExplorer.vue - Point 3: Aiguilleur d'affichage par type", () => {
+  // Le contenu par défaut du mock contient des marqueurs qui permettent de
+  // distinguer un rendu Markdown (# devient un titre) d'un affichage texte brut.
+  const fsWithTypes = {
+    name: 'root', path: '/', type: 'directory', defaultPath: '/data',
+    children: [
+      {
+        name: 'data', path: '/data', type: 'disk',
+        children: [
+          { name: 'journal.docx', path: '/data/journal.docx', type: 'file', previewMode: 'summary', summary: 'Journal des transmissions — 214 entrees clients.' },
+          { name: 'reseau.config', path: '/data/reseau.config', type: 'file' },
+          { name: 'image.dat', path: '/data/image.dat', type: 'file' },
+          { name: 'notes.md', path: '/data/notes.md', type: 'file' }
+        ]
+      }
+    ]
+  }
+
+  let wrapper
+  beforeEach(() => {
+    global.fetch = vi.fn((url) => {
+      if (url === '/file-system.json') {
+        return Promise.resolve({ json: () => Promise.resolve(fsWithTypes) })
+      }
+      return Promise.resolve({ ok: true, text: () => Promise.resolve('# titre\n<b>x</b>') })
+    })
+    wrapper = mount(FileExplorer)
+  })
+
+  const fileNamed = (name) => wrapper.vm.currentDirectory.children.find(f => f.name === name)
+
+  it("mode summary : affiche le résumé et invite au téléchargement", async () => {
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.openFile(fileNamed('journal.docx'))
+    await wrapper.vm.$nextTick()
+    const modal = wrapper.find('.file-modal')
+    expect(modal.text()).toContain('Journal des transmissions — 214 entrees clients.')
+    expect(modal.text().toLowerCase()).toContain('téléchargez')
+  })
+
+  it("fichier texte système (.config) : contenu brut, ni Markdown ni HTML interprété", async () => {
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.openFile(fileNamed('reseau.config'))
+    await wrapper.vm.$nextTick()
+    const modal = wrapper.find('.file-modal')
+    // '# titre' reste littéral (pas de <h1>) et '<b>' n'est pas injecté
+    expect(modal.text()).toContain('# titre')
+    expect(modal.text()).toContain('<b>x</b>')
+  })
+
+  it("binaire inconnu (.dat) : « impossible de prévisualiser »", async () => {
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.openFile(fileNamed('image.dat'))
+    await wrapper.vm.$nextTick()
+    const modal = wrapper.find('.file-modal')
+    expect(modal.text().toLowerCase()).toContain('impossible de prévisualiser')
+  })
+
+  it("fichier .md : rend le Markdown (titre sans le #)", async () => {
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.openFile(fileNamed('notes.md'))
+    await wrapper.vm.$nextTick()
+    const modal = wrapper.find('.file-modal')
+    expect(modal.text()).toContain('titre')
+    expect(modal.text()).not.toContain('# titre')
+  })
+})

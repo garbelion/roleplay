@@ -23,7 +23,9 @@
           "name": "etc",
           "path": "/user-51394345/etc",
           "type": "directory",
-          "children": []
+          "children": [
+            { "name": "reseau.config", "path": "/user-51394345/etc/reseau.config", "type": "file" }
+          ]
         },
         {
           "name": "var",
@@ -53,7 +55,13 @@
           "path": "/srv-transmissions/partages",
           "type": "directory",
           "children": [
-            { "name": "journal_transmissions.md", "path": "/srv-transmissions/partages/journal_transmissions.md", "type": "file" }
+            {
+              "name": "journal_transmissions.md",
+              "path": "/srv-transmissions/partages/journal_transmissions.md",
+              "type": "file",
+              "previewMode": "summary",
+              "summary": "Journal des transmissions du poste — 214 entrées clients. Deux colonnes (message, destinataire) apparaissent illisibles : données chiffrées."
+            }
           ]
         },
         {
