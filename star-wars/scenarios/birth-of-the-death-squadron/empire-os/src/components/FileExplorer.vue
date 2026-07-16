@@ -115,6 +115,11 @@ export default {
       try {
         const response = await fetch('/file-system.json')
         this.fileSystem = await response.json()
+        // Point d'entrée piloté par la donnée : le MJ décide où l'on atterrit
+        // (ex. le home de la machine piratée). Défaut conservé sinon.
+        if (this.fileSystem.defaultPath) {
+          this.currentPath = this.fileSystem.defaultPath
+        }
       } catch (error) {
         console.error('Erreur lors du chargement du file system:', error)
         this.fileSystem = {

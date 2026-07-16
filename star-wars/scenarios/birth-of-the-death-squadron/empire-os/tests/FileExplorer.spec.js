@@ -574,22 +574,30 @@ describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", 
 describe("FileExplorer.vue - Point 2: Multi-disques", () => {
   // Un disque est un noeud `type: 'disk'` au sommet de l'arbre, traité comme un
   // conteneur navigable. La racine liste les disques (sélecteur de disques).
+  // `defaultPath` (piloté par la donnée) fixe le point d'entrée : la machine de Tana.
   const multiDiskFS = {
     name: 'root', path: '/', type: 'directory',
+    defaultPath: '/user-51394345/home',
     children: [
       {
-        name: 'Terminal Local', path: '/Terminal Local', type: 'disk',
+        name: 'user-51394345', path: '/user-51394345', type: 'disk',
         children: [
-          { name: 'notes.md', path: '/Terminal Local/notes.md', type: 'file' }
+          {
+            name: 'home', path: '/user-51394345/home', type: 'directory',
+            children: [
+              { name: 'rapport_mission.md', path: '/user-51394345/home/rapport_mission.md', type: 'file' }
+            ]
+          },
+          { name: 'etc', path: '/user-51394345/etc', type: 'directory', children: [] }
         ]
       },
       {
-        name: 'Disque Réseau', path: '/Disque Réseau', type: 'disk',
+        name: 'srv-transmissions', path: '/srv-transmissions', type: 'disk',
         children: [
           {
-            name: 'Partages', path: '/Disque Réseau/Partages', type: 'directory',
+            name: 'partages', path: '/srv-transmissions/partages', type: 'directory',
             children: [
-              { name: 'journal.docx', path: '/Disque Réseau/Partages/journal.docx', type: 'file' }
+              { name: 'journal_transmissions.md', path: '/srv-transmissions/partages/journal_transmissions.md', type: 'file' }
             ]
           }
         ]
@@ -608,11 +616,16 @@ describe("FileExplorer.vue - Point 2: Multi-disques", () => {
     wrapper = mount(FileExplorer)
   })
 
+  it("atterrit sur le point d'entrée (defaultPath) après chargement", async () => {
+    await wrapper.vm.loadFileSystem()
+    expect(wrapper.vm.currentPath).toBe('/user-51394345/home')
+  })
+
   it("affiche le contenu d'un disque après y avoir navigué", async () => {
     await wrapper.vm.loadFileSystem()
-    await wrapper.vm.changeDirectory('/Disque Réseau')
+    await wrapper.vm.changeDirectory('/srv-transmissions')
     const names = wrapper.vm.currentDirectoryItems.map(i => i.name)
-    expect(names).toContain('Partages')
+    expect(names).toContain('partages')
   })
 
   it("entre dans un disque au clic, sans le sélectionner", async () => {
@@ -620,9 +633,9 @@ describe("FileExplorer.vue - Point 2: Multi-disques", () => {
     await wrapper.vm.changeDirectory('/') // racine = sélecteur de disques
     await wrapper.vm.$nextTick()
     const items = wrapper.findAll('.file-item')
-    const reseau = items.find(i => i.find('.file-name').text().startsWith('Disque Réseau'))
+    const reseau = items.find(i => i.find('.file-name').text().startsWith('srv-transmissions'))
     await reseau.trigger('click')
-    expect(wrapper.vm.currentPath).toBe('/Disque Réseau')
+    expect(wrapper.vm.currentPath).toBe('/srv-transmissions')
     expect(wrapper.vm.selectedFiles).toEqual([])
   })
 
@@ -631,7 +644,7 @@ describe("FileExplorer.vue - Point 2: Multi-disques", () => {
     await wrapper.vm.changeDirectory('/')
     await wrapper.vm.$nextTick()
     const items = wrapper.findAll('.file-item')
-    const reseau = items.find(i => i.find('.file-name').text().startsWith('Disque Réseau'))
+    const reseau = items.find(i => i.find('.file-name').text().startsWith('srv-transmissions'))
     expect(reseau.classes()).toContain('disk')
     expect(reseau.find('input[type=checkbox]').exists()).toBe(false)
   })

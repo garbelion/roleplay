@@ -78,10 +78,13 @@ Deux publics :
    où vit **(d)**. *Prérequis narratif, pas du polish.*
    - ✅ **Capacité livrée** : un disque est un noeud `type: 'disk'` navigable, distinct
      visuellement, non sélectionnable ; navigation dans/hors des disques (tests + build OK).
-   - ⏳ **Reste à faire** : (a) configs séparées par disque (manifeste) au lieu d'un seul
-     `file-system.json` ; (b) atterrissage par défaut + en-tête montrant le disque courant
-     (touche le `currentPath` par défaut, épinglé par des tests existants) ; (c) données de
-     démo réelles (dépend du contenu, point 1 en pause).
+   - ✅ **Atterrissage piloté par la donnée** (`defaultPath` dans la config) : on arrive sur
+     le home de la machine piratée (`/user-51394345/home`). Vérifié en live dans le navigateur.
+   - ✅ **Données de démo** : arbo UNIX-ish à 2 disques (`user-51394345` machine de Tana +
+     `srv-transmissions` disque réseau où vit le journal placeholder).
+   - ⏳ **Reste** : en-tête à repenser (le préfixe `C:\EmpireOS\` est un reliquat DOS
+     incohérent avec les chemins unix) → **feature skin** (point 5). Configs séparées par
+     disque : **non prioritaire**, on garde un seul `file-system.json`.
 3. **Aiguilleur d'affichage par type + mode `summary`** — texte brut pour les configs, « aperçu
    impossible » pour les binaires, **`summary` pour (d)**.
 4. **Correctif téléchargement en blob + download `.docx` réel** — *voir §6 (must-fix)*.

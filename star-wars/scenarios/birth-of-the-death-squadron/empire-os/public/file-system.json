@@ -2,38 +2,67 @@
   "name": "root",
   "path": "/",
   "type": "directory",
+  "defaultPath": "/user-51394345/home",
   "children": [
     {
-      "name": "Fichiers",
-      "path": "/Fichiers",
-      "type": "directory",
-      "children": [
-        { "name": "rapport_mission.md", "path": "/Fichiers/rapport_mission.md", "type": "file" },
-        { "name": "ordre_executor.md", "path": "/Fichiers/ordre_executor.md", "type": "file" },
-        { "name": "liste_cibles.md", "path": "/Fichiers/liste_cibles.md", "type": "file" },
-        { "name": "protocole_secret.md", "path": "/Fichiers/protocole_secret.md", "type": "file" }
-      ]
-    },
-    {
-      "name": "Dossiers",
-      "path": "/Dossiers",
-      "type": "directory",
+      "name": "user-51394345",
+      "path": "/user-51394345",
+      "type": "disk",
       "children": [
         {
-          "name": "Secrets",
-          "path": "/Dossiers/Secrets",
+          "name": "home",
+          "path": "/user-51394345/home",
           "type": "directory",
           "children": [
-            { "name": "protocole_secret.md", "path": "/Dossiers/Secrets/protocole_secret.md", "type": "file" }
+            { "name": "rapport_mission.md", "path": "/user-51394345/home/rapport_mission.md", "type": "file" },
+            { "name": "ordre_executor.md", "path": "/user-51394345/home/ordre_executor.md", "type": "file" },
+            { "name": "liste_cibles.md", "path": "/user-51394345/home/liste_cibles.md", "type": "file" }
+          ]
+        },
+        {
+          "name": "etc",
+          "path": "/user-51394345/etc",
+          "type": "directory",
+          "children": []
+        },
+        {
+          "name": "var",
+          "path": "/user-51394345/var",
+          "type": "directory",
+          "children": [
+            { "name": "log", "path": "/user-51394345/var/log", "type": "directory", "children": [] }
+          ]
+        },
+        {
+          "name": "tmp",
+          "path": "/user-51394345/tmp",
+          "type": "directory",
+          "children": [
+            { "name": "protocole_secret.md", "path": "/user-51394345/tmp/protocole_secret.md", "type": "file" }
           ]
         }
       ]
     },
     {
-      "name": "Archives",
-      "path": "/Archives",
-      "type": "directory",
-      "children": []
+      "name": "srv-transmissions",
+      "path": "/srv-transmissions",
+      "type": "disk",
+      "children": [
+        {
+          "name": "partages",
+          "path": "/srv-transmissions/partages",
+          "type": "directory",
+          "children": [
+            { "name": "journal_transmissions.md", "path": "/srv-transmissions/partages/journal_transmissions.md", "type": "file" }
+          ]
+        },
+        {
+          "name": "incoming",
+          "path": "/srv-transmissions/incoming",
+          "type": "directory",
+          "children": []
+        }
+      ]
     }
   ]
 }
