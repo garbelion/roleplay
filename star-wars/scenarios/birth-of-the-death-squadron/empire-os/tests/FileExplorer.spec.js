@@ -570,3 +570,69 @@ describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", 
     global.fetch = originalFetch
   })
 })
+
+describe("FileExplorer.vue - Point 2: Multi-disques", () => {
+  // Un disque est un noeud `type: 'disk'` au sommet de l'arbre, traité comme un
+  // conteneur navigable. La racine liste les disques (sélecteur de disques).
+  const multiDiskFS = {
+    name: 'root', path: '/', type: 'directory',
+    children: [
+      {
+        name: 'Terminal Local', path: '/Terminal Local', type: 'disk',
+        children: [
+          { name: 'notes.md', path: '/Terminal Local/notes.md', type: 'file' }
+        ]
+      },
+      {
+        name: 'Disque Réseau', path: '/Disque Réseau', type: 'disk',
+        children: [
+          {
+            name: 'Partages', path: '/Disque Réseau/Partages', type: 'directory',
+            children: [
+              { name: 'journal.docx', path: '/Disque Réseau/Partages/journal.docx', type: 'file' }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+
+  let wrapper
+  beforeEach(() => {
+    global.fetch = vi.fn((url) => {
+      if (url === '/file-system.json') {
+        return Promise.resolve({ json: () => Promise.resolve(multiDiskFS) })
+      }
+      return Promise.resolve({ ok: true, text: () => Promise.resolve('contenu') })
+    })
+    wrapper = mount(FileExplorer)
+  })
+
+  it("affiche le contenu d'un disque après y avoir navigué", async () => {
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.changeDirectory('/Disque Réseau')
+    const names = wrapper.vm.currentDirectoryItems.map(i => i.name)
+    expect(names).toContain('Partages')
+  })
+
+  it("entre dans un disque au clic, sans le sélectionner", async () => {
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.changeDirectory('/') // racine = sélecteur de disques
+    await wrapper.vm.$nextTick()
+    const items = wrapper.findAll('.file-item')
+    const reseau = items.find(i => i.find('.file-name').text().startsWith('Disque Réseau'))
+    await reseau.trigger('click')
+    expect(wrapper.vm.currentPath).toBe('/Disque Réseau')
+    expect(wrapper.vm.selectedFiles).toEqual([])
+  })
+
+  it("marque visuellement les disques (classe disk) et ne leur met pas de checkbox", async () => {
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.changeDirectory('/')
+    await wrapper.vm.$nextTick()
+    const items = wrapper.findAll('.file-item')
+    const reseau = items.find(i => i.find('.file-name').text().startsWith('Disque Réseau'))
+    expect(reseau.classes()).toContain('disk')
+    expect(reseau.find('input[type=checkbox]').exists()).toBe(false)
+  })
+})

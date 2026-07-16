@@ -8,7 +8,7 @@
         v-for="(item, index) in currentDirectoryItems"
         :key="index"
         class="file-item"
-        :class="{ selected: selectedFiles.includes(index), directory: item.type === 'directory' }"
+        :class="{ selected: selectedFiles.includes(index), directory: item.type === 'directory', disk: item.type === 'disk' }"
         @click="handleItemClick(item, index)"
         @dblclick="handleItemDoubleClick(item)"
       >
@@ -107,6 +107,10 @@ export default {
       let normalized = path.replace(/\/+/g, '/').replace(/^\//, '/').replace(/\/$/, '')
       return normalized === '' ? '/' : normalized
     },
+    // Un conteneur navigable : un dossier classique ou un disque (noeud de tête).
+    isContainer(item) {
+      return item.type === 'directory' || item.type === 'disk'
+    },
     async loadFileSystem() {
       try {
         const response = await fetch('/file-system.json')
@@ -139,7 +143,7 @@ export default {
       const pathParts = normalizedPath.split('/').filter(p => p)
       let current = this.fileSystem
       for (const part of pathParts) {
-        const found = current.children.find(child => child.name === part && child.type === 'directory')
+        const found = current.children.find(child => child.name === part && this.isContainer(child))
         if (!found) return null
         current = found
       }
@@ -173,7 +177,7 @@ export default {
       }
       
       const currentDir = this.currentDirectory
-      const target = currentDir.children.find(child => child.name === normalizedPath && child.type === 'directory')
+      const target = currentDir.children.find(child => child.name === normalizedPath && this.isContainer(child))
       if (target) {
         this.currentPath = target.path
       }
@@ -212,14 +216,14 @@ export default {
       this.fileContent = ''
     },
     handleItemClick(item, index) {
-      if (item.type === 'directory') {
+      if (this.isContainer(item)) {
         this.changeDirectory(item.path)
       } else {
         this.toggleFileSelection(index)
       }
     },
     handleItemDoubleClick(item) {
-      if (item.type === 'directory') {
+      if (this.isContainer(item)) {
         this.changeDirectory(item.path)
       } else {
         this.openFile(item)
@@ -301,6 +305,10 @@ export default {
 .file-item.selected { background-color: rgba(0, 255, 0, 0.3); border-color: #0f0; }
 .file-item.directory { color: #0ff; }
 .file-item.directory:hover { background-color: rgba(0, 255, 255, 0.1); }
+/* Un disque (noeud de tête) : distinct des dossiers, marqué par une bordure d'accent.
+   La palette impériale définitive viendra avec la feature « skin ». */
+.file-item.disk { color: #fff; font-weight: bold; border-left: 3px solid #0ff; }
+.file-item.disk:hover { background-color: rgba(0, 255, 255, 0.12); }
 
 .file-name {
   flex: 1;
