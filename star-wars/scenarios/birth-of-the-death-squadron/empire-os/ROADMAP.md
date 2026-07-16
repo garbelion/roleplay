@@ -76,6 +76,12 @@ Deux publics :
    le contenu n'est pas disponible pour l'instant, feature en pause. 
 2. **Multi-disques** — racine = sélecteur de disques ; ajouter le **disque réseau** (poste de Tana)
    où vit **(d)**. *Prérequis narratif, pas du polish.*
+   - ✅ **Capacité livrée** : un disque est un noeud `type: 'disk'` navigable, distinct
+     visuellement, non sélectionnable ; navigation dans/hors des disques (tests + build OK).
+   - ⏳ **Reste à faire** : (a) configs séparées par disque (manifeste) au lieu d'un seul
+     `file-system.json` ; (b) atterrissage par défaut + en-tête montrant le disque courant
+     (touche le `currentPath` par défaut, épinglé par des tests existants) ; (c) données de
+     démo réelles (dépend du contenu, point 1 en pause).
 3. **Aiguilleur d'affichage par type + mode `summary`** — texte brut pour les configs, « aperçu
    impossible » pour les binaires, **`summary` pour (d)**.
 4. **Correctif téléchargement en blob + download `.docx` réel** — *voir §6 (must-fix)*.
