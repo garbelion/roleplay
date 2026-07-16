@@ -54,7 +54,7 @@ Deux publics :
 | `.md` | Markdown rendu (comportement actuel) |
 | Texte système (`.json`, `.ini`, `.config`, `.log`, `.txt`) | **texte brut** (canal de fouille / planque d'indices) |
 | `.docx` & docs riches | **mode `summary`** (téléchargement forcé pour lire) ; *mammoth.js inline en option si on y arrive* |
-| image | *(à décider — aperçu inline probable)* |
+| image (type connu : png/jpg/gif/webp/bmp/svg) | **rendue inline** via `<img>` |
 | autre binaire | **« Impossible de prévisualiser ce contenu »** → téléchargement uniquement |
 
 ## 4. État livré (voir `readme.md` pour le détail)
@@ -88,12 +88,12 @@ Deux publics :
 3. **Aiguilleur d'affichage par type + mode `summary`** — texte brut pour les configs, « aperçu
    impossible » pour les binaires, **`summary` pour (d)**.
    - ✅ **Livré** : `previewKindFor` aiguille l'ouverture — `.md`→Markdown, texte système
-     (`.json/.ini/.config/.log/.txt`)→brut (échappé, pas de `v-html`), docs riches
+     (`.json/.ini/.config/.log/.txt`)→brut (échappé, pas de `v-html`), **image d'un type connu
+     (png/jpg/gif/webp/bmp/svg)→rendue inline via `<img>`**, docs riches
      (`.docx…`)/`previewMode:'summary'`→résumé + invite au téléchargement, binaire→« impossible
      de prévisualiser ». Métadonnées `previewMode`/`summary` dans la config. Mode summary
-     vérifié en live. 57 tests, build OK.
-   - ⏳ **Ouvert** : aperçu **image** inline (décision) ; rendu **mammoth.js** inline des `.docx`
-     (parqué, point 8).
+     vérifié en live. 58 tests, build OK.
+   - ⏳ **Ouvert** : rendu **mammoth.js** inline des `.docx` (parqué, point 8).
 4. **Correctif téléchargement en blob + download `.docx` réel** — *voir §6 (must-fix)*.
 
 **Immersion & tension**

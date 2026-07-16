@@ -662,6 +662,7 @@ describe("FileExplorer.vue - Point 3: Aiguilleur d'affichage par type", () => {
           { name: 'journal.docx', path: '/data/journal.docx', type: 'file', previewMode: 'summary', summary: 'Journal des transmissions — 214 entrees clients.' },
           { name: 'reseau.config', path: '/data/reseau.config', type: 'file' },
           { name: 'image.dat', path: '/data/image.dat', type: 'file' },
+          { name: 'photo.png', path: '/data/photo.png', type: 'file' },
           { name: 'notes.md', path: '/data/notes.md', type: 'file' }
         ]
       }
@@ -715,5 +716,14 @@ describe("FileExplorer.vue - Point 3: Aiguilleur d'affichage par type", () => {
     const modal = wrapper.find('.file-modal')
     expect(modal.text()).toContain('titre')
     expect(modal.text()).not.toContain('# titre')
+  })
+
+  it("image d'un type connu (.png) : rendue inline via <img>", async () => {
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.openFile(fileNamed('photo.png'))
+    await wrapper.vm.$nextTick()
+    const img = wrapper.find('.file-modal img')
+    expect(img.exists()).toBe(true)
+    expect(img.attributes('src')).toBe('/fichiers/photo.png')
   })
 })

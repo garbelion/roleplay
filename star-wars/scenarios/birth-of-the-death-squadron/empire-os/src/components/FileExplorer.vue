@@ -58,6 +58,7 @@
             <p class="summary-text">{{ openedFile?.summary || 'Aperçu non disponible pour ce document.' }}</p>
             <p class="download-hint">Téléchargez le fichier pour consulter son contenu complet.</p>
           </div>
+          <img v-else-if="previewKind === 'image'" :src="fileUrl(openedFile)" :alt="openedFile?.name" class="image-preview">
           <div v-else-if="previewKind === 'binary'" class="error">Impossible de prévisualiser ce contenu.</div>
           <pre v-else-if="previewKind === 'text'" class="raw-text">{{ fileContent }}</pre>
           <div v-else-if="fileContent" v-html="fileContent"></div>
@@ -202,10 +203,17 @@ export default {
       const ext = (file.name.split('.').pop() || '').toLowerCase()
       if (ext === 'md') return 'markdown'
       if (['json', 'ini', 'config', 'log', 'txt'].includes(ext)) return 'text'
+      // Images d'un type connu : rendues inline via <img>.
+      if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg'].includes(ext)) return 'image'
       // Documents riches (Office/PDF) : téléchargement forcé via résumé.
       // Un rendu fidèle inline (mammoth.js) pourra venir plus tard.
       if (['docx', 'doc', 'xlsx', 'pptx', 'pdf'].includes(ext)) return 'summary'
       return 'binary'
+    },
+    // URL physique d'un fichier : tous vivent à plat dans /public/fichiers/,
+    // adressés par leur nom de base.
+    fileUrl(file) {
+      return `/fichiers/${file.path.split('/').pop()}`
     },
     async openFile(file) {
       this.openedFile = file
@@ -461,6 +469,9 @@ export default {
 /* Aperçu « résumé » (docs riches / previewMode summary : lecture = téléchargement) */
 .summary-text { margin: 0 0 12px; }
 .download-hint { color: #0ff; font-style: italic; opacity: 0.85; }
+
+/* Aperçu image (types connus) */
+.image-preview { max-width: 100%; height: auto; display: block; }
 
 .close-button {
   background: none;
