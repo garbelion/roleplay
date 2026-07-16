@@ -12,6 +12,17 @@
         @click="handleItemClick(item, index)"
         @dblclick="handleItemDoubleClick(item)"
       >
+        <!-- Checkbox pour sélectionner les fichiers (pas les dossiers).
+             Elle dérive de selectedFiles (source unique) et passe par le même
+             mutateur que le clic sur la ligne, d'où une cohérence par construction. -->
+        <input
+          v-if="item.type === 'file'"
+          type="checkbox"
+          :checked="selectedFiles.includes(index)"
+          class="file-checkbox"
+          @change.stop="toggleFileSelection(index)"
+          @click.stop
+        >
         <span class="file-name">
           {{ item.name }}{{ item.type === 'directory' ? '/' : '' }}
         </span>
@@ -27,6 +38,13 @@
       </div>
     </div>
     
+    <!-- Bouton de téléchargement (visible si des fichiers sont sélectionnés) -->
+    <div v-if="selectedFiles.length > 0" class="download-section">
+      <button class="download-button" @click="downloadSelectedFiles">
+        💾 Télécharger ({{ selectedFiles.length }}) fichiers
+      </button>
+    </div>
+
     <!-- Modale pour afficher le contenu des fichiers -->
     <div v-if="showFileModal" class="file-modal-overlay" @click="closeFileModal">
       <div class="file-modal" @click.stop>
@@ -35,7 +53,9 @@
           <button class="close-button" @click="closeFileModal">X</button>
         </div>
         <div class="modal-content">
-          <pre>{{ fileContent || 'Contenu non disponible' }}</pre>
+          <!-- Afficher le contenu HTML (pas de texte brut) -->
+          <div v-if="fileContent" v-html="fileContent"></div>
+          <div v-else class="error">Contenu non disponible</div>
         </div>
       </div>
     </div>
@@ -43,14 +63,18 @@
 </template>
 
 <script>
+import { marked } from 'marked';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+
 export default {
   name: 'FileExplorer',
   data() {
     return {
       fileSystem: null,
       currentPath: '/Fichiers',
+      // Source unique de la sélection : index des fichiers cochés dans currentDirectoryItems.
       selectedFiles: [],
-      files: [],
       showFileModal: false,
       openedFile: null,
       fileContent: ''
@@ -99,16 +123,15 @@ export default {
               path: '/Fichiers',
               type: 'directory',
               children: [
-                { name: 'rapport_mission.docx', path: '/Fichiers/rapport_mission.docx', type: 'file' },
-                { name: 'ordre_executor.docx', path: '/Fichiers/ordre_executor.docx', type: 'file' },
-                { name: 'liste_cibles.docx', path: '/Fichiers/liste_cibles.docx', type: 'file' },
-                { name: 'protocole_secret.docx', path: '/Fichiers/protocole_secret.docx', type: 'file' }
+                { name: 'rapport_mission.md', path: '/Fichiers/rapport_mission.md', type: 'file' },
+                { name: 'ordre_executor.md', path: '/Fichiers/ordre_executor.md', type: 'file' },
+                { name: 'liste_cibles.md', path: '/Fichiers/liste_cibles.md', type: 'file' },
+                { name: 'protocole_secret.md', path: '/Fichiers/protocole_secret.md', type: 'file' }
               ]
             }
           ]
         }
       }
-      this.updateCurrentDirectory()
     },
     findDirectoryByPath(path) {
       const normalizedPath = this.normalizePath(path)
@@ -162,28 +185,31 @@ export default {
     },
     async loadFileContent(file) {
       try {
-        // Extraire le nom du fichier du chemin (ex: /Fichiers/rapport_mission.docx -> rapport_mission.docx)
+        // L'arborescence (file-system.json) est un décor : physiquement, tous les
+        // fichiers vivent à plat dans /public/fichiers/ et sont adressés par leur
+        // nom de base. Deux fichiers de même nom dans des dossiers différents
+        // pointent donc volontairement vers le même contenu physique.
         const filename = file.path.split('/').pop()
-        // Charger le fichier depuis /fichiers/nom.docx
         const response = await fetch(`/fichiers/${filename}`)
         if (response.ok) {
-          this.fileContent = await response.text()
+          const markdownContent = await response.text()
+          // Contenu Markdown local et maîtrisé par l'auteur du scénario, rendu via
+          // v-html. Si un jour ce contenu devient éditable/externe, il faudra
+          // assainir la sortie (ex: DOMPurify) avant injection.
+          this.fileContent = marked.parse(markdownContent)
         } else {
-          // Si le fichier n'existe pas, afficher un message par défaut
-          this.fileContent = 'Contenu non disponible'
+          // Si le fichier n'existe pas, afficher un message d'erreur
+          this.fileContent = '<div class="error">Fichier introuvable</div>'
         }
       } catch (error) {
         console.error('Erreur lors du chargement du fichier:', error)
-        this.fileContent = 'Contenu non disponible'
+        this.fileContent = '<div class="error">Fichier introuvable</div>'
       }
     },
     closeFileModal() {
       this.showFileModal = false
       this.openedFile = null
       this.fileContent = ''
-    },
-    updateCurrentDirectory() {
-      this.files = this.currentDirectoryItems
     },
     handleItemClick(item, index) {
       if (item.type === 'directory') {
@@ -208,19 +234,51 @@ export default {
       }
       this.$emit('files-selected', this.selectedFiles)
     },
-    getFiles() {
-      return this.files
+
+    // Méthode pour télécharger les fichiers sélectionnés en ZIP
+    async downloadSelectedFiles() {
+      if (this.selectedFiles.length === 0) {
+        console.warn('Aucun fichier sélectionné pour téléchargement.')
+        return
+      }
+
+      try {
+        // Créer une nouvelle archive ZIP
+        const zip = new JSZip()
+
+        // Ajouter chaque fichier sélectionné à l'archive
+        for (const index of this.selectedFiles) {
+          const file = this.currentDirectoryItems[index]
+          if (file.type === 'file') {
+            const filename = file.path.split('/').pop()
+            const response = await fetch(`/fichiers/${filename}`)
+            if (response.ok) {
+              const fileContent = await response.text()
+              zip.file(filename, fileContent)
+            }
+          }
+        }
+
+        // Générer le ZIP
+        const zipBlob = await zip.generateAsync({ type: 'blob' })
+        
+        // Télécharger le ZIP
+        saveAs(zipBlob, 'EmpireOS_Fichiers.zip')
+        
+        console.log('Téléchargement terminé.')
+      } catch (error) {
+        console.error('Erreur lors du téléchargement:', error)
+      }
     },
-    setFiles(newFiles) {
-      this.files = newFiles
+    getFiles() {
+      return this.currentDirectoryItems
     }
   },
   watch: {
-    currentPath: {
-      handler() {
-        this.updateCurrentDirectory()
-      },
-      immediate: true
+    currentPath() {
+      // La sélection est indexée par position dans le répertoire courant ;
+      // on la vide à chaque navigation pour éviter des index périmés.
+      this.selectedFiles = []
     }
   }
 }
@@ -246,6 +304,13 @@ export default {
 
 .file-name {
   flex: 1;
+}
+
+/* Checkbox pour la sélection de fichiers */
+.file-checkbox {
+  margin-right: 8px;
+  cursor: pointer;
+  accent-color: #0f0; /* Couleur verte pour cocher la checkbox */
 }
 
 /* Icône d'ouverture pour les fichiers */
@@ -302,6 +367,46 @@ export default {
   word-wrap: break-word;
 }
 
+/* Styles pour le contenu Markdown */
+.modal-content h1, .modal-content h2, .modal-content h3 {
+  color: #0f0;
+  margin-top: 10px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #0f0;
+  padding-bottom: 4px;
+}
+
+.modal-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 10px 0;
+  color: #0f0;
+}
+
+.modal-content table th, .modal-content table td {
+  border: 1px solid #0f0;
+  padding: 6px;
+  text-align: left;
+}
+
+.modal-content table th {
+  background-color: #000;
+}
+
+.modal-content ul, .modal-content ol {
+  margin-left: 20px;
+  margin-bottom: 10px;
+}
+
+.modal-content li {
+  margin-bottom: 4px;
+}
+
+.error {
+  color: #f00;
+  font-weight: bold;
+}
+
 .close-button {
   background: none;
   border: 1px solid #0f0;
@@ -315,5 +420,28 @@ export default {
 .close-button:hover {
   background-color: #0f0;
   color: #000;
+}
+
+/* Bouton de téléchargement */
+.download-section {
+  margin-top: 15px;
+  text-align: right;
+}
+
+.download-button {
+  background-color: #000;
+  border: 1px solid #0f0;
+  color: #0f0;
+  cursor: pointer;
+  padding: 8px 16px;
+  font-family: monospace;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.download-button:hover {
+  background-color: #0f0;
+  color: #000;
+  border-color: #0f0;
 }
 </style>
