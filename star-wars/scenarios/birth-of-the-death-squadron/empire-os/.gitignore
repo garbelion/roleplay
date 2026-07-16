@@ -28,3 +28,7 @@ coverage/
 
 # Cache
 .cache/
+
+# Agent skills tooling (npx skills)
+.agents/
+skills-lock.json

@@ -60,11 +60,52 @@ npm run test:unit
 
 ## Features
 
-- [x] Feature 1: Afficher une liste de fichiers .docx
+- [x] Feature 1: Afficher une liste de fichiers .md (anciennement .docx)
 - [x] Feature 2: Naviguer dans les répertoires (avec support de `..` pour remonter)
-- [x] Feature 3: Ouvrir les fichiers pour consultation (avec icônes 📄 et contenu réel)
-- [ ] Feature 4: Sélectionner des fichiers pour téléchargement
-- [ ] Feature 5: Télécharger les fichiers en .zip avec progression
+- [x] Feature 3: Ouvrir les fichiers pour consultation (avec icônes 📄 et contenu Markdown structuré)
+- [x] Feature 4: Sélectionner des fichiers pour téléchargement (checkboxes + surlignage synchronisé)
+- [x] Feature 5: Télécharger les fichiers en .zip avec JSZip et FileSaver
+
+## Features Futures
+
+Idées pour les prochaines versions :
+
+### Gestion Multi-Disques
+- **Concept de disques** : Simuler plusieurs disques (ex: `C:`, `P:`, `D:`) comme dans MS-DOS.
+  - `C:` : Disque principal (par défaut).
+  - `P:` : Disque personnel (fichiers utilisateur).
+  - `D:` : Disque de données (archives, logs).
+- **Changer de disque** : Commande `cd P:` ou bouton dans l'interface.
+- **Structure** : Chaque disque a son propre `file-system.json` et dossier `/public/fichiers_<disque>`.
+
+### Recherche de Fichiers
+- **Barre de recherche** : Champ de texte pour filtrer les fichiers par nom.
+- **Matching partiel** : Recherche sur `rapport` → affiche `rapport_mission.md`.
+- **Highlight** : Surligner les correspondances dans les noms de fichiers.
+- **Raccourci clavier** : `Ctrl+F` pour focus la recherche.
+
+### Améliorations Existantes
+- **Progression du téléchargement** : Barre de progression pour la génération du ZIP.
+- **Prévisualisation riche** : Supporter `.txt`, `.json`, et `.csv` en plus du Markdown.
+- **Thèmes** : Mode sombre/clair ou couleurs personnalisées (rouge pour l'Empire, bleu pour les Rebelles).
+
+## Développement
+
+### Installation
+
+npm install
+
+### Lancement
+
+npm run dev
+
+### Build
+
+npm run build
+
+### Tests
+
+npm run test:unit
 
 ## Détails des Features
 
