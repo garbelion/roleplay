@@ -32,3 +32,6 @@ coverage/
 # Agent skills tooling (npx skills)
 .agents/
 skills-lock.json
+
+# Claude tooling (résidus locaux d'invocation de skills)
+.claude/
