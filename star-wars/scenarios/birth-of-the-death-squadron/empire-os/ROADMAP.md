@@ -117,7 +117,29 @@ Deux publics :
      pas synchronisable), démarrant à `00:00:00`. Prépare l'avertissement 2 h (cf. point 7).
    - Tests : identité + horloge de session (fake timers) + prompt. Le reste (couleurs/angles)
      est du CSS non vérifiable en jsdom → validation visuelle.
-6. **Popin d'attente à progression bidon (RNG)** — *détails encore ouverts, voir §7.*
+6. **Popin d'attente à progression bidon (RNG)** — *ambiance pure* : faire poireauter les PJ
+   pendant l'« extraction » de leurs précieuses données en milieu hostile. Fausse barre découplée
+   du vrai transfert (le vrai `fetch`+zip tourne en fond ; `saveAs` réel à la complétion ; si le
+   vrai est plus lent, on l'attend aussi). **Une popin pour tout le lot.**
+   - **Durée (s)** = `(base + Σ poids_fichier + jitter±20%) × facteur_qualité × facteur_alerte`,
+     **clampée [15 s, 20 min]**, **retirée au sort à chaque téléchargement** (pas de recalcul en
+     cours de route).
+     - `base` = 10 s ; `poids_fichier` = métadonnée `transferWeight` par fichier, **défaut 2 s** ;
+       `jitter` = ±20 % de la somme.
+     - `facteur_qualité` (connexion) : excellente ×0.5 · bonne ×0.8 · moyenne ×1.0 · faible ×1.8 · critique ×3.0.
+     - `facteur_alerte` (niveau 0–5 : normal, minimal, major, active-threat, lockdown, war) :
+       ×1.0 / 1.3 / 1.8 / 2.6 / 4.0 / 6.5 *(défauts tweakables)*.
+   - **Réglages MJ** (`connectionQuality`, `alertLevel`) : lus depuis une **config statique**
+     (racine de `file-system.json`) pour le MVP, via un petit **store de session** (pour pouvoir
+     basculer la source plus tard). Dépendent de la prépa des PJ + d'un jet d'informatique.
+   - **Annulation** depuis la modale = abandon total (AbortController, aucun fichier), relançable.
+     Incite à la stratégie (ne pas tout rafler sans regarder).
+   - **Sortie** : `saveAs` assumé, habillé « EXTRACTION VERS SUPPORT EXTERNE ». Barre **linéaire**
+     au MVP.
+   - **Injectables** : horloge + RNG (seed) → durée testable en déterministe.
+   - **MVP** : formule + barre bornée + annulation + download réel à la complétion + texte
+     diégétique. *Reportés* : échec narratif (« CONNEXION PERDUE — 73 % »), rendu non-linéaire
+     (fluctuations/paliers liés à la qualité), câblage vers la console (point 7).
 7. **Console d'ambiance réactive + barre de recherche** — logs qui réagissent aux actions ;
    recherche par **nom, sur le répertoire courant** (v1) | messages en rouge façon big brother "l'Empire vous protège du chaos".
    - **Avertissement de session** : au-delà de **2 h** d'horloge de session, un warning système
@@ -146,15 +168,24 @@ zip.file(filename, blob)
 ## 7. Décisions encore ouvertes
 
 ### Popin d'attente RNG (feature 6)
-- **Critères de durée** : taille/nombre de fichiers ? cran de « tension/hostilité » réglable MJ ?
-  type de fichier (un « protocole secret » plus long qu'un rapport) ?
-- **Bornes** de durée (ex. 10–40 s ? plus ?).
-- **Main du MJ** : bouton caché « forcer complétion » / « déclencher un échec » ?
-- **Échec narratif** : le transfert peut-il échouer/s'interrompre (« CONNEXION PERDUE — 73% ») ?
-- **Fermeture de la popin** à mi-parcours : annule / continue en fond / attente forcée non fermable ?
-- **Dialogue natif `saveAs`** (« Enregistrer sous » Windows) qui casse l'immersion : on l'assume
-  ou on met en scène autour ?
-- **Testabilité** : horloge + RNG **injectables** (seed) pour tester en déterministe.
+✅ **Tranché** — spec complète au **point 6** (§5). Résumé : ambiance pure, formule bornée
+[15 s, 20 min], réglages MJ en config statique (MVP), annulation, injectables.
+
+### Back-office MJ + synchro temps réel *(nouvelle feature — dépendance backend)*
+Une **2ᵉ page** (URL connue du seul MJ) pour régler **en live** `connectionQuality` / `alertLevel`.
+Le MJ étant sur un **poste séparé**, deux navigateurs sur deux machines ne partagent aucun état :
+ça **exige un store temps réel** (Supabase/Firebase recommandé, gratuit) → l'app **cesse d'être
+statique**. À décider avant de l'implémenter. Le popin (point 6) lit déjà via un store de session,
+donc la bascule de source sera localisée.
+
+### Affichage du niveau d'alerte dans l'OS *(nouvelle feature)*
+Dès `alertLevel > 0`, un indicateur d'alerte s'affiche dans le chrome (barre de statut / titre),
+avec le libellé du niveau (minimal → war) et une teinte montante (jusqu'au rouge impérial).
+
+### Options popin *(reportées)*
+Rendu **non-linéaire** (débit qui fluctue, paliers qui stagnent, « reconnexion au nœud relais… »),
+d'autant plus marqué que la connexion est faible. **Échec narratif** (« CONNEXION PERDUE — 73 % »),
+MJ-only, retryable.
 
 ### Page éditeur / générateur MJ (G)
 - Route dans *cette* app (ex. `/forge`, réservée MJ) ou outil séparé ? — **à trancher quand/si.**
