@@ -4,7 +4,7 @@ export const OS = {
   name: 'Sienar Imperial Terminal',
   // Forme courte pour le prompt (style hostname unix, sans espace) : sienar:/chemin$
   shortName: 'sienar',
-  fullName: "Système d'exploitation impérial",
+  fullName: "Engineer Desktop Edition",
   version: 'v2.14.7',
   // Datation impériale (canon) : an 0 = fondation de l'Empire (19 av. BY), notée AFE
   // (After the Formation of the Empire). Le scénario en 1 ABY correspond à 20 AFE.
