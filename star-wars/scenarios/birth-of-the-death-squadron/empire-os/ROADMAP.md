@@ -106,16 +106,22 @@ Deux publics :
    angulaires et froides. *(Indépendant : peut avancer en parallèle ; forte valeur « produit ».)*
    - ✅ **Livré** : palette impériale centralisée en variables CSS (`index.html :root` :
      noir bleuté, ardoise, acier froid, accent cyan hologramme, rouge impérial), angles nets,
-     majuscules/letter-spacing. Chrome : barre de titre (nom OS + version + build + horloge
-     temps réel) et barre de statut (licence). Vert MS-DOS abandonné.
-   - ✅ **Renommage** : l'OS s'appelle **ISOS — Imperial Standard OS** (piloté par
-     `src/os-identity.js`, changeable en une ligne ; alternatives proposées : ORDO.SYS,
-     COMPNOR/NET, Sienar Terminal). Prompt : `ISOS:/user-51394345/home$`.
-   - Tests : identité + horloge (fake timers) + prompt. Le reste (couleurs/angles) est du
-     CSS non vérifiable en jsdom → validation visuelle.
+     majuscules/letter-spacing. Chrome : barre de titre (nom OS + version + build + horloge)
+     et barre de statut (licence). Vert MS-DOS abandonné.
+   - ✅ **Renommage** : l'OS s'appelle **Sienar Imperial Terminal** (piloté par
+     `src/os-identity.js`, changeable en une ligne). Prompt en forme courte :
+     `sienar:/user-51394345/home$`.
+   - ✅ **Datation impériale** : `build` = **20 AFE** (*After the Formation of the Empire*,
+     canon — an 0 = fondation de l'Empire en 19 av. BY ; le scénario en 1 ABY = 20 AFE).
+   - ✅ **Horloge de session** : durée écoulée depuis l'ouverture (le temps in-game n'étant
+     pas synchronisable), démarrant à `00:00:00`. Prépare l'avertissement 2 h (cf. point 7).
+   - Tests : identité + horloge de session (fake timers) + prompt. Le reste (couleurs/angles)
+     est du CSS non vérifiable en jsdom → validation visuelle.
 6. **Popin d'attente à progression bidon (RNG)** — *détails encore ouverts, voir §7.*
 7. **Console d'ambiance réactive + barre de recherche** — logs qui réagissent aux actions ;
    recherche par **nom, sur le répertoire courant** (v1) | messages en rouge façon big brother "l'Empire vous protège du chaos".
+   - **Avertissement de session** : au-delà de **2 h** d'horloge de session, un warning système
+     défile dans la console (sécurité/traçabilité impériale). S'appuie sur l'horloge de session (point 5).
 8. Rendu **mammoth.js inline** des `.docx` (si un aperçu fidèle in-app devient souhaitable).
 9. icônes par type de fichier.
 

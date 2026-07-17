@@ -18,19 +18,23 @@ describe("App.vue - Skin / chrome impérial", () => {
     expect(bar.text()).toContain(OS.version)
   })
 
-  it("affiche une horloge HH:MM:SS qui s'actualise chaque seconde", async () => {
+  it("affiche une horloge de session (durée écoulée) démarrant à 00:00:00", async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date(2026, 0, 1, 14, 30, 45))
     const wrapper = mount(App)
     await wrapper.vm.$nextTick()
     const clock = wrapper.find(".os-clock")
     expect(clock.exists()).toBe(true)
-    expect(clock.text()).toBe("14:30:45")
+    // Durée de session, pas l'heure murale : démarre à zéro.
+    expect(clock.text()).toBe("00:00:00")
 
-    // advanceTimersByTime avance aussi l'horloge système : +1s -> 14:30:46
     vi.advanceTimersByTime(1000)
     await wrapper.vm.$nextTick()
-    expect(clock.text()).toBe("14:30:46")
+    expect(clock.text()).toBe("00:00:01")
+
+    vi.advanceTimersByTime(3600 * 1000) // +1h
+    await wrapper.vm.$nextTick()
+    expect(clock.text()).toBe("01:00:01")
 
     vi.useRealTimers()
   })

@@ -1,7 +1,7 @@
 <template>
   <div class="file-explorer">
     <div class="terminal-header">
-      <span>{{ osName }}:{{ currentPath }}$</span>
+      <span>{{ osPrompt }}:{{ currentPath }}$</span>
     </div>
     <div class="file-list-container">
       <div
@@ -84,7 +84,7 @@ export default {
   name: 'FileExplorer',
   data() {
     return {
-      osName: OS.name,
+      osPrompt: OS.shortName,
       fileSystem: null,
       currentPath: '/Fichiers',
       // Source unique de la sélection : index des fichiers cochés dans currentDirectoryItems.

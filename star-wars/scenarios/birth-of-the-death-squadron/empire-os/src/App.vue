@@ -24,13 +24,19 @@ import { ref, onMounted, onUnmounted } from "vue";
 import FileExplorer from "./components/FileExplorer.vue";
 import { OS } from "./os-identity.js";
 
+// Horloge de session : durée écoulée depuis l'ouverture (le temps narratif in-game
+// n'étant pas synchronisable). Permettra plus tard un avertissement au-delà de 2 h.
 const pad = (n) => String(n).padStart(2, "0");
-const formatTime = (d) => `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+const formatElapsed = (ms) => {
+  const s = Math.floor(ms / 1000);
+  return `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
+};
 
-const clock = ref(formatTime(new Date()));
+const sessionStart = Date.now();
+const clock = ref(formatElapsed(0));
 let timer;
 onMounted(() => {
-  timer = setInterval(() => { clock.value = formatTime(new Date()); }, 1000);
+  timer = setInterval(() => { clock.value = formatElapsed(Date.now() - sessionStart); }, 1000);
 });
 onUnmounted(() => clearInterval(timer));
 
