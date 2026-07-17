@@ -157,6 +157,10 @@ export default {
         if (this.fileSystem.defaultPath) {
           this.currentPath = this.fileSystem.defaultPath
         }
+        // Réglages de session (MJ) : qualité de connexion / niveau d'alerte.
+        if (this.fileSystem.session) {
+          this.sessionConfig = { ...this.sessionConfig, ...this.fileSystem.session }
+        }
       } catch (error) {
         console.error('Erreur lors du chargement du file system:', error)
         this.fileSystem = {

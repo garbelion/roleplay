@@ -912,4 +912,38 @@ describe("FileExplorer.vue - Point 6: Popin d'attente (transfert)", () => {
 
     vi.useRealTimers()
   })
+
+  it("annuler ferme la popin sans enregistrer et interrompt le vrai transfert", async () => {
+    vi.useFakeTimers()
+    const signals = []
+    global.fetch = vi.fn((url, opts) => {
+      if (url === '/file-system.json') return Promise.resolve({ json: () => Promise.resolve(fs) })
+      if (opts && opts.signal) signals.push(opts.signal)
+      return Promise.resolve({ ok: true, blob: () => Promise.resolve(new Blob(['x'])) })
+    })
+    await wrapper.vm.loadFileSystem()
+    wrapper.vm.rng = () => 0.5
+    wrapper.vm.selectedFiles = [1]
+
+    wrapper.vm.downloadSelectedFiles()
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.transfer-modal').exists()).toBe(true)
+
+    await wrapper.find('.transfer-cancel').trigger('click')
+    expect(wrapper.find('.transfer-modal').exists()).toBe(false)
+
+    // Même en laissant filer le temps : aucun enregistrement, et le fetch a été abandonné.
+    await vi.advanceTimersByTimeAsync(60000)
+    expect(saveAs).not.toHaveBeenCalled()
+    expect(signals.some(s => s.aborted)).toBe(true)
+    vi.useRealTimers()
+  })
+
+  it("lit les réglages MJ (connexion/alerte) depuis la racine de file-system.json", async () => {
+    global.fetch = vi.fn((url) => url === '/file-system.json'
+      ? Promise.resolve({ json: () => Promise.resolve({ ...fs, session: { connectionQuality: 'critique', alertLevel: 3 } }) })
+      : Promise.resolve({ ok: true, blob: () => Promise.resolve(new Blob(['x'])) }))
+    await wrapper.vm.loadFileSystem()
+    expect(wrapper.vm.sessionConfig).toEqual({ connectionQuality: 'critique', alertLevel: 3 })
+  })
 })

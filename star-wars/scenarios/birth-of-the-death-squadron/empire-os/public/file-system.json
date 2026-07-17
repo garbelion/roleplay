@@ -3,6 +3,7 @@
   "path": "/",
   "type": "directory",
   "defaultPath": "/user-51394345/home",
+  "session": { "connectionQuality": "moyenne", "alertLevel": 0 },
   "children": [
     {
       "name": "user-51394345",

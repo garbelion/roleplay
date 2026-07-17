@@ -171,15 +171,17 @@ zip.file(filename, blob)
 ✅ **Tranché** — spec complète au **point 6** (§5). Résumé : ambiance pure, formule bornée
 [15 s, 20 min], réglages MJ en config statique (MVP), annulation, injectables.
 
-**Avancement MVP (TDD)** — point de reprise :
+**Avancement MVP (TDD)** — ✅ **MVP terminé** :
 - [x] Formule de durée (`src/transfer-duration.js`) + tests unitaires (`tests/transfer-duration.spec.js`).
 - [x] Popin d'attente : barre sur horloge injectée (`rng`/`Date.now` injectables), complétion →
       `saveAs` réel ; le vrai ZIP se construit en fond (`buildZip`, AbortController). Tests download
       existants adaptés au nouveau flux.
-- [ ] **Annulation** : bouton + `cancelTransfer()` déjà en place (UI) ; reste à **couvrir par un test**
-      (abort du fetch, pas de `saveAs`, popin fermée).
-- [ ] **Config MJ** : lire `connectionQuality`/`alertLevel` depuis la racine de `file-system.json`
-      dans `sessionConfig` (aujourd'hui : défauts `moyenne`/`0`).
+- [x] **Annulation** : bouton + `cancelTransfer()` (abort du fetch, pas de `saveAs`, popin fermée) + test.
+- [x] **Config MJ** : `connectionQuality`/`alertLevel` lus depuis `file-system.json` (racine `session`)
+      dans `sessionConfig`. Défauts `moyenne`/`0` si absent.
+
+**Reste (hors MVP)** : options popin (rendu non-linéaire, échec narratif), affichage du niveau
+d'alerte dans l'OS, back-office MJ live (dépendance backend). Voir plus bas.
 
 ### Back-office MJ + synchro temps réel *(nouvelle feature — dépendance backend)*
 Une **2ᵉ page** (URL connue du seul MJ) pour régler **en live** `connectionQuality` / `alertLevel`.
