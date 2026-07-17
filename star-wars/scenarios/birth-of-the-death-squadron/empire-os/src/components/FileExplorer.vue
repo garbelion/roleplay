@@ -71,6 +71,18 @@
         </div>
       </div>
     </div>
+
+    <!-- Popin d'attente du « transfert » (ambiance) : barre décorrélée du vrai téléchargement -->
+    <div v-if="transfer" class="transfer-modal-overlay">
+      <div class="transfer-modal">
+        <div class="transfer-title">EXTRACTION VERS SUPPORT EXTERNE</div>
+        <div class="transfer-bar">
+          <div class="transfer-bar-fill" :style="{ width: transfer.progress + '%' }"></div>
+        </div>
+        <div class="transfer-status">{{ Math.floor(transfer.progress) }}% — transfert du flux chiffré…</div>
+        <button class="transfer-cancel" @click="cancelTransfer">Annuler</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -79,6 +91,7 @@ import { marked } from 'marked';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { OS } from '../os-identity.js';
+import { computeTransferDuration } from '../transfer-duration.js';
 
 export default {
   name: 'FileExplorer',
@@ -87,6 +100,12 @@ export default {
       osPrompt: OS.shortName,
       fileSystem: null,
       currentPath: '/Fichiers',
+      // Transfert en cours (popin d'attente) : null | { progress: 0..100, duration }
+      transfer: null,
+      // Réglages MJ (config statique pour le MVP ; store/back-office plus tard).
+      sessionConfig: { connectionQuality: 'moyenne', alertLevel: 0 },
+      // RNG injectable (déterminisme en test).
+      rng: Math.random,
       // Source unique de la sélection : index des fichiers cochés dans currentDirectoryItems.
       selectedFiles: [],
       showFileModal: false,
@@ -295,42 +314,73 @@ export default {
       this.$emit('files-selected', this.selectedFiles)
     },
 
-    // Méthode pour télécharger les fichiers sélectionnés en ZIP
-    async downloadSelectedFiles() {
+    // Lance un « transfert » : popin d'attente à durée fictive (ambiance), le vrai ZIP
+    // se construit en fond, l'enregistrement (saveAs) ne part qu'à la complétion de la barre.
+    downloadSelectedFiles() {
       if (this.selectedFiles.length === 0) {
         console.warn('Aucun fichier sélectionné pour téléchargement.')
         return
       }
+      if (this.transfer) return // un transfert est déjà en cours
 
-      try {
-        // Créer une nouvelle archive ZIP
-        const zip = new JSZip()
+      const files = this.selectedFiles
+        .map(i => this.currentDirectoryItems[i])
+        .filter(f => f && f.type === 'file')
 
-        // Ajouter chaque fichier sélectionné à l'archive
-        for (const index of this.selectedFiles) {
-          const file = this.currentDirectoryItems[index]
-          if (file.type === 'file') {
-            const filename = file.path.split('/').pop()
-            const response = await fetch(`/fichiers/${filename}`)
-            if (response.ok) {
-              // Lecture en blob (binaire) : .text() corromprait les .docx, images
-              // et autres binaires en les décodant en UTF-8.
-              const fileBlob = await response.blob()
-              zip.file(filename, fileBlob)
-            }
-          }
-        }
+      const duration = computeTransferDuration({
+        files,
+        connectionQuality: this.sessionConfig.connectionQuality,
+        alertLevel: this.sessionConfig.alertLevel,
+        rng: this.rng
+      })
 
-        // Générer le ZIP
-        const zipBlob = await zip.generateAsync({ type: 'blob' })
-        
-        // Télécharger le ZIP
-        saveAs(zipBlob, 'EmpireOS_Fichiers.zip')
-        
-        console.log('Téléchargement terminé.')
-      } catch (error) {
-        console.error('Erreur lors du téléchargement:', error)
+      // Vrai téléchargement en fond (annulable)
+      this._abort = new AbortController()
+      this._transferBlob = this.buildZip(files, this._abort.signal)
+      this._finishing = false
+
+      // Fausse barre, décorrélée du vrai transfert
+      this.transfer = { progress: 0, duration }
+      this._transferStart = Date.now()
+      this._transferTimer = setInterval(() => this.tickTransfer(), 100)
+    },
+    tickTransfer() {
+      if (!this.transfer) return
+      const elapsed = (Date.now() - this._transferStart) / 1000
+      this.transfer.progress = Math.min(100, (elapsed / this.transfer.duration) * 100)
+      if (this.transfer.progress >= 100 && !this._finishing) {
+        this._finishing = true
+        this.finalizeTransfer()
       }
+    },
+    async finalizeTransfer() {
+      clearInterval(this._transferTimer)
+      try {
+        // On attend aussi le vrai ZIP s'il est plus lent que la barre.
+        const blob = await this._transferBlob
+        if (this.transfer) saveAs(blob, 'transfert_sienar.zip')
+      } catch (error) {
+        console.error('Erreur lors du transfert:', error)
+      } finally {
+        this.transfer = null
+      }
+    },
+    cancelTransfer() {
+      if (this._abort) this._abort.abort()
+      clearInterval(this._transferTimer)
+      this.transfer = null
+    },
+    async buildZip(files, signal) {
+      const zip = new JSZip()
+      for (const file of files) {
+        const filename = file.path.split('/').pop()
+        const response = await fetch(`/fichiers/${filename}`, { signal })
+        if (response.ok) {
+          // Lecture en blob (binaire) : .text() corromprait .docx / images / binaires.
+          zip.file(filename, await response.blob())
+        }
+      }
+      return zip.generateAsync({ type: 'blob' })
     },
     getFiles() {
       return this.currentDirectoryItems
@@ -581,4 +631,61 @@ export default {
   color: var(--bg);
   border-color: var(--accent);
 }
+
+/* Popin d'attente du transfert */
+.transfer-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(3, 5, 8, 0.82);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+}
+.transfer-modal {
+  background-color: var(--panel);
+  border: 1px solid var(--line-strong);
+  padding: 20px 24px;
+  width: 80%;
+  max-width: 460px;
+  color: var(--ink);
+  text-align: center;
+}
+.transfer-title {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.transfer-bar {
+  height: 14px;
+  border: 1px solid var(--line-strong);
+  background-color: var(--bg);
+  overflow: hidden;
+}
+.transfer-bar-fill {
+  height: 100%;
+  background-color: var(--accent);
+  transition: width 0.1s linear;
+}
+.transfer-status {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+}
+.transfer-cancel {
+  margin-top: 16px;
+  background: transparent;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  cursor: pointer;
+  padding: 6px 14px;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 0;
+}
+.transfer-cancel:hover { background-color: var(--danger); color: var(--bg); }
 </style>

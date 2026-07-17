@@ -557,7 +557,7 @@ describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", 
   })
 
   it("devrait appeler fetch pour chaque fichier sélectionné", async () => {
-    // Mock global.fetch pour vérifier les appels
+    vi.useFakeTimers()
     const originalFetch = global.fetch
     global.fetch = vi.fn((url) => {
       if (url === '/file-system.json') {
@@ -565,20 +565,21 @@ describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", 
       }
       return Promise.resolve({ ok: true, blob: () => Promise.resolve(new Blob(['Contenu du fichier'])) })
     })
-    
+
     await wrapper.vm.loadFileSystem()
-    // Sélectionner 2 fichiers
+    wrapper.vm.rng = () => 0.5
     wrapper.vm.selectedFiles = [1, 2]
-    
-    // Appeler downloadSelectedFiles
-    await wrapper.vm.downloadSelectedFiles()
-    
-    // Vérifier que fetch a été appelé pour chaque fichier
-    expect(global.fetch).toHaveBeenCalledWith('/fichiers/rapport_mission.md')
-    expect(global.fetch).toHaveBeenCalledWith('/fichiers/ordre_executor.md')
-    
-    // Restaurer fetch
+
+    // Le download passe par la popin d'attente ; on avance jusqu'à complétion.
+    wrapper.vm.downloadSelectedFiles()
+    await vi.advanceTimersByTimeAsync(60000)
+
+    // Le vrai fetch (en fond) a été appelé pour chaque fichier (avec un signal d'abandon).
+    expect(global.fetch).toHaveBeenCalledWith('/fichiers/rapport_mission.md', expect.anything())
+    expect(global.fetch).toHaveBeenCalledWith('/fichiers/ordre_executor.md', expect.anything())
+
     global.fetch = originalFetch
+    vi.useRealTimers()
   })
 })
 
@@ -762,9 +763,15 @@ describe("FileExplorer.vue - Point 4: Téléchargement binaire (blob)", () => {
       })
     })
 
+    vi.useFakeTimers()
     await wrapper.vm.loadFileSystem()
+    wrapper.vm.rng = () => 0.5
     wrapper.vm.selectedFiles = [1] // un fichier du répertoire courant
-    await wrapper.vm.downloadSelectedFiles()
+
+    // Le download passe par la popin d'attente ; on avance jusqu'à complétion (saveAs).
+    wrapper.vm.downloadSelectedFiles()
+    await vi.advanceTimersByTimeAsync(60000)
+    vi.useRealTimers()
 
     expect(capturedZip).toBeTruthy()
     // On relit le ZIP produit et on compare les octets à l'original.
@@ -859,5 +866,50 @@ describe("FileExplorer.vue - Loader d'affichage", () => {
     await opening
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.file-modal .loader').exists()).toBe(false) // contenu prêt, loader parti
+  })
+})
+
+describe("FileExplorer.vue - Point 6: Popin d'attente (transfert)", () => {
+  // gros.bin : poids 20 -> durée = base 10 + 20 = 30 s (jitter neutre, qualité/alerte par défaut)
+  const fs = {
+    name: 'root', path: '/', type: 'directory', defaultPath: '/data',
+    children: [
+      {
+        name: 'data', path: '/data', type: 'disk',
+        children: [
+          { name: 'gros.bin', path: '/data/gros.bin', type: 'file', transferWeight: 20 }
+        ]
+      }
+    ]
+  }
+
+  let wrapper
+  beforeEach(() => {
+    saveAs.mockReset()
+    global.fetch = vi.fn((url) => url === '/file-system.json'
+      ? Promise.resolve({ json: () => Promise.resolve(fs) })
+      : Promise.resolve({ ok: true, blob: () => Promise.resolve(new Blob(['x'])) }))
+    wrapper = mount(FileExplorer)
+  })
+
+  it("ouvre une popin d'attente et n'enregistre qu'à la complétion de la barre", async () => {
+    vi.useFakeTimers()
+    await wrapper.vm.loadFileSystem()
+    wrapper.vm.rng = () => 0.5 // jitter neutre -> durée déterministe 30 s
+    wrapper.vm.selectedFiles = [1] // gros.bin (index 0 = '..')
+
+    wrapper.vm.downloadSelectedFiles()
+    await wrapper.vm.$nextTick()
+    // Popin visible, rien d'enregistré encore
+    expect(wrapper.find('.transfer-modal').exists()).toBe(true)
+    expect(saveAs).not.toHaveBeenCalled()
+
+    // Avance jusqu'à la complétion (30 s) en flushant les promesses (fetch + zip)
+    await vi.advanceTimersByTimeAsync(30000)
+    await wrapper.vm.$nextTick()
+    expect(saveAs).toHaveBeenCalledTimes(1)
+    expect(wrapper.find('.transfer-modal').exists()).toBe(false)
+
+    vi.useRealTimers()
   })
 })
