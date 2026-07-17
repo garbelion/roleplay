@@ -82,9 +82,11 @@ Deux publics :
      le home de la machine piratée (`/user-51394345/home`). Vérifié en live dans le navigateur.
    - ✅ **Données de démo** : arbo UNIX-ish à 2 disques (`user-51394345` machine de Tana +
      `srv-transmissions` disque réseau où vit le journal placeholder).
-   - ⏳ **Reste** : en-tête à repenser (le préfixe `C:\EmpireOS\` est un reliquat DOS
-     incohérent avec les chemins unix) → **feature skin** (point 5). Configs séparées par
-     disque : **non prioritaire**, on garde un seul `file-system.json`.
+   - ✅ **En-tête cohérent** : le prompt affiche un chemin unix (`EmpireOS:/user-51394345/home$`),
+     plus de préfixe DOS `C:\EmpireOS\` ni de backslashes. (L'habillage visuel complet reste au
+     point 5.)
+   - ⏳ **Reste** : configs séparées par disque — **non prioritaire**, on garde un seul
+     `file-system.json`.
 3. **Aiguilleur d'affichage par type + mode `summary`** — texte brut pour les configs, « aperçu
    impossible » pour les binaires, **`summary` pour (d)**.
    - ✅ **Livré** : `previewKindFor` aiguille l'ouverture — `.md`→Markdown, texte système

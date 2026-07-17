@@ -96,7 +96,9 @@ describe("FileExplorer.vue - Feature 1: Afficher une liste de fichiers .docx", (
     await wrapper.vm.loadFileSystem()
     const header = wrapper.find(".terminal-header")
     expect(header.exists()).toBe(true)
-    expect(header.text()).toContain("C:\\EmpireOS\\Fichiers>")
+    expect(header.text()).toContain("EmpireOS:/Fichiers$")
+    expect(header.text()).not.toContain("C:")
+    expect(header.text()).not.toContain("\\")
   })
 
   it("devrait permettre la selection de fichiers", async () => {
@@ -183,7 +185,9 @@ describe("FileExplorer.vue - Feature 2: Naviguer dans les répertoires", () => {
     await wrapper.vm.loadFileSystem()
     await wrapper.vm.changeDirectory("/Fichiers")
     const header = wrapper.find(".terminal-header")
-    expect(header.text()).toContain("C:\\EmpireOS\\Fichiers>")
+    expect(header.text()).toContain("EmpireOS:/Fichiers$")
+    expect(header.text()).not.toContain("C:")
+    expect(header.text()).not.toContain("\\")
   })
 
   it("devrait mettre à jour currentDirectory après navigation", async () => {
