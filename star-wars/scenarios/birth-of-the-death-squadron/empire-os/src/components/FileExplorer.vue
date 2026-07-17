@@ -299,8 +299,10 @@ export default {
             const filename = file.path.split('/').pop()
             const response = await fetch(`/fichiers/${filename}`)
             if (response.ok) {
-              const fileContent = await response.text()
-              zip.file(filename, fileContent)
+              // Lecture en blob (binaire) : .text() corromprait les .docx, images
+              // et autres binaires en les décodant en UTF-8.
+              const fileBlob = await response.blob()
+              zip.file(filename, fileBlob)
             }
           }
         }

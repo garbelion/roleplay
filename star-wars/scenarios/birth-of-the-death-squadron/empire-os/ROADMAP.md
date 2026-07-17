@@ -95,6 +95,9 @@ Deux publics :
      vérifié en live. 58 tests, build OK.
    - ⏳ **Ouvert** : rendu **mammoth.js** inline des `.docx` (parqué, point 8).
 4. **Correctif téléchargement en blob + download `.docx` réel** — *voir §6 (must-fix)*.
+   - ✅ **Livré** : le téléchargement lit chaque fichier en `blob()` (au lieu de `.text()`)
+     avant de l'ajouter au ZIP → `.docx`, images et binaires ressortent **intacts**. Test de
+     non-régression : on relit le ZIP produit et on compare les octets à l'original. 59 tests.
 
 **Immersion & tension**
 5. **Skin impérial** — palette, chrome d'ambiance (version / révision / licence / horloge), lignes
@@ -121,7 +124,7 @@ const blob = await response.blob()
 zip.file(filename, blob)
 ```
 
-À implémenter **en TDD** au moment du download `.docx` (ajouter un cas binaire), pas avant.
+✅ **Fait** (point 4) : le download lit en `blob()` ; test d'intégrité binaire (relecture du ZIP).
 
 ## 7. Décisions encore ouvertes
 

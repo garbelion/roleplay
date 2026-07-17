@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from "vitest"
 import { mount } from "@vue/test-utils"
+import JSZip from "jszip"
+import { saveAs } from "file-saver"
 import FileExplorer from "../src/components/FileExplorer.vue"
+
+// saveAs déclenche un vrai téléchargement navigateur (indisponible en jsdom) ;
+// on le mocke pour capturer le blob ZIP produit et l'inspecter.
+vi.mock("file-saver", () => ({ saveAs: vi.fn() }))
 
 const mockFileSystem = {
   name: 'root',
@@ -552,7 +558,7 @@ describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", 
       if (url === '/file-system.json') {
         return Promise.resolve({ json: () => Promise.resolve(mockFileSystem) })
       }
-      return Promise.resolve({ ok: true, text: () => Promise.resolve('Contenu du fichier') })
+      return Promise.resolve({ ok: true, blob: () => Promise.resolve(new Blob(['Contenu du fichier'])) })
     })
     
     await wrapper.vm.loadFileSystem()
@@ -725,5 +731,41 @@ describe("FileExplorer.vue - Point 3: Aiguilleur d'affichage par type", () => {
     const img = wrapper.find('.file-modal img')
     expect(img.exists()).toBe(true)
     expect(img.attributes('src')).toBe('/fichiers/photo.png')
+  })
+})
+
+describe("FileExplorer.vue - Point 4: Téléchargement binaire (blob)", () => {
+  let wrapper
+  beforeEach(() => {
+    wrapper = mount(FileExplorer)
+  })
+
+  it("télécharge le contenu en binaire (blob) : les octets ne sont pas corrompus", async () => {
+    // Octets non-représentables en UTF-8 : un pipeline `.text()` les mangerait.
+    const originalBytes = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0xff, 0xfe, 0x42])
+    let capturedZip = null
+    saveAs.mockImplementation((blob) => { capturedZip = blob })
+
+    global.fetch = vi.fn((url) => {
+      if (url === '/file-system.json') {
+        return Promise.resolve({ json: () => Promise.resolve(mockFileSystem) })
+      }
+      return Promise.resolve({
+        ok: true,
+        blob: () => Promise.resolve(new Blob([originalBytes])),
+        text: () => Promise.resolve('CONTENU-TEXTE-CORROMPU')
+      })
+    })
+
+    await wrapper.vm.loadFileSystem()
+    wrapper.vm.selectedFiles = [1] // un fichier du répertoire courant
+    await wrapper.vm.downloadSelectedFiles()
+
+    expect(capturedZip).toBeTruthy()
+    // On relit le ZIP produit et on compare les octets à l'original.
+    const zip = await JSZip.loadAsync(capturedZip)
+    const name = Object.keys(zip.files)[0]
+    const bytes = await zip.file(name).async('uint8array')
+    expect(Array.from(bytes)).toEqual(Array.from(originalBytes))
   })
 })
