@@ -53,16 +53,21 @@
           <button class="close-button" @click="closeFileModal">X</button>
         </div>
         <div class="modal-content">
-          <!-- Aiguilleur d'affichage selon le type / previewMode du fichier -->
-          <div v-if="previewKind === 'summary'" class="summary-preview">
-            <p class="summary-text">{{ openedFile?.summary || 'Aperçu non disponible pour ce document.' }}</p>
-            <p class="download-hint">Téléchargez le fichier pour consulter son contenu complet.</p>
+          <!-- Loader pendant le premier rendu (fetch d'un document ou chargement d'une image) -->
+          <div v-if="previewLoading" class="loader">Chargement…</div>
+          <!-- Aiguilleur d'affichage selon le type / previewMode du fichier.
+               v-show garde l'<img> dans le DOM pendant le chargement pour capter @load. -->
+          <div v-show="!previewLoading">
+            <div v-if="previewKind === 'summary'" class="summary-preview">
+              <p class="summary-text">{{ openedFile?.summary || 'Aperçu non disponible pour ce document.' }}</p>
+              <p class="download-hint">Téléchargez le fichier pour consulter son contenu complet.</p>
+            </div>
+            <img v-else-if="previewKind === 'image'" :src="fileUrl(openedFile)" :alt="openedFile?.name" class="image-preview" @load="previewLoading = false" @error="previewLoading = false">
+            <div v-else-if="previewKind === 'binary'" class="error">Impossible de prévisualiser ce contenu.</div>
+            <pre v-else-if="previewKind === 'text'" class="raw-text">{{ fileContent }}</pre>
+            <div v-else-if="fileContent" v-html="fileContent"></div>
+            <div v-else class="error">Contenu non disponible</div>
           </div>
-          <img v-else-if="previewKind === 'image'" :src="fileUrl(openedFile)" :alt="openedFile?.name" class="image-preview">
-          <div v-else-if="previewKind === 'binary'" class="error">Impossible de prévisualiser ce contenu.</div>
-          <pre v-else-if="previewKind === 'text'" class="raw-text">{{ fileContent }}</pre>
-          <div v-else-if="fileContent" v-html="fileContent"></div>
-          <div v-else class="error">Contenu non disponible</div>
         </div>
       </div>
     </div>
@@ -85,8 +90,10 @@ export default {
       showFileModal: false,
       openedFile: null,
       fileContent: '',
-      // Mode d'aperçu résolu à l'ouverture : 'markdown' | 'text' | 'summary' | 'binary'.
-      previewKind: ''
+      // Mode d'aperçu résolu à l'ouverture : 'markdown' | 'text' | 'summary' | 'binary' | 'image'.
+      previewKind: '',
+      // Vrai tant que l'aperçu n'est pas prêt à s'afficher (fetch ou chargement image).
+      previewLoading: false
     }
   },
   computed: {
@@ -219,10 +226,14 @@ export default {
       this.openedFile = file
       this.previewKind = this.previewKindFor(file)
       this.fileContent = ''
+      const textual = this.previewKind === 'markdown' || this.previewKind === 'text'
+      // Loader tant que l'aperçu n'est pas prêt : pendant le fetch (md/texte),
+      // ou jusqu'à l'événement load/error pour une image. summary/binaire : instantané.
+      this.previewLoading = textual || this.previewKind === 'image'
       this.showFileModal = true
-      // Seuls les modes textuels chargent le contenu ; summary/binaire ne fetchent rien.
-      if (this.previewKind === 'markdown' || this.previewKind === 'text') {
+      if (textual) {
         await this.loadFileContent(file)
+        this.previewLoading = false
       }
     },
     async loadFileContent(file) {
@@ -256,6 +267,7 @@ export default {
       this.openedFile = null
       this.fileContent = ''
       this.previewKind = ''
+      this.previewLoading = false
     },
     handleItemClick(item, index) {
       if (this.isContainer(item)) {
@@ -479,6 +491,28 @@ export default {
 
 /* Aperçu image (types connus) */
 .image-preview { max-width: 100%; height: auto; display: block; }
+
+/* Loader d'affichage (premier rendu d'un document / image) */
+.loader {
+  color: #0f0;
+  font-family: monospace;
+  padding: 20px 0;
+  text-align: center;
+  opacity: 0.85;
+}
+.loader::after {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-left: 8px;
+  border: 2px solid #0f0;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: loader-spin 0.8s linear infinite;
+  vertical-align: middle;
+}
+@keyframes loader-spin { to { transform: rotate(360deg); } }
 
 .close-button {
   background: none;

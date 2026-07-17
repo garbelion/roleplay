@@ -807,3 +807,56 @@ describe("FileExplorer.vue - Nom de fichier long", () => {
     expect(fileItem.find('.open-icon').exists()).toBe(true)
   })
 })
+
+describe("FileExplorer.vue - Loader d'affichage", () => {
+  const fs = {
+    name: 'root', path: '/', type: 'directory', defaultPath: '/data',
+    children: [
+      {
+        name: 'data', path: '/data', type: 'disk',
+        children: [
+          { name: 'photo.png', path: '/data/photo.png', type: 'file' },
+          { name: 'notes.md', path: '/data/notes.md', type: 'file' }
+        ]
+      }
+    ]
+  }
+
+  let wrapper
+  beforeEach(() => {
+    global.fetch = vi.fn((url) => url === '/file-system.json'
+      ? Promise.resolve({ json: () => Promise.resolve(fs) })
+      : Promise.resolve({ ok: true, text: () => Promise.resolve('# hi') }))
+    wrapper = mount(FileExplorer)
+  })
+
+  const fileNamed = (name) => wrapper.vm.currentDirectory.children.find(f => f.name === name)
+
+  it("image : affiche un loader tant qu'elle n'a pas déclenché son chargement", async () => {
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.openFile(fileNamed('photo.png'))
+    await wrapper.vm.$nextTick()
+    // Loader visible tant que l'<img> n'a pas fini de charger
+    expect(wrapper.find('.file-modal .loader').exists()).toBe(true)
+    // Une fois l'image chargée (événement load), le loader disparaît
+    await wrapper.find('.file-modal img').trigger('load')
+    expect(wrapper.find('.file-modal .loader').exists()).toBe(false)
+  })
+
+  it("markdown/texte : affiche un loader pendant le chargement du contenu", async () => {
+    let resolveContent
+    global.fetch = vi.fn((url) => url === '/file-system.json'
+      ? Promise.resolve({ json: () => Promise.resolve(fs) })
+      : new Promise((res) => { resolveContent = () => res({ ok: true, text: () => Promise.resolve('# hi') }) }))
+    await wrapper.vm.loadFileSystem()
+
+    const opening = wrapper.vm.openFile(fileNamed('notes.md')) // ne pas await : fetch en attente
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.file-modal .loader').exists()).toBe(true) // loader pendant le fetch
+
+    resolveContent()
+    await opening
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.file-modal .loader').exists()).toBe(false) // contenu prêt, loader parti
+  })
+})
