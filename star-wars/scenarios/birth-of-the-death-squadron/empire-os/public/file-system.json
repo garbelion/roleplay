@@ -16,7 +16,17 @@
           "children": [
             { "name": "rapport_mission.md", "path": "/user-51394345/home/rapport_mission.md", "type": "file" },
             { "name": "ordre_executor.md", "path": "/user-51394345/home/ordre_executor.md", "type": "file" },
-            { "name": "liste_cibles.md", "path": "/user-51394345/home/liste_cibles.md", "type": "file" }
+            { "name": "liste_cibles.md", "path": "/user-51394345/home/liste_cibles.md", "type": "file" },
+            {
+              "name": "surveillance",
+              "path": "/user-51394345/home/surveillance",
+              "type": "directory",
+              "children": [
+                { "name": "executor_chantier.jpg", "path": "/user-51394345/home/surveillance/executor_chantier.jpg", "type": "file" },
+                { "name": "flotte_escorte.webp", "path": "/user-51394345/home/surveillance/flotte_escorte.webp", "type": "file" },
+                { "name": "destroyer_orbite.webp", "path": "/user-51394345/home/surveillance/destroyer_orbite.webp", "type": "file" }
+              ]
+            }
           ]
         },
         {
