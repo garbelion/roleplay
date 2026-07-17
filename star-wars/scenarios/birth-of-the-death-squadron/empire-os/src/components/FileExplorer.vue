@@ -1,7 +1,7 @@
 <template>
   <div class="file-explorer">
     <div class="terminal-header">
-      <span>EmpireOS:{{ currentPath }}$</span>
+      <span>{{ osName }}:{{ currentPath }}$</span>
     </div>
     <div class="file-list-container">
       <div
@@ -78,11 +78,13 @@
 import { marked } from 'marked';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { OS } from '../os-identity.js';
 
 export default {
   name: 'FileExplorer',
   data() {
     return {
+      osName: OS.name,
       fileSystem: null,
       currentPath: '/Fichiers',
       // Source unique de la sélection : index des fichiers cochés dans currentDirectoryItems.
@@ -345,26 +347,43 @@ export default {
 </script>
 
 <style scoped>
-.file-explorer { color: #0f0; font-family: monospace; font-size: 14px; line-height: 1.5; }
-.terminal-header { margin-bottom: 10px; color: #0f0; }
-.file-list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+/* Skin impérial : sombre, froid, anguleux. Couleurs via variables (index.html :root). */
+.file-explorer { color: var(--ink); font-family: inherit; font-size: 14px; line-height: 1.5; }
+
+/* Prompt : chemin unix, accent hologramme */
+.terminal-header {
+  margin-bottom: 12px;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 6px;
+}
+
+.file-list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px; }
 .file-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 6px 12px;
-  background-color: transparent;
-  border: 1px solid #000;
+  background-color: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0;              /* angles nets */
   cursor: pointer;
+  transition: background-color 0.12s, border-color 0.12s;
 }
-.file-item:hover { background-color: rgba(0, 255, 0, 0.1); }
-.file-item.selected { background-color: rgba(0, 255, 0, 0.3); border-color: #0f0; }
-.file-item.directory { color: #0ff; }
-.file-item.directory:hover { background-color: rgba(0, 255, 255, 0.1); }
-/* Un disque (noeud de tête) : distinct des dossiers, marqué par une bordure d'accent.
-   La palette impériale définitive viendra avec la feature « skin ». */
-.file-item.disk { color: #fff; font-weight: bold; border-left: 3px solid #0ff; }
-.file-item.disk:hover { background-color: rgba(0, 255, 255, 0.12); }
+.file-item:hover { background-color: var(--panel-raised); border-color: var(--line-strong); }
+.file-item.selected { background-color: var(--selection); border-color: var(--accent); }
+.file-item.directory { color: var(--accent); }
+.file-item.directory:hover { background-color: var(--accent-soft); }
+/* Un disque (noeud de tête) : distinct des dossiers, marqué par une bordure d'accent. */
+.file-item.disk {
+  color: var(--ink);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-left: 3px solid var(--accent);
+}
+.file-item.disk:hover { background-color: var(--accent-soft); }
 
 .file-name {
   flex: 1;
@@ -378,7 +397,7 @@ export default {
 .file-checkbox {
   margin-right: 8px;
   cursor: pointer;
-  accent-color: #0f0; /* Couleur verte pour cocher la checkbox */
+  accent-color: var(--accent);
 }
 
 /* Icône d'ouverture pour les fichiers */
@@ -401,7 +420,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(3, 5, 8, 0.82);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -409,15 +428,15 @@ export default {
 }
 
 .file-modal {
-  background-color: #111;
-  border: 2px solid #0f0;
-  border-radius: 4px;
+  background-color: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
   width: 80%;
-  max-width: 600px;
+  max-width: 640px;
   max-height: 80%;
   overflow: auto;
-  color: #0f0;
-  font-family: monospace;
+  color: var(--ink);
+  font-family: inherit;
   font-size: 14px;
 }
 
@@ -426,8 +445,11 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 10px 15px;
-  border-bottom: 1px solid #0f0;
-  background-color: #000;
+  border-bottom: 1px solid var(--line-strong);
+  background-color: var(--panel-raised);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 13px;
 }
 
 .modal-content {
@@ -438,10 +460,10 @@ export default {
 
 /* Styles pour le contenu Markdown */
 .modal-content h1, .modal-content h2, .modal-content h3 {
-  color: #0f0;
+  color: var(--accent);
   margin-top: 10px;
   margin-bottom: 8px;
-  border-bottom: 1px solid #0f0;
+  border-bottom: 1px solid var(--line);
   padding-bottom: 4px;
 }
 
@@ -449,17 +471,18 @@ export default {
   border-collapse: collapse;
   width: 100%;
   margin: 10px 0;
-  color: #0f0;
+  color: var(--ink);
 }
 
 .modal-content table th, .modal-content table td {
-  border: 1px solid #0f0;
+  border: 1px solid var(--line);
   padding: 6px;
   text-align: left;
 }
 
 .modal-content table th {
-  background-color: #000;
+  background-color: var(--panel-raised);
+  color: var(--accent);
 }
 
 .modal-content ul, .modal-content ol {
@@ -472,7 +495,7 @@ export default {
 }
 
 .error {
-  color: #f00;
+  color: var(--danger);
   font-weight: bold;
 }
 
@@ -481,24 +504,26 @@ export default {
   margin: 0;
   white-space: pre-wrap;
   word-wrap: break-word;
-  font-family: monospace;
-  color: #0f0;
+  font-family: inherit;
+  color: var(--ink);
 }
 
 /* Aperçu « résumé » (docs riches / previewMode summary : lecture = téléchargement) */
 .summary-text { margin: 0 0 12px; }
-.download-hint { color: #0ff; font-style: italic; opacity: 0.85; }
+.download-hint { color: var(--accent); font-style: italic; opacity: 0.9; }
 
 /* Aperçu image (types connus) */
 .image-preview { max-width: 100%; height: auto; display: block; }
 
 /* Loader d'affichage (premier rendu d'un document / image) */
 .loader {
-  color: #0f0;
-  font-family: monospace;
+  color: var(--accent);
+  font-family: inherit;
   padding: 20px 0;
   text-align: center;
-  opacity: 0.85;
+  opacity: 0.9;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 .loader::after {
   content: '';
@@ -506,7 +531,7 @@ export default {
   width: 10px;
   height: 10px;
   margin-left: 8px;
-  border: 2px solid #0f0;
+  border: 2px solid var(--accent);
   border-top-color: transparent;
   border-radius: 50%;
   animation: loader-spin 0.8s linear infinite;
@@ -516,17 +541,19 @@ export default {
 
 .close-button {
   background: none;
-  border: 1px solid #0f0;
-  color: #0f0;
+  border: 1px solid var(--line-strong);
+  color: var(--ink-dim);
   cursor: pointer;
   padding: 4px 8px;
-  font-family: monospace;
+  font-family: inherit;
   font-size: 12px;
+  border-radius: 0;
 }
 
 .close-button:hover {
-  background-color: #0f0;
-  color: #000;
+  background-color: var(--danger);
+  border-color: var(--danger);
+  color: var(--bg);
 }
 
 /* Bouton de téléchargement */
@@ -536,19 +563,22 @@ export default {
 }
 
 .download-button {
-  background-color: #000;
-  border: 1px solid #0f0;
-  color: #0f0;
+  background-color: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
   cursor: pointer;
   padding: 8px 16px;
-  font-family: monospace;
+  font-family: inherit;
   font-size: 14px;
-  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 0;
+  transition: all 0.15s;
 }
 
 .download-button:hover {
-  background-color: #0f0;
-  color: #000;
-  border-color: #0f0;
+  background-color: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
 }
 </style>

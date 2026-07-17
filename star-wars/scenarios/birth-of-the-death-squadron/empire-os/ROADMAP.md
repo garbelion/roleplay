@@ -104,6 +104,15 @@ Deux publics :
 **Immersion & tension**
 5. **Skin impérial** — palette, chrome d'ambiance (version / révision / licence / horloge), lignes
    angulaires et froides. *(Indépendant : peut avancer en parallèle ; forte valeur « produit ».)*
+   - ✅ **Livré** : palette impériale centralisée en variables CSS (`index.html :root` :
+     noir bleuté, ardoise, acier froid, accent cyan hologramme, rouge impérial), angles nets,
+     majuscules/letter-spacing. Chrome : barre de titre (nom OS + version + build + horloge
+     temps réel) et barre de statut (licence). Vert MS-DOS abandonné.
+   - ✅ **Renommage** : l'OS s'appelle **ISOS — Imperial Standard OS** (piloté par
+     `src/os-identity.js`, changeable en une ligne ; alternatives proposées : ORDO.SYS,
+     COMPNOR/NET, Sienar Terminal). Prompt : `ISOS:/user-51394345/home$`.
+   - Tests : identité + horloge (fake timers) + prompt. Le reste (couleurs/angles) est du
+     CSS non vérifiable en jsdom → validation visuelle.
 6. **Popin d'attente à progression bidon (RNG)** — *détails encore ouverts, voir §7.*
 7. **Console d'ambiance réactive + barre de recherche** — logs qui réagissent aux actions ;
    recherche par **nom, sur le répertoire courant** (v1) | messages en rouge façon big brother "l'Empire vous protège du chaos".

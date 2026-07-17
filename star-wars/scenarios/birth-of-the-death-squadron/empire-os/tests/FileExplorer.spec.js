@@ -3,6 +3,7 @@ import { mount } from "@vue/test-utils"
 import JSZip from "jszip"
 import { saveAs } from "file-saver"
 import FileExplorer from "../src/components/FileExplorer.vue"
+import { OS } from "../src/os-identity.js"
 
 // saveAs déclenche un vrai téléchargement navigateur (indisponible en jsdom) ;
 // on le mocke pour capturer le blob ZIP produit et l'inspecter.
@@ -96,7 +97,7 @@ describe("FileExplorer.vue - Feature 1: Afficher une liste de fichiers .docx", (
     await wrapper.vm.loadFileSystem()
     const header = wrapper.find(".terminal-header")
     expect(header.exists()).toBe(true)
-    expect(header.text()).toContain("EmpireOS:/Fichiers$")
+    expect(header.text()).toContain(`${OS.name}:/Fichiers$`)
     expect(header.text()).not.toContain("C:")
     expect(header.text()).not.toContain("\\")
   })
@@ -185,7 +186,7 @@ describe("FileExplorer.vue - Feature 2: Naviguer dans les répertoires", () => {
     await wrapper.vm.loadFileSystem()
     await wrapper.vm.changeDirectory("/Fichiers")
     const header = wrapper.find(".terminal-header")
-    expect(header.text()).toContain("EmpireOS:/Fichiers$")
+    expect(header.text()).toContain(`${OS.name}:/Fichiers$`)
     expect(header.text()).not.toContain("C:")
     expect(header.text()).not.toContain("\\")
   })
