@@ -773,3 +773,37 @@ describe("FileExplorer.vue - Point 4: Téléchargement binaire (blob)", () => {
     expect(Array.from(bytes)).toEqual(Array.from(originalBytes))
   })
 })
+
+describe("FileExplorer.vue - Nom de fichier long", () => {
+  const longName = 'rapport_de_surveillance_tres_long_de_la_flotte_executor_2024.md'
+  const fs = {
+    name: 'root', path: '/', type: 'directory', defaultPath: '/data',
+    children: [
+      {
+        name: 'data', path: '/data', type: 'disk',
+        children: [
+          { name: longName, path: '/data/' + longName, type: 'file' }
+        ]
+      }
+    ]
+  }
+
+  let wrapper
+  beforeEach(() => {
+    global.fetch = vi.fn((url) => url === '/file-system.json'
+      ? Promise.resolve({ json: () => Promise.resolve(fs) })
+      : Promise.resolve({ ok: true, blob: () => Promise.resolve(new Blob(['x'])) }))
+    wrapper = mount(FileExplorer)
+  })
+
+  it("expose le nom complet au survol (title) et garde le bouton d'ouverture présent", async () => {
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.$nextTick()
+    const items = wrapper.findAll('.file-item')
+    const fileItem = items.find(i => i.find('.file-name').text().startsWith('rapport_de_surveillance'))
+    // Nom complet accessible au survol (le nom affiché sera tronqué par le CSS).
+    expect(fileItem.find('.file-name').attributes('title')).toBe(longName)
+    // Le bouton d'ouverture reste dans le DOM (le CSS l'empêche d'être poussé hors vue).
+    expect(fileItem.find('.open-icon').exists()).toBe(true)
+  })
+})

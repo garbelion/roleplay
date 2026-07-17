@@ -23,7 +23,7 @@
           @change.stop="toggleFileSelection(index)"
           @click.stop
         >
-        <span class="file-name">
+        <span class="file-name" :title="item.name">
           {{ item.name }}{{ item.type === 'directory' ? '/' : '' }}
         </span>
         <!-- Icône d'ouverture pour les fichiers (pas les dossiers) -->
@@ -356,6 +356,10 @@ export default {
 
 .file-name {
   flex: 1;
+  min-width: 0;            /* autorise le rétrécissement sous la taille du contenu */
+  overflow: hidden;
+  text-overflow: ellipsis; /* nom tronqué (…) ; nom complet dispo via title au survol */
+  white-space: nowrap;
 }
 
 /* Checkbox pour la sélection de fichiers */
@@ -371,6 +375,7 @@ export default {
   margin-left: 8px;
   font-size: 16px;
   opacity: 0.7;
+  flex-shrink: 0;   /* le bouton ne se comprime jamais : toujours visible */
 }
 
 .open-icon:hover {
