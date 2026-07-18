@@ -47,6 +47,14 @@ describe("App.vue - Skin / chrome impérial", () => {
     vi.useRealTimers()
   })
 
+  it("affiche un filigrane du logo impérial en fond (décoratif)", () => {
+    const wrapper = mount(App)
+    const mark = wrapper.find(".os-watermark")
+    expect(mark.exists()).toBe(true)
+    expect(mark.text()).toBe("#") // même glyphe impérial que le logo de la barre de titre
+    expect(mark.attributes("aria-hidden")).toBe("true")
+  })
+
   it("affiche une notification à l'écran pour un message non-surveillance", async () => {
     const wrapper = mount(App)
     await flushPromises()

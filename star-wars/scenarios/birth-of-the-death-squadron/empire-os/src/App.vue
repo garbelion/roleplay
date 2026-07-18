@@ -1,5 +1,7 @@
 <template>
   <div class="dos-window">
+    <!-- Filigrane décoratif : logo impérial (Star Jedi) estompé en fond de l'OS. -->
+    <div class="os-watermark" aria-hidden="true">#</div>
     <div class="dos-title-bar">
       <span class="dos-title">
         <span class="os-logo" aria-hidden="true">#</span>
@@ -66,6 +68,8 @@ const closeTerminal = () => {
 
 /* Barre de titre : anguleuse, froide, hiérarchisée (ordre impérial) */
 .dos-title-bar {
+  position: relative;
+  z-index: 1; /* au-dessus du filigrane */
   display: flex;
   align-items: center;
   gap: 16px;
@@ -74,6 +78,25 @@ const closeTerminal = () => {
   border-bottom: 1px solid var(--line-strong);
   font-size: 13px;
   letter-spacing: 0.5px;
+}
+
+/* Filigrane décoratif : logo impérial (Star Jedi) estompé, centré, derrière tout le contenu.
+   Visible dans les zones transparentes de l'explorateur. */
+.os-watermark {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Star Jedi', monospace;
+  font-size: 62vmin;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.04;
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
 }
 /* Police Star Jedi (libre d'utilisation, dafont) — le « # » y rend un logo impérial. */
 @font-face {
@@ -106,10 +129,12 @@ const closeTerminal = () => {
 }
 .dos-close-button:hover { color: var(--bg); background: var(--danger); border-color: var(--danger); }
 
-.terminal-container { flex: 1; min-height: 0; padding: 12px; overflow: hidden; }
+.terminal-container { position: relative; z-index: 1; flex: 1; min-height: 0; padding: 12px; overflow: hidden; }
 
 /* Barre de statut basse : licence / mentions (ambiance OS) */
 .dos-status-bar {
+  position: relative;
+  z-index: 1; /* au-dessus du filigrane */
   padding: 4px 12px;
   background: var(--panel);
   border-top: 1px solid var(--line);
@@ -131,13 +156,15 @@ const closeTerminal = () => {
   .dos-status-bar { display: none; } /* licence : trop longue en très étroit */
 }
 
-/* Overlay de notifications : coin haut-droit, empilées, cliquables pour fermer. */
+/* Overlay de notifications : haut-centre, empilées, cliquables pour fermer. */
 .os-notifications {
   position: absolute;
   top: 44px;
-  right: 12px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 8px;
   max-width: min(360px, 80vw);
   z-index: 20;
@@ -145,7 +172,7 @@ const closeTerminal = () => {
 }
 .os-notification {
   pointer-events: auto;
-  text-align: left;
+  text-align: center;
   font-family: inherit;
   font-size: 12px;
   line-height: 1.4;
@@ -164,7 +191,7 @@ const closeTerminal = () => {
 /* Propagande / alerte : accent rouge impérial pour se distinguer du système. */
 .os-notification.kind-propaganda { border-left-color: var(--danger); }
 @keyframes os-notif-in {
-  from { opacity: 0; transform: translateX(12px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
