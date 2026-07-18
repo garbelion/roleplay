@@ -1,138 +1,94 @@
-# Empire OS - Interface de Hacking
+# Sienar Imperial Terminal (codename `empire-os`)
 
-Interface graphique façon MS-DOS pour le scénario Star Wars "Birth of the Death Squadron".
+Accessoire narratif diégétique pour le scénario Star Wars *Birth of the Death Squadron* :
+un **OS impérial simulé** que les PJ « piratent » pour découvrir des documents. Sous un
+habillage rétro impérial (sombre, froid, anguleux), l'arborescence imite un système
+volontairement **dépaysant** (type Unix) pour forcer la fouille.
 
-## Description
+> **Vision, décisions gravées et suite** : voir **[ROADMAP.md](ROADMAP.md)** (source faisant autorité).
+> Le nom in-fiction est **Sienar Imperial Terminal** ; `empire-os` reste le codename du projet.
 
-Cette application web simule un terminal MS-DOS permettant aux joueurs de:
-- Naviguer dans un système de fichiers
-- Afficher une liste de fichiers .docx
-- Ouvrir les fichiers pour consultation
-- Sélectionner des fichiers pour téléchargement
-- Télécharger les fichiers sélectionnés dans une archive .zip
+## Principe
 
-## Technos
+Le contenu est de la **donnée**, jamais du code : toute l'arborescence vit dans
+`public/file-system.json` et les fichiers de `public/fichiers/`. Le composant est un lecteur
+générique — changer l'histoire ne touche pas au code.
 
-- Vue.js 3: Framework principal
-- Vite: Bundler pour un développement rapide
-- xterm.js: Émulateur de terminal
-- JSZip: Création d'archives .zip côté client
-- FileSaver.js: Téléchargement des fichiers
+## Stack technique
+
+- **Vue 3** (Options API) — framework
+- **Vite 8** — bundler / dev server
+- **marked** — rendu Markdown
+- **mammoth** — rendu `.docx` → HTML inline (importé dynamiquement, code-split)
+- **JSZip** + **FileSaver** — archive `.zip` côté client
+- Tests : **Vitest 4**, **@vue/test-utils**, **jsdom** (~77 tests)
+- Police **Star Jedi** (libre, dafont) : le caractère `#` y rend le logo impérial
+
+> `@xterm/xterm` figure encore dans les dépendances mais n'est **plus utilisé** (décision « pas de
+> terminal ») — à retirer (cf. backlog ROADMAP).
 
 ## Structure
 
+```
 empire-os/
 ├── public/
-│   ├── fichiers/          # Dossier pour les fichiers .docx (contenu réel)
-│   │   ├── rapport_mission.docx
-│   │   ├── ordre_executor.docx
-│   │   ├── liste_cibles.docx
-│   │   └── protocole_secret.docx
-│   └── file-system.json   # Structure des répertoires et fichiers
+│   ├── fichiers/            # fichiers réels servis à plat (.md, .docx, .webp, .config…)
+│   └── file-system.json     # arbre (disques/dossiers/fichiers) + defaultPath + session (réglages MJ)
 ├── src/
+│   ├── App.vue              # chrome impérial (barre de titre : logo, nom, version, build, horloge de session)
 │   ├── components/
-│   │   └── FileExplorer.vue
-│   ├── App.vue
+│   │   └── FileExplorer.vue # explorateur : navigation, aperçu, sélection, déclenchement du transfert
+│   ├── transfer.js          # orchestration du « transfert » (popin d'attente + ZIP réel + saveAs)
+│   ├── transfer-duration.js # formule de durée fictive (pure, testable)
+│   ├── os-identity.js       # identité de l'OS (nom, version, build 20 AFE, licence) — source unique
+│   ├── assets/starjedi/     # police Star Jedi
 │   └── main.js
-├── tests/
-│   └── FileExplorer.spec.js
-├── package.json
+├── tests/                   # FileExplorer.spec.js, App.spec.js, transfer-duration.spec.js
 ├── vite.config.js
-└── index.html
+└── index.html               # palette impériale en variables CSS (:root)
+```
 
 ## Développement
 
-### Installation
+```bash
+npm install        # install propre (deps alignées ; plus de --legacy-peer-deps)
+npm run dev        # serveur de dev
+npm run build      # build de production
+npm run test:unit  # tests (Vitest)
+npm run test:coverage
+```
 
-npm install
+## Fonctionnalités livrées
 
-### Lancement
+- **Navigation** : chemins relatifs/absolus, `..`, normalisation, prompt unix cohérent
+  (`sienar:/user-51394345/home$`).
+- **Multi-disques** : la racine liste les disques (machine locale + disque réseau) ; atterrissage
+  piloté par la donnée (`defaultPath`).
+- **Aperçu par type** (`previewKindFor`) : Markdown rendu · texte système brut (échappé) · image
+  inline · `.docx` en **résumé** (téléchargement forcé) ou **rendu inline mammoth** si
+  `previewMode: 'full'` · binaire « aperçu impossible ». **Loader** pendant le premier rendu.
+- **Sélection + téléchargement ZIP** binaire-safe, via une **popin d'attente** (durée fictive
+  d'ambiance, décorrélée du vrai transfert, annulable). Réglages MJ (`connectionQuality`,
+  `alertLevel`) lus depuis `file-system.json`.
+- **Icônes par type** (glyphes monochromes) devant chaque entrée.
+- **Skin impérial** : palette sombre/froide (variables CSS), chrome (logo `#`, nom, version,
+  build **20 AFE**, **horloge de session**), angles nets.
 
-npm run dev
+## Modèle de données (`file-system.json`)
 
-### Build
+- Racine : `children` (disques `type: 'disk'` / dossiers `type: 'directory'` / fichiers `type: 'file'`),
+  `defaultPath` (point d'entrée), `session` (`connectionQuality`, `alertLevel`).
+- Par fichier : `previewMode` (`full` | `summary`), `summary` (accroche), `transferWeight`
+  (poids de durée du transfert, défaut 2 s).
 
-npm run build
+## Qualité / méthodo
 
-### Tests
-
-npm run test:unit
-
-## Features
-
-- [x] Feature 1: Afficher une liste de fichiers .md (anciennement .docx)
-- [x] Feature 2: Naviguer dans les répertoires (avec support de `..` pour remonter)
-- [x] Feature 3: Ouvrir les fichiers pour consultation (avec icônes 📄 et contenu Markdown structuré)
-- [x] Feature 4: Sélectionner des fichiers pour téléchargement (checkboxes + surlignage synchronisé)
-- [x] Feature 5: Télécharger les fichiers en .zip avec JSZip et FileSaver
-
-## Roadmap
-
-La direction produit, les décisions de conception gravées et les questions ouvertes sont
-maintenues dans **[ROADMAP.md](ROADMAP.md)** (source faisant autorité).
-
-En bref, les prochains chantiers : contenu réel + arborescence dépaysante, multi-disques (dont
-le disque réseau), aiguilleur d'affichage par type de fichier (mode `summary` / téléchargement),
-skin impérial, popin d'attente narrative, et console d'ambiance + recherche.
-
-## Détails des Features
-
-### Feature 1: Afficher une liste de fichiers .docx
-- Affiche les fichiers `.docx` dans le répertoire courant.
-- Style DOS-like appliqué (couleurs vertes, police monospace).
-- Tests: 9 tests unitaires.
-
-### Feature 2: Naviguer dans les répertoires
-- Navigation via chemins relatifs (`cd Fichiers`).
-- Navigation via chemins absolus (`cd /Fichiers`).
-- Remontée d'un niveau avec `..` (bouton cliquable dans l'interface).
-- Gestion des chemins invalides (ignore et reste dans le répertoire courant).
-- Normalisation des chemins (suppression des `/` multiples et finaux).
-- **L'élément `..` est affiché dans tous les sous-dossiers pour permettre de remonter à la racine.**
-- Tests: 13 tests unitaires (dont 10 spécifiques à la Feature 2).
-
-### Feature 3: Ouvrir les fichiers pour consultation
-- Ouverture des fichiers `.docx` en double-cliquant dessus **ou via une icône 📄**.
-- **Icônes d'action** :
-  - Une icône 📄 est affichée à côté de chaque fichier (pas des dossiers).
-  - Clic sur l'icône ouvre le fichier dans une modale.
-  - Prêt pour les futures icônes (téléchargement, etc.).
-- **Chargement du contenu réel** :
-  - Les fichiers `.docx` sont stockés dans `/public/fichiers/` avec un contenu en Lorem Ipsum + détails thématiques Star Wars.
-  - Le contenu est chargé dynamiquement via `fetch` et affiché dans la modale.
-- Affichage d'une **modale** avec :
-  - Le nom du fichier.
-  - Le contenu du fichier (chargé depuis le fichier réel).
-  - Un bouton de fermeture (X).
-- Fermeture de la modale en cliquant à l'extérieur ou sur le bouton X.
-- **Les dossiers ne s'ouvrent pas en double-cliquant** (navigation via `changeDirectory`).
-- Style DOS-like pour la modale (fond noir, bordures vertes).
-- Tests: 11 tests unitaires (8 pour la Feature 3 + 2 pour les icônes).
-
-## TDD
-
-Chaque feature est développée en suivant la méthodologie TDD:
-1. Écrire les tests unitaires
-2. Voir les tests échouer
-3. Implémenter le code minimal pour faire passer les tests
-4. Refactorer si nécessaire
-5. Commiter avec les tests
+Développement en **TDD** (rouge → vert), refactor guidé par revue de code (extraction de
+`transfer.js`, dédup, suppression de code mort). Le contenu narratif et l'intégrité du puzzle
+(aucun matériel de déchiffrement dans le bundle) sont détaillés dans la ROADMAP.
 
 ## Déploiement
 
-Le projet est déployable sur n'importe quel hébergement statique (Netlify, Vercel, GitHub Pages).
-
-```bash
-npm run build
-# Puis uploader le contenu du dossier dist/
-```
-
-## Contenu des fichiers
-
-Les fichiers `.docx` dans `/public/fichiers/` contiennent un mélange de **Lorem Ipsum** et de **contenu thématique Star Wars** pour une immersion totale dans l'univers du scénario "Birth of the Death Squadron".
-
-Exemples de contenu :
-- **rapport_mission.docx** : Rapport d'une mission impériale avec objectifs et résultats.
-- **ordre_executor.docx** : Ordre direct de l'Exécuteur (Lord Dark Vador).
-- **liste_cibles.docx** : Liste des cibles prioritaires de l'Empire (Luke Skywalker, Leia, etc.).
-- **protocole_secret.docx** : Protocole secret de l'Empire avec instructions et codes d'urgence.
+Hébergement **statique** (Netlify / Vercel / GitHub Pages) : `npm run build`, puis publier `dist/`.
+Le chunk `mammoth` (~0,5 Mo) est chargé **à la demande** (uniquement à l'ouverture d'un `.docx`
+en aperçu inline).

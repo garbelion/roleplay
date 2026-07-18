@@ -6,7 +6,9 @@
 
 ## 1. Vision / métier
 
-EmpireOS est **une récompense**, pas un point de départ : les PJ n'y accèdent qu'**après avoir
+> Nom in-fiction : **Sienar Imperial Terminal** ; `EmpireOS` / `empire-os` reste le codename du projet.
+
+L'OS est **une récompense**, pas un point de départ : les PJ n'y accèdent qu'**après avoir
 réussi le hack** (résolu à la table, hors app). Le MJ leur « met alors la page sous les mains ».
 
 C'est un **OS impérial simulé**, volontairement **dépaysant** : sous un habillage rétro MS-DOS
@@ -59,11 +61,25 @@ Deux publics :
 
 ## 4. État livré (voir `readme.md` pour le détail)
 
-- [x] Liste de fichiers, navigation (`..`, chemins relatifs/absolus, normalisation)
-- [x] Ouverture en modale, rendu Markdown
-- [x] Sélection (checkbox + surlignage, **source unique**) et téléchargement ZIP
-- [x] Implémentation revue (revue thermo-nucléaire) : source de sélection unique, reset à la
-      navigation, suppression de l'état vestigial
+**Fonctionnel** (~77 tests, build OK)
+- [x] Navigation (`..`, chemins relatifs/absolus, normalisation) + prompt unix cohérent
+- [x] **Multi-disques** (racine = sélecteur de disques) + atterrissage `defaultPath`
+- [x] **Aperçu par type** (`previewKindFor`) : Markdown · texte brut · image inline ·
+      `.docx` résumé **ou** rendu inline **mammoth** (`previewMode: 'full'`) · binaire ·
+      **loader** au premier rendu
+- [x] **Sélection source-unique** + téléchargement **ZIP binaire-safe** (blob)
+- [x] **Popin d'attente** du transfert (durée fictive d'ambiance, annulable) + réglages MJ
+      (`connectionQuality`/`alertLevel`) lus depuis `file-system.json`
+- [x] **Icônes par type** ; **skin impérial** (palette CSS, logo `#` Star Jedi, horloge de
+      session, build 20 AFE, angles nets)
+
+**Technique & qualité**
+- [x] **Montée d'outillage** : vite 5→8, vitest 1→4, plugin-vue/jsdom/test-utils à jour ;
+      conflit de dépendances résolu (`npm install` propre, sans `--legacy-peer-deps`)
+- [x] **Revue thermo-nucléaire** : extraction de l'orchestration du transfert dans
+      `src/transfer.js` (fin des 5 champs d'instance magiques), `fileUrl` canonique réutilisé,
+      dédup des branches d'erreur, suppression de code mort / wrapper vestigial, fallback
+      `loadFileSystem` sans faux arbre en dur. `FileExplorer.vue` 732 → 660 lignes.
 
 ## 5. Roadmap priorisée *(proposition à valider)*
 
@@ -115,7 +131,9 @@ Deux publics :
      canon — an 0 = fondation de l'Empire en 19 av. BY ; le scénario en 1 ABY = 20 AFE).
    - ✅ **Horloge de session** : durée écoulée depuis l'ouverture (le temps in-game n'étant
      pas synchronisable), démarrant à `00:00:00`. Prépare l'avertissement 2 h (cf. point 7).
-   - Tests : identité + horloge de session (fake timers) + prompt. Le reste (couleurs/angles)
+   - ✅ **Logo & police** : police **Star Jedi** (libre, dafont) ; le caractère `#` rend le
+     logo impérial, en tête de la barre de titre. Alignement du chrome corrigé (centrage vertical).
+   - Tests : identité + horloge de session + logo + prompt (fake timers). Le reste (couleurs/angles)
      est du CSS non vérifiable en jsdom → validation visuelle.
 6. **Popin d'attente à progression bidon (RNG)** — *ambiance pure* : faire poireauter les PJ
    pendant l'« extraction » de leurs précieuses données en milieu hostile. Fausse barre découplée
@@ -161,6 +179,10 @@ Deux publics :
   + statut licence). Prévoir un chrome condensé / masquage progressif sous une largeur seuil.
 - **Tri des entrées** : afficher les **dossiers (et disques) avant les fichiers**, par ordre, dans
   `currentDirectoryItems` (le `..` restant en tête).
+
+**Backlog technique**
+- **Retirer `@xterm/xterm`** : dépendance morte (seul son CSS est importé dans `main.js`, aucun
+  terminal utilisé — décision « pas de terminal »). Supprimer l'import + la dépendance.
 
 ## 6. Must-fix technique (à traiter avec le download `.docx`)
 
