@@ -54,7 +54,7 @@ rédigée par le MJ ; `transferWeight` = poids pour la durée de transfert ficti
 
 ## 4. État livré (archive)
 
-**118 tests, build OK.** Une ligne par capacité ; le détail vit dans l'historique git.
+**127 tests, build OK.** Une ligne par capacité ; le détail vit dans l'historique git.
 
 - **Navigation** Unix (`..`, chemins relatifs/absolus, normalisation) + prompt cohérent
   (`sienar:/user-51394345/home$`).
@@ -74,10 +74,13 @@ rédigée par le MJ ; `transferWeight` = poids pour la durée de transfert ficti
   compteur typé, surlignage `<mark>` de la liste courante (distinct de la sélection cyan),
   élargissement **dossier→disque→`/`**, **Ctrl+F**/Échap, query préservée à la navigation.
   Cœur pur : `search.js`.
-- **Console « big brother »** : onglet Console alimenté par un journal de session
-  (`session-log.js`) — surveillance des actions, propagande d'ambiance sur timer
-  (`propaganda.js`, pool MJ), avertissement > 2 h, teinte montant avec `alertLevel`.
-  Onglet **Session** = coquille prête.
+- **Console « big brother »** : onglet Console (affiché **par défaut**) alimenté par un journal
+  de session (`session-log.js`), **plus récents en premier** — surveillance des actions,
+  propagande d'ambiance sur timer (`propaganda.js`, pool MJ), avertissement > 2 h, ligne
+  d'amorçage « SESSION OUVERTE », teinte montant avec `alertLevel`. Émetteurs regroupés sous
+  un handle unique (`console-ambience.js`). Onglet **Session** = coquille prête.
+- **Notifications OS** : tout message console **non-surveillance** surgit 5 s en overlay
+  (`notifications.js` + overlay `App.vue`), cliquable pour fermer.
 - **Skin impérial** : palette CSS centralisée (`index.html :root`), chrome (barre de titre :
   logo `#` **Star Jedi**, nom OS, version, build **20 AFE**, **horloge de session** ; barre de
   statut : licence), angles nets, responsive (chrome condensé <640px). Identité pilotée par
@@ -117,10 +120,11 @@ les joueurs le **relisent** (polling).
   d'ambiance sur timer (`propaganda.js`, pool en donnée MJ `console.propaganda`, cadence qui se
   resserre avec l'alerte), **avertissements système** (dont le warning **> 2 h**). Couleur par
   nature (surveillance cyan, propagande/alerte rouge) et **teinte de la console montant avec
-  `alertLevel`**. ~29 tests dédiés.
+  `alertLevel`**. Console **récent-d'abord**, onglet **par défaut**, ligne d'amorçage
+  « SESSION OUVERTE », et **notifications OS 5 s** pour tout message non-surveillance
+  (`notifications.js`). ~40 tests dédiés.
 - ⏳ **Reste** : **indicateur de niveau d'alerte dans le chrome** (badge titre/statut, libellé
-  minimal→war) — distinct de la teinte de la console, déplacé au besoin. Éventuelle ligne de
-  « session ouverte » à l'amorçage (console non vide au premier coup d'œil).
+  minimal→war) — distinct de la teinte de la console, déplacé au besoin.
 
 ### 5.4 — Plus tard / parqué
 - **Recherche dans le contenu** des fichiers texte / descriptions (v2 de la recherche).

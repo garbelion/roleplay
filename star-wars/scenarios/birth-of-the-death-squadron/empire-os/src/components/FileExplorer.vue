@@ -108,8 +108,8 @@ import { marked } from 'marked';
 import { OS } from '../os-identity.js';
 import { startTransfer } from '../transfer.js';
 import { searchTree, formatCount, highlightSegments, matches } from '../search.js';
-import { sessionLog, pushLog, surveillanceText, startSessionWarning, SESSION_OPEN_TEXT } from '../session-log.js';
-import { startPropaganda } from '../propaganda.js';
+import { sessionLog, pushLog, surveillanceText, SESSION_OPEN_TEXT } from '../session-log.js';
+import { startConsoleAmbience } from '../console-ambience.js';
 import BottomDock from './BottomDock.vue';
 
 export default {
@@ -191,25 +191,22 @@ export default {
     }
   },
   async created() {
-    // Amorçage : la console s'ouvre sur une ligne système (jamais vide).
+    // Amorçage : la console s'ouvre sur une ligne système (jamais vide, en tête chronologique).
     pushLog({ kind: 'system', text: SESSION_OPEN_TEXT })
     await this.loadFileSystem()
-    // Propagande d'ambiance : démarre une fois la config chargée (pool + niveau d'alerte).
-    this._propaganda = startPropaganda({
-      pool: this.fileSystem?.console?.propaganda,
+    // Émetteurs d'ambiance (propagande + avertissement 2 h) : un seul handle, arrêté au démontage.
+    this._console = startConsoleAmbience({
+      propaganda: this.fileSystem?.console?.propaganda,
       alertLevel: this.sessionConfig.alertLevel,
       rng: this.rng
     })
-    // Avertissement système au-delà de 2 h de session.
-    this._sessionWarn = startSessionWarning()
   },
   mounted() {
     window.addEventListener('keydown', this.onKeydown)
   },
   beforeUnmount() {
     window.removeEventListener('keydown', this.onKeydown)
-    if (this._propaganda) this._propaganda.stop()
-    if (this._sessionWarn) this._sessionWarn.stop()
+    if (this._console) this._console.stop()
   },
   methods: {
     normalizePath(path) {
