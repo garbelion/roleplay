@@ -8,7 +8,7 @@
         v-for="(item, index) in currentDirectoryItems"
         :key="index"
         class="file-item"
-        :class="{ selected: selectedFiles.includes(index), directory: item.type === 'directory', disk: item.type === 'disk' }"
+        :class="{ selected: selectedFiles.includes(index), directory: item.type === 'directory', disk: item.type === 'disk', 'search-match': isSearchMatch(item) }"
         @click="handleItemClick(item, index)"
         @dblclick="handleItemDoubleClick(item)"
       >
@@ -25,9 +25,10 @@
           @change.stop="toggleFileSelection(index)"
           @click.stop
         >
-        <span class="file-name" :title="item.name">
-          {{ item.name }}{{ item.type === 'directory' ? '/' : '' }}
-        </span>
+        <span class="file-name" :title="item.name"><template
+          v-for="(seg, i) in nameSegments(item)"
+          :key="i"
+        ><mark v-if="seg.match" class="hl">{{ seg.text }}</mark><template v-else>{{ seg.text }}</template></template>{{ item.type === 'directory' ? '/' : '' }}</span>
         <!-- Icône d'ouverture pour les fichiers (pas les dossiers) -->
         <span
           v-if="item.type === 'file'"
@@ -102,7 +103,7 @@
 import { marked } from 'marked';
 import { OS } from '../os-identity.js';
 import { startTransfer } from '../transfer.js';
-import { searchTree, formatCount } from '../search.js';
+import { searchTree, formatCount, highlightSegments } from '../search.js';
 import BottomDock from './BottomDock.vue';
 
 export default {
@@ -191,6 +192,14 @@ export default {
     onSearchSelect(node) {
       if (this.isContainer(node)) this.changeDirectory(node.path)
       else this.openFile(node)
+    },
+    // Nom découpé pour le surlignage de recherche (jamais pour `..`).
+    nameSegments(item) {
+      if (item.name === '..' || !this.searchQuery.trim()) return [{ text: item.name, match: false }]
+      return highlightSegments(item.name, this.searchQuery)
+    },
+    isSearchMatch(item) {
+      return this.nameSegments(item).some(seg => seg.match)
     },
     // Icône de type (glyphe monochrome, cohérent avec le skin froid).
     iconFor(item) {
@@ -446,6 +455,10 @@ export default {
   border-left: 3px solid var(--accent);
 }
 .file-item.disk:hover { background-color: var(--accent-soft); }
+/* Correspondance de recherche : barre d'accent à gauche — DISTINCT de la sélection (fond cyan). */
+.file-item.search-match { box-shadow: inset 3px 0 0 var(--accent); }
+/* Surlignage de la sous-chaîne (nom + résultats du dock) */
+.hl { background: var(--accent); color: var(--bg); padding: 0 1px; }
 
 /* Icône de type (glyphe à gauche du nom) */
 .file-icon {

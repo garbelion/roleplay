@@ -1113,4 +1113,15 @@ describe("FileExplorer.vue - Point 7: Recherche (dock)", () => {
     expect(dock.text()).toContain('/d/sous/rapport_mission.md') // résultat récursif + chemin
     expect(dock.text().toLowerCase()).toContain('1 fichier correspond')
   })
+
+  it("surligne dans la liste courante les entrées qui matchent (classe + <mark>)", async () => {
+    await wrapper.vm.loadFileSystem() // /d ; 'notes.md' y est directement
+    await wrapper.find('.search-input').setValue('notes')
+    await wrapper.vm.$nextTick()
+    const notes = wrapper.findAll('.file-item')
+      .find(i => i.find('.file-name').text().startsWith('notes'))
+    expect(notes.classes()).toContain('search-match')
+    expect(notes.find('mark.hl').exists()).toBe(true)
+    expect(notes.find('mark.hl').text()).toBe('notes')
+  })
 })
