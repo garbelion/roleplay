@@ -61,7 +61,7 @@ Deux publics :
 
 ## 4. État livré (voir `readme.md` pour le détail)
 
-**Fonctionnel** (~77 tests, build OK)
+**Fonctionnel** (93 tests, build OK)
 - [x] Navigation (`..`, chemins relatifs/absolus, normalisation) + prompt unix cohérent
 - [x] **Multi-disques** (racine = sélecteur de disques) + atterrissage `defaultPath`
 - [x] **Aperçu par type** (`previewKindFor`) : Markdown · texte brut · image inline ·
@@ -70,6 +70,10 @@ Deux publics :
 - [x] **Sélection source-unique** + téléchargement **ZIP binaire-safe** (blob)
 - [x] **Popin d'attente** du transfert (durée fictive d'ambiance, annulable) + réglages MJ
       (`connectionQuality`/`alertLevel`) lus depuis `file-system.json`
+- [x] **Recherche de fichiers** (récursive, insensible casse+accents) dans un **dock inférieur
+      à onglets** (`BottomDock.vue`) : résultats cliquables avec chemin, compteur typé,
+      surlignage `<mark>` de la liste courante, élargissement dossier→disque→`/`, **Ctrl+F**/Échap,
+      query préservée à la navigation (cœur pur testé dans `src/search.js`)
 - [x] **Icônes par type** ; **skin impérial** (palette CSS, logo `#` Star Jedi, horloge de
       session, build 20 AFE, angles nets)
 
@@ -79,7 +83,8 @@ Deux publics :
 - [x] **Revue thermo-nucléaire** : extraction de l'orchestration du transfert dans
       `src/transfer.js` (fin des 5 champs d'instance magiques), `fileUrl` canonique réutilisé,
       dédup des branches d'erreur, suppression de code mort / wrapper vestigial, fallback
-      `loadFileSystem` sans faux arbre en dur. `FileExplorer.vue` 732 → 660 lignes.
+      `loadFileSystem` sans faux arbre en dur. Recherche : cœur pur isolé dans `src/search.js`,
+      dock présentationnel (`BottomDock.vue`), `.hl` hissé en style global.
 
 ## 5. Roadmap priorisée *(proposition à valider)*
 
