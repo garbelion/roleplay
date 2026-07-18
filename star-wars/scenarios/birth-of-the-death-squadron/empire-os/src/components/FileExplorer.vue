@@ -95,6 +95,7 @@
       :count-message="searchCountMessage"
       :widen-label="widenLabel"
       :log="sessionLog"
+      :alert-level="sessionConfig.alertLevel"
       @update:query="searchQuery = $event"
       @select="onSearchSelect"
       @widen="widenSearch"
@@ -107,7 +108,7 @@ import { marked } from 'marked';
 import { OS } from '../os-identity.js';
 import { startTransfer } from '../transfer.js';
 import { searchTree, formatCount, highlightSegments, matches } from '../search.js';
-import { sessionLog, pushLog, surveillanceText } from '../session-log.js';
+import { sessionLog, pushLog, surveillanceText, startSessionWarning } from '../session-log.js';
 import { startPropaganda } from '../propaganda.js';
 import BottomDock from './BottomDock.vue';
 
@@ -197,6 +198,8 @@ export default {
       alertLevel: this.sessionConfig.alertLevel,
       rng: this.rng
     })
+    // Avertissement système au-delà de 2 h de session.
+    this._sessionWarn = startSessionWarning()
   },
   mounted() {
     window.addEventListener('keydown', this.onKeydown)
@@ -204,6 +207,7 @@ export default {
   beforeUnmount() {
     window.removeEventListener('keydown', this.onKeydown)
     if (this._propaganda) this._propaganda.stop()
+    if (this._sessionWarn) this._sessionWarn.stop()
   },
   methods: {
     normalizePath(path) {

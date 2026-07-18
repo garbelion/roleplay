@@ -39,7 +39,12 @@
         </ul>
       </div>
 
-      <div v-else-if="activeTab === 'console'" ref="consoleScroll" class="console-panel">
+      <div
+        v-else-if="activeTab === 'console'"
+        ref="consoleScroll"
+        class="console-panel"
+        :class="`alert-${alertLevel}`"
+      >
         <div v-if="!log.length" class="console-empty">Aucune activité enregistrée.</div>
         <ul v-else class="console-log">
           <li
@@ -72,7 +77,9 @@ export default {
     // Libellé du bouton d'élargissement (vide = pas de proposition).
     widenLabel: { type: String, default: '' },
     // Journal de session (onglet Console) : entrées { kind, level?, text, at }.
-    log: { type: Array, default: () => [] }
+    log: { type: Array, default: () => [] },
+    // Niveau d'alerte 0..5 : teinte la console (plus rouge = alerte plus haute).
+    alertLevel: { type: Number, default: 0 }
   },
   emits: ['update:query', 'select', 'widen'],
   data() {
@@ -186,7 +193,13 @@ export default {
 .dock-placeholder { color: var(--ink-dim); font-size: 12px; text-align: center; padding: 16px; }
 
 /* Console « big brother » : journal horodaté, monospace, couleur par nature. */
-.console-panel { font-size: 12px; }
+.console-panel { font-size: 12px; border-left: 3px solid transparent; padding-left: 8px; transition: border-color 0.4s, background 0.4s; }
+/* Teinte montante avec le niveau d'alerte (0 = neutre → 5 = rouge impérial saturé). */
+.console-panel.alert-1 { border-left-color: rgba(207, 75, 69, 0.25); }
+.console-panel.alert-2 { border-left-color: rgba(207, 75, 69, 0.45); background: rgba(207, 75, 69, 0.04); }
+.console-panel.alert-3 { border-left-color: rgba(207, 75, 69, 0.65); background: rgba(207, 75, 69, 0.07); }
+.console-panel.alert-4 { border-left-color: rgba(207, 75, 69, 0.85); background: rgba(207, 75, 69, 0.10); }
+.console-panel.alert-5 { border-left-color: var(--danger); background: rgba(207, 75, 69, 0.14); }
 .console-empty { color: var(--ink-dim); text-align: center; padding: 16px; }
 .console-log { list-style: none; margin: 0; padding: 0; }
 .console-line { display: flex; gap: 10px; padding: 2px 4px; line-height: 1.5; }

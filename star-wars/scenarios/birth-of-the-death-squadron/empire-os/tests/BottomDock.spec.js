@@ -31,4 +31,11 @@ describe("BottomDock - onglet Console", () => {
     expect(wrapper.find('.console-empty').exists()).toBe(true)
     expect(wrapper.findAll('.console-line').length).toBe(0)
   })
+
+  it("teinte la console selon le niveau d'alerte (classe alert-N)", async () => {
+    const log = [{ kind: 'system', text: 'x', at: 0 }]
+    const wrapper = mount(BottomDock, { props: { log, alertLevel: 3 } })
+    await openConsole(wrapper)
+    expect(wrapper.find('.console-panel').classes()).toContain('alert-3')
+  })
 })
