@@ -87,13 +87,14 @@
       </div>
     </div>
 
-    <!-- Dock bas à onglets : recherche (v1), console / session (à venir) -->
+    <!-- Dock bas à onglets : recherche + console (journal de session) ; session à venir -->
     <BottomDock
       ref="dock"
       :query="searchQuery"
       :results="searchResults"
       :count-message="searchCountMessage"
       :widen-label="widenLabel"
+      :log="sessionLog"
       @update:query="searchQuery = $event"
       @select="onSearchSelect"
       @widen="widenSearch"
@@ -106,7 +107,7 @@ import { marked } from 'marked';
 import { OS } from '../os-identity.js';
 import { startTransfer } from '../transfer.js';
 import { searchTree, formatCount, highlightSegments, matches } from '../search.js';
-import { pushLog, surveillanceText } from '../session-log.js';
+import { sessionLog, pushLog, surveillanceText } from '../session-log.js';
 import BottomDock from './BottomDock.vue';
 
 export default {
@@ -115,6 +116,8 @@ export default {
   data() {
     return {
       osPrompt: OS.shortName,
+      // Journal de session partagé (onglet Console du dock) ; alimenté par logSurveillance.
+      sessionLog,
       // Recherche : requête + portée récursive ('dir' | 'disk' | 'all').
       searchQuery: '',
       searchScope: 'dir',

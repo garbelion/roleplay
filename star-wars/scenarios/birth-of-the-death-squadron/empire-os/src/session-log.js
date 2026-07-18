@@ -36,12 +36,20 @@ export function surveillanceText(action, target, labels = DEFAULT_SURVEILLANCE) 
   return target ? `${label} : ${target}` : label
 }
 
+// Début de session : instant de chargement du module (= ouverture de l'OS).
+// Sert d'origine à l'horodatage des entrées (temps écoulé, pas heure murale).
+export const sessionStart = Date.now()
+
 // Journal réactif partagé (singleton d'app) : producteurs → vue découplés.
 export const sessionLog = reactive([])
 
-/** Empile une entrée, en gardant au plus MAX_ENTRIES lignes (les plus récentes). */
+/**
+ * Empile une entrée, en gardant au plus MAX_ENTRIES lignes (les plus récentes).
+ * Horodate automatiquement (`at` = ms écoulés) si l'appelant ne l'a pas fait.
+ */
 export function pushLog(entry) {
-  sessionLog.push(entry)
+  const stamped = entry.at === undefined ? { ...entry, at: Date.now() - sessionStart } : entry
+  sessionLog.push(stamped)
   if (sessionLog.length > MAX_ENTRIES) sessionLog.splice(0, sessionLog.length - MAX_ENTRIES)
 }
 

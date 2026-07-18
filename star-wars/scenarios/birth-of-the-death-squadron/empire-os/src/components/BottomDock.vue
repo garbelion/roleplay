@@ -38,6 +38,22 @@
           </li>
         </ul>
       </div>
+
+      <div v-else-if="activeTab === 'console'" ref="consoleScroll" class="console-panel">
+        <div v-if="!log.length" class="console-empty">Aucune activité enregistrée.</div>
+        <ul v-else class="console-log">
+          <li
+            v-for="(e, i) in log"
+            :key="i"
+            class="console-line"
+            :class="[`kind-${e.kind}`, e.level ? `level-${e.level}` : '']"
+          >
+            <span class="console-time">{{ time(e.at) }}</span>
+            <span class="console-text">{{ e.text }}</span>
+          </li>
+        </ul>
+      </div>
+
       <div v-else class="dock-placeholder">{{ activeLabel }} — à venir</div>
     </div>
   </div>
@@ -45,6 +61,7 @@
 
 <script>
 import { highlightSegments } from '../search.js';
+import { formatSessionTime } from '../session-log.js';
 
 export default {
   name: 'BottomDock',
@@ -53,7 +70,9 @@ export default {
     results: { type: Array, default: () => [] },
     countMessage: { type: String, default: '' },
     // Libellé du bouton d'élargissement (vide = pas de proposition).
-    widenLabel: { type: String, default: '' }
+    widenLabel: { type: String, default: '' },
+    // Journal de session (onglet Console) : entrées { kind, level?, text, at }.
+    log: { type: Array, default: () => [] }
   },
   emits: ['update:query', 'select', 'widen'],
   data() {
@@ -61,10 +80,20 @@ export default {
       activeTab: 'search',
       tabs: [
         { id: 'search', label: 'Recherche', ready: true },
-        { id: 'console', label: 'Console', ready: false },
+        { id: 'console', label: 'Console', ready: true },
         { id: 'session', label: 'Session', ready: false }
       ]
     };
+  },
+  watch: {
+    // Auto-scroll de la console : coller au bas dès qu'une ligne arrive.
+    'log.length'() {
+      if (this.activeTab !== 'console') return;
+      this.$nextTick(() => {
+        const el = this.$refs.consoleScroll;
+        if (el) el.scrollTop = el.scrollHeight;
+      });
+    }
   },
   computed: {
     activeLabel() {
@@ -75,6 +104,9 @@ export default {
   methods: {
     segments(name) {
       return highlightSegments(name, this.query);
+    },
+    time(at) {
+      return formatSessionTime(at || 0);
     },
     // Appelé par le parent (Ctrl+F) : active l'onglet Recherche et focus le champ.
     focusSearch() {
@@ -152,4 +184,18 @@ export default {
 .result-name { color: var(--ink); white-space: nowrap; }
 .result-path { color: var(--ink-dim); font-size: 11px; overflow: hidden; text-overflow: ellipsis; }
 .dock-placeholder { color: var(--ink-dim); font-size: 12px; text-align: center; padding: 16px; }
+
+/* Console « big brother » : journal horodaté, monospace, couleur par nature. */
+.console-panel { font-size: 12px; }
+.console-empty { color: var(--ink-dim); text-align: center; padding: 16px; }
+.console-log { list-style: none; margin: 0; padding: 0; }
+.console-line { display: flex; gap: 10px; padding: 2px 4px; line-height: 1.5; }
+.console-time { color: var(--ink-dim); flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.console-text { color: var(--ink); word-break: break-word; }
+/* Surveillance : le regard de l'Empire (accent froid). Propagande : rouge impérial. */
+.console-line.kind-surveillance .console-text { color: var(--accent); }
+.console-line.kind-propaganda .console-text { color: var(--danger); letter-spacing: 0.5px; }
+.console-line.kind-system .console-text { color: var(--ink-dim); }
+.console-line.level-warn .console-text,
+.console-line.level-alert .console-text { color: var(--danger); font-weight: bold; }
 </style>
