@@ -111,6 +111,7 @@ import { startTransfer } from '../transfer.js';
 import { searchTree, formatCount, highlightSegments, matches } from '../search.js';
 import { sessionLog, pushLog, surveillanceText, SESSION_OPEN_TEXT } from '../session-log.js';
 import { sessionState, setSessionConfig } from '../session-store.js';
+import { connectSupabaseSession } from '../supabase-source.js';
 import { startConsoleAmbience } from '../console-ambience.js';
 import BottomDock from './BottomDock.vue';
 
@@ -202,6 +203,12 @@ export default {
       alertLevel: sessionState.alertLevel,
       rng: this.rng
     })
+    // Back-office MJ : si un projet Supabase est configuré, brancher l'état de session en live
+    // (fire-and-forget : le SDK se charge en dynamique, sans bloquer l'UI). Absent => statique.
+    connectSupabaseSession(this.fileSystem?.session?.supabase).then((remote) => {
+      if (this._unmounted) remote.disconnect()
+      else this._remote = remote
+    })
   },
   mounted() {
     window.addEventListener('keydown', this.onKeydown)
@@ -209,6 +216,8 @@ export default {
   beforeUnmount() {
     window.removeEventListener('keydown', this.onKeydown)
     if (this._console) this._console.stop()
+    this._unmounted = true
+    if (this._remote) this._remote.disconnect()
   },
   methods: {
     normalizePath(path) {
