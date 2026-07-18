@@ -103,15 +103,37 @@ de démo (2 disques) en attendant. *Rien à coder côté app tant que le contenu
 2ᵉ page (URL connue du seul MJ) pour régler **en live** `connectionQuality` / `alertLevel`.
 Le MJ étant sur un **poste séparé**, deux navigateurs ne partagent aucun état : il faut un
 **endroit inscriptible joignable par les deux machines**. Ce n'est **pas** une « vraie » DB —
-juste un **blob JSON hébergé dans un service léger** (JSONBin, npoint.io…). Le MJ y **écrit**,
-les joueurs le **relisent** (polling).
+juste un **blob JSON hébergé dans un service léger**. Le MJ y **écrit**, les joueurs **pollent**.
 
 **Décisions actées** :
-- **Déploiement = URL partagée** (pas d'hébergement local ; le jeu peut être à distance).
-- **App et config découplées** : l'app reste un **frontend statique** ; l'état de session vit
-  dans le **blob externe**, pas dans le bundle. Rien ne cesse d'être statique côté app.
-- **Store = blob JSON léger** (polling), **pas de backend maison ni de BaaS temps réel** au MVP.
-  Le popin lit déjà via un store de session → la bascule de source sera localisée.
+- **Déploiement = URL partagée** ; **app et config découplées** : l'app reste un **frontend
+  statique**, l'état de session vit dans le **blob externe** (pas dans le bundle).
+- **Périmètre MVP** = `connectionQuality` + `alertLevel` **seuls** (le reste au backlog : message
+  console à la volée, échec de transfert forcé, verrouillage de l'OS).
+- **Service = JSONBin.io** (lecture publique + clé d'écriture `X-Master-Key`, bins versionnés, free).
+- **URL de lecture** dans `file-system.json` (`session.remoteUrl`) ; **absente ⇒ mode 100 %
+  statique inchangé**. La **clé d'écriture n'est JAMAIS dans le bundle** : le MJ la colle à la main.
+- **Page MJ = route `#/mj`** (routage par hash, pas de serveur) — *routage à confirmer : hash vs
+  app séparée.*
+- **Polling ≈ 10 s** ; **pas de BaaS temps réel** au MVP (Supabase/Firebase seulement si la latence
+  du polling gêne — parqué).
+
+**Backlog (slices TDD)** :
+1. **`session-store.js`** : extraire l'état de session (`{connectionQuality, alertLevel}`, réactif,
+   défauts depuis `file-system.json`) hors de FileExplorer ; propagande/console **et** popin de
+   transfert le consomment. *Refactor iso-comportement — le déblocage.*
+2. **`session-remote.js` (lecture)** : polling du blob (10 s) → applique au store ; **injoignable
+   ⇒ garde la dernière valeur** (dégradation propre). `fetch`/timer injectés.
+3. **Affichage live** : teinte console **+ badge d'alerte dans le chrome** (titre/statut, libellé
+   minimal→war) suivent le store réactif. *(Absorbe le « reste » de §5.3.)*
+4. **Route `#/mj`** : mini-routage par hash + formulaire (champ clé d'écriture, sélecteurs
+   connexion/alerte, « Appliquer », préremplis depuis l'état courant).
+5. **`session-remote.js` (écriture)** : PUT JSONBin avec la clé saisie. `fetch` mocké en test.
+6. **(option) Re-tuning live des timers** : cadence propagande redémarre quand `alertLevel` change
+   (`watch` → restart). Indépendante ; pour le « tout temps réel ».
+
+**Prérequis hors-code (MJ)** : créer un bin JSONBin (compte free), noter l'URL de lecture publique
++ la clé d'écriture (jamais commitée). Tout est codable/testable en **mockant le service** en attendant.
 
 ### 5.3 — Immersion « big brother » (onglets du dock)
 - ✅ **Console v1 livrée** : onglet Console du dock alimenté par un **journal de session**
@@ -123,8 +145,8 @@ les joueurs le **relisent** (polling).
   `alertLevel`**. Console **récent-d'abord**, onglet **par défaut**, ligne d'amorçage
   « SESSION OUVERTE », et **notifications OS 5 s** pour tout message non-surveillance
   (`notifications.js`). ~40 tests dédiés.
-- ⏳ **Reste** : **indicateur de niveau d'alerte dans le chrome** (badge titre/statut, libellé
-  minimal→war) — distinct de la teinte de la console, déplacé au besoin.
+- ⏳ **Reste** : **badge d'alerte dans le chrome** (titre/statut, libellé minimal→war) — **rattaché
+  à la slice 3 du back-office** (§5.2), pour n'avoir qu'une source réactive de `alertLevel`.
 
 ### 5.4 — Plus tard / parqué
 - **Recherche dans le contenu** des fichiers texte / descriptions (v2 de la recherche).
@@ -136,10 +158,8 @@ les joueurs le **relisent** (polling).
 
 ## 6. Décisions encore ouvertes
 
-- **Back-office — détails du blob** : quel service (JSONBin / npoint.io / autre) ; **schéma** du
-  blob (`{connectionQuality, alertLevel, …}`) ; **secret d'écriture** protégeant la page MJ
-  (les joueurs n'ont qu'un accès lecture) ; **intervalle de polling** côté joueurs. *Approche
-  tranchée (blob JSON léger) ; ces détails restent à trancher au démarrage du jalon 5.2.*
+- **Back-office — routage de la page MJ** : `#/mj` par hash (défaut retenu) **ou** app séparée
+  déployée à part. *Seul point du back-office encore à confirmer ; le reste est tranché en §5.2.*
 - **Push vs polling** : polling au MVP ; passer à un BaaS temps réel (Supabase/Firebase) seulement
   si la latence du polling gêne réellement au jeu. *Parqué.*
 - **Page éditeur MJ** : route dans *cette* app (ex. `/forge`) ou outil séparé ? « Plusieurs
