@@ -113,8 +113,7 @@ juste un **blob JSON hébergé dans un service léger**. Le MJ y **écrit**, les
 - **Service = JSONBin.io** (lecture publique + clé d'écriture `X-Master-Key`, bins versionnés, free).
 - **URL de lecture** dans `file-system.json` (`session.remoteUrl`) ; **absente ⇒ mode 100 %
   statique inchangé**. La **clé d'écriture n'est JAMAIS dans le bundle** : le MJ la colle à la main.
-- **Page MJ = route `#/mj`** (routage par hash, pas de serveur) — *routage à confirmer : hash vs
-  app séparée.*
+- **Page MJ = route `#/mj`** (routage par hash, pas de serveur ; **confirmé**, pas d'app séparée).
 - **Polling ≈ 10 s** ; **pas de BaaS temps réel** au MVP (Supabase/Firebase seulement si la latence
   du polling gêne — parqué).
 
@@ -158,8 +157,6 @@ juste un **blob JSON hébergé dans un service léger**. Le MJ y **écrit**, les
 
 ## 6. Décisions encore ouvertes
 
-- **Back-office — routage de la page MJ** : `#/mj` par hash (défaut retenu) **ou** app séparée
-  déployée à part. *Seul point du back-office encore à confirmer ; le reste est tranché en §5.2.*
 - **Push vs polling** : polling au MVP ; passer à un BaaS temps réel (Supabase/Firebase) seulement
   si la latence du polling gêne réellement au jeu. *Parqué.*
 - **Page éditeur MJ** : route dans *cette* app (ex. `/forge`) ou outil séparé ? « Plusieurs
