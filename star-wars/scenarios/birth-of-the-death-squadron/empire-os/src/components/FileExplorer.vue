@@ -12,6 +12,8 @@
         @click="handleItemClick(item, index)"
         @dblclick="handleItemDoubleClick(item)"
       >
+        <!-- Icône de type (dossier, disque, image, texte, doc, binaire…) -->
+        <span class="file-icon" aria-hidden="true">{{ iconFor(item) }}</span>
         <!-- Checkbox pour sélectionner les fichiers (pas les dossiers).
              Elle dérive de selectedFiles (source unique) et passe par le même
              mutateur que le clic sur la ligne, d'où une cohérence par construction. -->
@@ -147,6 +149,19 @@ export default {
     // Un conteneur navigable : un dossier classique ou un disque (noeud de tête).
     isContainer(item) {
       return item.type === 'directory' || item.type === 'disk'
+    },
+    // Icône de type (glyphe monochrome, cohérent avec le skin froid).
+    iconFor(item) {
+      if (item.name === '..') return '↰'
+      if (item.type === 'disk') return '▤'
+      if (item.type === 'directory') return '▸'
+      switch (this.previewKindFor(item)) {
+        case 'markdown': return '≡'
+        case 'text': return '⚙'
+        case 'image': return '▦'
+        case 'summary': return '◈' // documents riches / verrouillés
+        default: return '▪' // binaire
+      }
     },
     async loadFileSystem() {
       try {
@@ -438,6 +453,17 @@ export default {
   border-left: 3px solid var(--accent);
 }
 .file-item.disk:hover { background-color: var(--accent-soft); }
+
+/* Icône de type (glyphe à gauche du nom) */
+.file-icon {
+  flex-shrink: 0;
+  width: 1.2em;
+  margin-right: 8px;
+  text-align: center;
+  color: var(--ink-dim);
+}
+.file-item.directory .file-icon,
+.file-item.disk .file-icon { color: var(--accent); }
 
 .file-name {
   flex: 1;

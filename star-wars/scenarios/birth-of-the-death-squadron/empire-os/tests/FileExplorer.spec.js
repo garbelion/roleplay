@@ -947,3 +947,53 @@ describe("FileExplorer.vue - Point 6: Popin d'attente (transfert)", () => {
     expect(wrapper.vm.sessionConfig).toEqual({ connectionQuality: 'critique', alertLevel: 3 })
   })
 })
+
+describe("FileExplorer.vue - Point 9: Icônes par type", () => {
+  const fs = {
+    name: 'root', path: '/', type: 'directory', defaultPath: '/d',
+    children: [
+      {
+        name: 'd', path: '/d', type: 'disk',
+        children: [
+          { name: 'sous', path: '/d/sous', type: 'directory', children: [] },
+          { name: 'photo.png', path: '/d/photo.png', type: 'file' },
+          { name: 'note.md', path: '/d/note.md', type: 'file' },
+          { name: 'conf.ini', path: '/d/conf.ini', type: 'file' },
+          { name: 'blob.dat', path: '/d/blob.dat', type: 'file' }
+        ]
+      }
+    ]
+  }
+
+  let wrapper
+  beforeEach(() => {
+    global.fetch = vi.fn((url) => url === '/file-system.json'
+      ? Promise.resolve({ json: () => Promise.resolve(fs) })
+      : Promise.resolve({ ok: true, blob: () => Promise.resolve(new Blob(['x'])) }))
+    wrapper = mount(FileExplorer)
+  })
+
+  const itemNamed = (name) => wrapper.findAll('.file-item')
+    .find(i => i.find('.file-name').text().startsWith(name))
+
+  it("affiche une icône de type devant chaque entrée (dossier)", async () => {
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.$nextTick()
+    const dir = itemNamed('sous')
+    expect(dir.find('.file-icon').exists()).toBe(true)
+    expect(dir.find('.file-icon').text()).toBe('▸')
+  })
+
+  it("mappe une icône distincte par type", async () => {
+    await wrapper.vm.loadFileSystem()
+    const icon = (item) => wrapper.vm.iconFor(item)
+    expect(icon({ name: '..', type: 'directory' })).toBe('↰')
+    expect(icon({ name: 'd', type: 'disk' })).toBe('▤')
+    expect(icon({ name: 'sous', type: 'directory' })).toBe('▸')
+    expect(icon({ name: 'note.md', type: 'file' })).toBe('≡')
+    expect(icon({ name: 'conf.ini', type: 'file' })).toBe('⚙')
+    expect(icon({ name: 'photo.png', type: 'file' })).toBe('▦')
+    expect(icon({ name: 'j.docx', type: 'file' })).toBe('◈') // doc riche -> summary
+    expect(icon({ name: 'blob.dat', type: 'file' })).toBe('▪') // binaire
+  })
+})
