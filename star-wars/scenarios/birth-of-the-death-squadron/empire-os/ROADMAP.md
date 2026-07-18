@@ -174,11 +174,12 @@ Deux publics :
 - Recherche avancée (contenu, multi-disques).
 - Interface MJ **Page éditeur** (voir §7 — G) fonctionnalités pour faire intervenir le droid Bafouille et aider les PJ.
 
-**Backlog UX / responsive** *(notes à traiter)*
-- **En-tête en mode mobile** : s'affiche mal, **trop d'informations** (nom + version + build + horloge
-  + statut licence). Prévoir un chrome condensé / masquage progressif sous une largeur seuil.
-- **Tri des entrées** : afficher les **dossiers (et disques) avant les fichiers**, par ordre, dans
-  `currentDirectoryItems` (le `..` restant en tête).
+**Backlog UX / responsive**
+- [x] **En-tête en mode mobile** : chrome condensé sous 640px (secondaire masqué : tagline,
+      version·build ; nom tronquable ; licence masquée sous 380px).
+- [x] **Tri des entrées** : dossiers/disques **avant** les fichiers (tri stable, ordre d'auteur
+      préservé dans chaque groupe ; `..` en tête). *Note : pas d'alphabétique imposé — le MJ garde
+      la main ; à basculer en alpha si souhaité.*
 
 **Backlog technique**
 - **Retirer `@xterm/xterm`** : dépendance morte (seul son CSS est importé dans `main.js`, aucun
