@@ -73,13 +73,14 @@ const closeTerminal = () => {
   font-display: swap;
 }
 
-.dos-title { display: flex; align-items: baseline; gap: 8px; font-weight: bold; text-transform: uppercase; color: var(--ink); }
+.dos-title { display: flex; align-items: center; gap: 8px; font-weight: bold; text-transform: uppercase; color: var(--ink); }
 .os-logo {
   font-family: 'Star Jedi', monospace;
   color: var(--accent);
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1;
-  transform: translateY(2px); /* alignement optique du glyphe */
+  display: inline-flex;
+  align-items: center;
 }
 .os-full { font-weight: normal; text-transform: none; color: var(--ink-dim); font-size: 12px; letter-spacing: 0; }
 .dos-meta { color: var(--ink-dim); font-size: 12px; }
