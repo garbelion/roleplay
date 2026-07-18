@@ -7,6 +7,12 @@ export function fold(str) {
   return [...str].map(c => c.normalize('NFD')[0].toLowerCase()).join('');
 }
 
+// Le nom `name` correspond-il à `query` (substring, insensible casse+accents) ?
+export function matches(name, query) {
+  const q = fold(query.trim());
+  return !!q && fold(name).includes(q);
+}
+
 // Parcourt récursivement `rootNode` (dossier/disque) et retourne, dans l'ordre de parcours,
 // les descendants (fichiers, dossiers, disques) dont le nom contient `query` (substring,
 // insensible casse+accents). La racine de départ et les entrées `..` sont exclues.

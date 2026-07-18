@@ -105,7 +105,7 @@
 import { marked } from 'marked';
 import { OS } from '../os-identity.js';
 import { startTransfer } from '../transfer.js';
-import { searchTree, formatCount, highlightSegments } from '../search.js';
+import { searchTree, formatCount, highlightSegments, matches } from '../search.js';
 import BottomDock from './BottomDock.vue';
 
 export default {
@@ -165,8 +165,8 @@ export default {
     searchResults() {
       const query = this.searchQuery.trim()
       if (!query || !this.fileSystem) return []
-      const root = this.findDirectoryByPath(this.searchRootPath) || this.fileSystem
-      return searchTree(root, query)
+      const root = this.findDirectoryByPath(this.searchRootPath)
+      return root ? searchTree(root, query) : []
     },
     searchCountMessage() {
       return this.searchQuery.trim() ? formatCount(this.searchResults) : ''
@@ -214,7 +214,7 @@ export default {
       return highlightSegments(item.name, this.searchQuery)
     },
     isSearchMatch(item) {
-      return this.nameSegments(item).some(seg => seg.match)
+      return item.name !== '..' && matches(item.name, this.searchQuery)
     },
     widenSearch() {
       if (this.searchScope === 'dir') this.searchScope = 'disk'
@@ -491,8 +491,6 @@ export default {
 .file-item.disk:hover { background-color: var(--accent-soft); }
 /* Correspondance de recherche : barre d'accent à gauche — DISTINCT de la sélection (fond cyan). */
 .file-item.search-match { box-shadow: inset 3px 0 0 var(--accent); }
-/* Surlignage de la sous-chaîne (nom + résultats du dock) */
-.hl { background: var(--accent); color: var(--bg); padding: 0 1px; }
 
 /* Icône de type (glyphe à gauche du nom) */
 .file-icon {

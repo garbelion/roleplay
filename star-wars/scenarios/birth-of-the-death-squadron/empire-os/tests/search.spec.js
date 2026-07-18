@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { searchTree, highlightSegments, formatCount } from "../src/search.js"
+import { searchTree, highlightSegments, formatCount, matches } from "../src/search.js"
 
 const tree = {
   name: 'root', path: '/', type: 'directory',
@@ -35,6 +35,15 @@ describe("searchTree", () => {
 
   it("retourne [] pour une requête vide", () => {
     expect(searchTree(tree, '   ')).toEqual([])
+  })
+})
+
+describe("matches", () => {
+  it("substring insensible casse+accents ; faux si requête vide", () => {
+    expect(matches('Résumé.txt', 'resume')).toBe(true)
+    expect(matches('rapport.md', 'RAP')).toBe(true)
+    expect(matches('rapport.md', 'xyz')).toBe(false)
+    expect(matches('rapport.md', '  ')).toBe(false)
   })
 })
 

@@ -38,7 +38,7 @@
           </li>
         </ul>
       </div>
-      <div v-else class="dock-placeholder">— {{ activeLabel }} —</div>
+      <div v-else class="dock-placeholder">{{ activeLabel }} — à venir</div>
     </div>
   </div>
 </template>
@@ -60,9 +60,9 @@ export default {
     return {
       activeTab: 'search',
       tabs: [
-        { id: 'search', label: 'Recherche' },
-        { id: 'console', label: 'Console — à venir' },
-        { id: 'session', label: 'Session — à venir' }
+        { id: 'search', label: 'Recherche', ready: true },
+        { id: 'console', label: 'Console', ready: false },
+        { id: 'session', label: 'Session', ready: false }
       ]
     };
   },
@@ -151,6 +151,5 @@ export default {
 .search-result:hover { background: var(--panel-raised); border-color: var(--line); }
 .result-name { color: var(--ink); white-space: nowrap; }
 .result-path { color: var(--ink-dim); font-size: 11px; overflow: hidden; text-overflow: ellipsis; }
-.hl { background: var(--accent); color: var(--bg); padding: 0 1px; }
 .dock-placeholder { color: var(--ink-dim); font-size: 12px; text-align: center; padding: 16px; }
 </style>
