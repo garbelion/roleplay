@@ -4,8 +4,10 @@
 import { afterEach } from 'vitest'
 import { resetLog } from '../src/session-log.js'
 import { resetNotifications } from '../src/notifications.js'
+import { resetSessionState } from '../src/session-store.js'
 
 afterEach(() => {
   resetLog()
   resetNotifications()
+  resetSessionState()
 })

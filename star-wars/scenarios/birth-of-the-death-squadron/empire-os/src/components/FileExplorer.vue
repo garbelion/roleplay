@@ -96,7 +96,7 @@
       :scope="searchScope"
       :scope-label="searchScopeLabel"
       :log="sessionLog"
-      :alert-level="sessionConfig.alertLevel"
+      :alert-level="sessionState.alertLevel"
       @update:query="searchQuery = $event"
       @select="onSearchSelect"
       @set-scope="searchScope = $event"
@@ -110,6 +110,7 @@ import { OS } from '../os-identity.js';
 import { startTransfer } from '../transfer.js';
 import { searchTree, formatCount, highlightSegments, matches } from '../search.js';
 import { sessionLog, pushLog, surveillanceText, SESSION_OPEN_TEXT } from '../session-log.js';
+import { sessionState, setSessionConfig } from '../session-store.js';
 import { startConsoleAmbience } from '../console-ambience.js';
 import BottomDock from './BottomDock.vue';
 
@@ -128,8 +129,9 @@ export default {
       currentPath: '/Fichiers',
       // Transfert en cours (popin d'attente) : null | { progress: 0..100 }
       transfer: null,
-      // Réglages MJ (config statique pour le MVP ; store/back-office plus tard).
-      sessionConfig: { connectionQuality: 'moyenne', alertLevel: 0 },
+      // Réglages MJ (connexion / alerte) : store réactif partagé, initialisé depuis
+      // file-system.json, plus tard mis à jour en live par le back-office (§5.2).
+      sessionState,
       // RNG injectable (déterminisme en test).
       rng: Math.random,
       // Source unique de la sélection : index des fichiers cochés dans currentDirectoryItems.
@@ -197,7 +199,7 @@ export default {
     // Émetteurs d'ambiance (propagande + avertissement 2 h) : un seul handle, arrêté au démontage.
     this._console = startConsoleAmbience({
       propaganda: this.fileSystem?.console?.propaganda,
-      alertLevel: this.sessionConfig.alertLevel,
+      alertLevel: sessionState.alertLevel,
       rng: this.rng
     })
   },
@@ -267,10 +269,8 @@ export default {
         if (this.fileSystem.defaultPath) {
           this.currentPath = this.fileSystem.defaultPath
         }
-        // Réglages de session (MJ) : qualité de connexion / niveau d'alerte.
-        if (this.fileSystem.session) {
-          this.sessionConfig = { ...this.sessionConfig, ...this.fileSystem.session }
-        }
+        // Réglages de session (MJ) : qualité de connexion / niveau d'alerte -> store partagé.
+        setSessionConfig(this.fileSystem.session)
       } catch (error) {
         console.error('Erreur lors du chargement du file system:', error)
         // Pas de faux arbre en dur : on retombe sur une racine vide (le contenu est
@@ -436,7 +436,7 @@ export default {
       this.transfer = { progress: 0 }
       this._transfer = startTransfer({
         files,
-        config: this.sessionConfig,
+        config: sessionState,
         fileUrl: this.fileUrl,
         rng: this.rng,
         onProgress: (progress) => { if (this.transfer) this.transfer.progress = progress },

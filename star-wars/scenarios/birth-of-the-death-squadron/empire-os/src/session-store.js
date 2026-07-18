@@ -1,0 +1,22 @@
+// État de session partagé (réglages MJ) : qualité de connexion + niveau d'alerte.
+// Source unique consommée par la propagande/console (cadence, teinte) ET le popin de
+// transfert (durée). Initialisé depuis file-system.json ; plus tard mis à jour en live
+// par le back-office (Supabase Realtime — ROADMAP §5.2). Réactif : les vues suivent.
+
+import { reactive } from 'vue'
+
+export const DEFAULT_SESSION = { connectionQuality: 'moyenne', alertLevel: 0 }
+
+export const sessionState = reactive({ ...DEFAULT_SESSION })
+
+/** Applique une config partielle ({connectionQuality?, alertLevel?}) ; ignore les clés absentes. */
+export function setSessionConfig(partial) {
+  if (!partial) return
+  if (partial.connectionQuality !== undefined) sessionState.connectionQuality = partial.connectionQuality
+  if (partial.alertLevel !== undefined) sessionState.alertLevel = partial.alertLevel
+}
+
+/** Restaure les défauts (nouvelle session / tests). */
+export function resetSessionState() {
+  Object.assign(sessionState, DEFAULT_SESSION)
+}
