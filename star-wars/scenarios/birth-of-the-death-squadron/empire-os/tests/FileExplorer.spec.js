@@ -1077,3 +1077,40 @@ describe("FileExplorer.vue - Tri des entrées (dossiers avant fichiers)", () => 
     expect(names).toEqual(['..', 'alpha', 'zeta.md', 'beta.md'])
   })
 })
+
+describe("FileExplorer.vue - Point 7: Recherche (dock)", () => {
+  const fs = {
+    name: 'root', path: '/', type: 'directory', defaultPath: '/d',
+    children: [
+      {
+        name: 'd', path: '/d', type: 'disk',
+        children: [
+          {
+            name: 'sous', path: '/d/sous', type: 'directory',
+            children: [
+              { name: 'rapport_mission.md', path: '/d/sous/rapport_mission.md', type: 'file' }
+            ]
+          },
+          { name: 'notes.md', path: '/d/notes.md', type: 'file' }
+        ]
+      }
+    ]
+  }
+
+  let wrapper
+  beforeEach(() => {
+    global.fetch = vi.fn((url) => url === '/file-system.json'
+      ? Promise.resolve({ json: () => Promise.resolve(fs) })
+      : Promise.resolve({ ok: true, blob: () => Promise.resolve(new Blob(['x'])) }))
+    wrapper = mount(FileExplorer)
+  })
+
+  it("affiche les résultats récursifs (avec chemin) et le compteur dans le dock", async () => {
+    await wrapper.vm.loadFileSystem() // currentPath = /d
+    await wrapper.find('.search-input').setValue('rapport')
+    await wrapper.vm.$nextTick()
+    const dock = wrapper.find('.bottom-dock')
+    expect(dock.text()).toContain('/d/sous/rapport_mission.md') // résultat récursif + chemin
+    expect(dock.text().toLowerCase()).toContain('1 fichier correspond')
+  })
+})

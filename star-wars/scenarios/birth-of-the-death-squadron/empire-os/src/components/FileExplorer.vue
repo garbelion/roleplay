@@ -85,6 +85,16 @@
         <button class="transfer-cancel" @click="cancelTransfer">Annuler</button>
       </div>
     </div>
+
+    <!-- Dock bas à onglets : recherche (v1), console / session (à venir) -->
+    <BottomDock
+      ref="dock"
+      :query="searchQuery"
+      :results="searchResults"
+      :count-message="searchCountMessage"
+      @update:query="searchQuery = $event"
+      @select="onSearchSelect"
+    />
   </div>
 </template>
 
@@ -92,12 +102,18 @@
 import { marked } from 'marked';
 import { OS } from '../os-identity.js';
 import { startTransfer } from '../transfer.js';
+import { searchTree, formatCount } from '../search.js';
+import BottomDock from './BottomDock.vue';
 
 export default {
   name: 'FileExplorer',
+  components: { BottomDock },
   data() {
     return {
       osPrompt: OS.shortName,
+      // Recherche : requête + portée récursive ('dir' | 'disk' | 'all').
+      searchQuery: '',
+      searchScope: 'dir',
       fileSystem: null,
       currentPath: '/Fichiers',
       // Transfert en cours (popin d'attente) : null | { progress: 0..100 }
@@ -136,6 +152,21 @@ export default {
         })
       }
       return items
+    },
+    // Racine de la recherche récursive selon la portée courante.
+    searchRootPath() {
+      if (this.searchScope === 'all') return '/'
+      if (this.searchScope === 'disk') return this.diskRootPath(this.currentPath)
+      return this.currentPath
+    },
+    searchResults() {
+      const query = this.searchQuery.trim()
+      if (!query || !this.fileSystem) return []
+      const root = this.findDirectoryByPath(this.searchRootPath) || this.fileSystem
+      return searchTree(root, query)
+    },
+    searchCountMessage() {
+      return this.searchQuery.trim() ? formatCount(this.searchResults) : ''
     }
   },
   async created() {
@@ -150,6 +181,16 @@ export default {
     // Un conteneur navigable : un dossier classique ou un disque (noeud de tête).
     isContainer(item) {
       return item.type === 'directory' || item.type === 'disk'
+    },
+    // Racine du disque contenant `path` (le premier segment) ; '/' si à la racine.
+    diskRootPath(path) {
+      const parts = this.normalizePath(path).split('/').filter(p => p)
+      return parts.length ? '/' + parts[0] : '/'
+    },
+    // Clic sur un résultat de recherche : on y navigue (dossier/disque) ou on l'ouvre (fichier).
+    onSearchSelect(node) {
+      if (this.isContainer(node)) this.changeDirectory(node.path)
+      else this.openFile(node)
     },
     // Icône de type (glyphe monochrome, cohérent avec le skin froid).
     iconFor(item) {
@@ -359,7 +400,16 @@ export default {
 
 <style scoped>
 /* Skin impérial : sombre, froid, anguleux. Couleurs via variables (index.html :root). */
-.file-explorer { color: var(--ink); font-family: inherit; font-size: 14px; line-height: 1.5; }
+.file-explorer {
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
 
 /* Prompt : chemin unix, accent hologramme */
 .terminal-header {
@@ -368,9 +418,10 @@ export default {
   letter-spacing: 0.5px;
   border-bottom: 1px solid var(--line);
   padding-bottom: 6px;
+  flex-shrink: 0;
 }
 
-.file-list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px; }
+.file-list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px; flex: 1; min-height: 0; overflow: auto; align-content: start; }
 .file-item {
   display: flex;
   justify-content: space-between;
@@ -582,6 +633,7 @@ export default {
 .download-section {
   margin-top: 15px;
   text-align: right;
+  flex-shrink: 0;
 }
 
 .download-button {

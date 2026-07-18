@@ -97,7 +97,7 @@ const closeTerminal = () => {
 }
 .dos-close-button:hover { color: var(--bg); background: var(--danger); border-color: var(--danger); }
 
-.terminal-container { flex: 1; padding: 12px; overflow: auto; }
+.terminal-container { flex: 1; min-height: 0; padding: 12px; overflow: hidden; }
 
 /* Barre de statut basse : licence / mentions (ambiance OS) */
 .dos-status-bar {
