@@ -53,7 +53,7 @@ Deux publics :
 |---|---|
 | `.md` | Markdown rendu (comportement actuel) |
 | Texte système (`.json`, `.ini`, `.config`, `.log`, `.txt`) | **texte brut** (canal de fouille / planque d'indices) |
-| `.docx` & docs riches | **mode `summary`** (téléchargement forcé pour lire) ; *mammoth.js inline en option si on y arrive* |
+| `.docx` & docs riches | `previewMode: 'full'` → **rendu inline (mammoth)** ; sinon **mode `summary`** (téléchargement forcé) |
 | image (type connu : png/jpg/gif/webp/bmp/svg) | **rendue inline** via `<img>` |
 | autre binaire | **« Impossible de prévisualiser ce contenu »** → téléchargement uniquement |
 
@@ -144,8 +144,12 @@ Deux publics :
    recherche par **nom, sur le répertoire courant** (v1) | messages en rouge façon big brother "l'Empire vous protège du chaos".
    - **Avertissement de session** : au-delà de **2 h** d'horloge de session, un warning système
      défile dans la console (sécurité/traçabilité impériale). S'appuie sur l'horloge de session (point 5).
-8. Rendu **mammoth.js inline** des `.docx` (si un aperçu fidèle in-app devient souhaitable).
-9. icônes par type de fichier.
+8. **Rendu `.docx` inline (mammoth)** — ✅ **livré** : un `.docx` avec `previewMode: 'full'` est
+   rendu inline (mammoth docx→HTML) ; sinon il reste en **`summary`** (le journal (d) verrouillé
+   garde son téléchargement forcé). Mammoth **importé dynamiquement** (code-split, chargé à la
+   demande). TDD sur un vrai `.docx` minimal (fixture OOXML via JSZip) + garde summary. 77 tests.
+9. **Icônes par type** — ✅ **livré** : glyphe monochrome (`iconFor`) devant chaque entrée
+   (disque ▤, dossier ▸, markdown ≡, texte ⚙, image ▦, doc riche ◈, binaire ▪).
 
 
 **Plus tard / parqué**

@@ -997,3 +997,62 @@ describe("FileExplorer.vue - Point 9: Icônes par type", () => {
     expect(icon({ name: 'blob.dat', type: 'file' })).toBe('▪') // binaire
   })
 })
+
+describe("FileExplorer.vue - Point 8: Rendu .docx inline (mammoth)", () => {
+  // Construit un vrai .docx minimal (zip OOXML) pour tester le rendu réel via mammoth.
+  async function makeDocx(text) {
+    const zip = new JSZip()
+    zip.file('[Content_Types].xml',
+      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+      '<Default Extension="xml" ContentType="application/xml"/>' +
+      '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' +
+      '</Types>')
+    zip.folder('_rels').file('.rels',
+      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' +
+      '</Relationships>')
+    zip.folder('word').file('document.xml',
+      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' +
+      `<w:body><w:p><w:r><w:t>${text}</w:t></w:r></w:p></w:body></w:document>`)
+    return zip.generateAsync({ type: 'arraybuffer' })
+  }
+
+  const fs = {
+    name: 'root', path: '/', type: 'directory', defaultPath: '/d',
+    children: [
+      {
+        name: 'd', path: '/d', type: 'disk',
+        children: [
+          { name: 'note.docx', path: '/d/note.docx', type: 'file', previewMode: 'full' }
+        ]
+      }
+    ]
+  }
+
+  it("rend un .docx (previewMode full) inline via mammoth, sans mode summary", async () => {
+    const docxAB = await makeDocx('RAPPORT IMPERIAL CONFIDENTIEL')
+    global.fetch = vi.fn((url) => url === '/file-system.json'
+      ? Promise.resolve({ json: () => Promise.resolve(fs) })
+      : Promise.resolve({ ok: true, arrayBuffer: () => Promise.resolve(docxAB) }))
+    const wrapper = mount(FileExplorer)
+    await wrapper.vm.loadFileSystem()
+
+    const file = wrapper.vm.currentDirectory.children.find(f => f.name === 'note.docx')
+    await wrapper.vm.openFile(file)
+    await wrapper.vm.$nextTick()
+
+    const modal = wrapper.find('.file-modal')
+    expect(modal.text()).toContain('RAPPORT IMPERIAL CONFIDENTIEL')
+    expect(modal.text().toLowerCase()).not.toContain('téléchargez') // pas le mode summary
+  })
+
+  it("un .docx sans previewMode 'full' reste en summary (journal verrouillé protégé)", () => {
+    const wrapper = mount(FileExplorer)
+    expect(wrapper.vm.previewKindFor({ name: 'j.docx', type: 'file' })).toBe('summary')
+    expect(wrapper.vm.previewKindFor({ name: 'j.docx', type: 'file', previewMode: 'full' })).toBe('docx')
+  })
+})

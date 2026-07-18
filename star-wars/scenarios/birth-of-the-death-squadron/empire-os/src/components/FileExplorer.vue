@@ -252,9 +252,11 @@ export default {
       if (['json', 'ini', 'config', 'log', 'txt'].includes(ext)) return 'text'
       // Images d'un type connu : rendues inline via <img>.
       if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg'].includes(ext)) return 'image'
-      // Documents riches (Office/PDF) : téléchargement forcé via résumé.
-      // Un rendu fidèle inline (mammoth.js) pourra venir plus tard.
-      if (['docx', 'doc', 'xlsx', 'pptx', 'pdf'].includes(ext)) return 'summary'
+      // Documents riches (Office/PDF) : `previewMode: 'full'` -> rendu inline (mammoth pour .docx) ;
+      // sinon téléchargement forcé via résumé (défaut, ex. le journal (d) verrouillé).
+      if (['docx', 'doc', 'xlsx', 'pptx', 'pdf'].includes(ext)) {
+        return file.previewMode === 'full' && ext === 'docx' ? 'docx' : 'summary'
+      }
       return 'binary'
     },
     // URL physique d'un fichier : tous vivent à plat dans /public/fichiers/,
@@ -266,12 +268,12 @@ export default {
       this.openedFile = file
       this.previewKind = this.previewKindFor(file)
       this.fileContent = ''
-      const textual = this.previewKind === 'markdown' || this.previewKind === 'text'
-      // Loader tant que l'aperçu n'est pas prêt : pendant le fetch (md/texte),
+      const needsFetch = ['markdown', 'text', 'docx'].includes(this.previewKind)
+      // Loader tant que l'aperçu n'est pas prêt : pendant le fetch (md/texte/docx),
       // ou jusqu'à l'événement load/error pour une image. summary/binaire : instantané.
-      this.previewLoading = textual || this.previewKind === 'image'
+      this.previewLoading = needsFetch || this.previewKind === 'image'
       this.showFileModal = true
-      if (textual) {
+      if (needsFetch) {
         await this.loadFileContent(file)
         this.previewLoading = false
       }
@@ -284,16 +286,25 @@ export default {
         // pointent donc volontairement vers le même contenu physique.
         const filename = file.path.split('/').pop()
         const response = await fetch(`/fichiers/${filename}`)
-        if (response.ok) {
+        if (!response.ok) {
+          this.fileContent = this.previewKind === 'markdown'
+            ? '<div class="error">Fichier introuvable</div>'
+            : 'Fichier introuvable'
+          return
+        }
+        if (this.previewKind === 'docx') {
+          // Rendu fidèle inline du .docx via mammoth (docx -> HTML), affiché en v-html.
+          // Import dynamique : mammoth est volumineux, on le charge à la demande.
+          const arrayBuffer = await response.arrayBuffer()
+          const mammoth = (await import('mammoth/mammoth.browser')).default
+          const result = await mammoth.convertToHtml({ arrayBuffer })
+          this.fileContent = result.value
+        } else {
           const raw = await response.text()
           // Markdown : rendu HTML via v-html (contenu local maîtrisé par l'auteur ;
           // assainir — ex. DOMPurify — s'il devient éditable/externe).
           // Texte système : affiché brut (échappé) dans un <pre>, jamais interprété.
           this.fileContent = this.previewKind === 'markdown' ? marked.parse(raw) : raw
-        } else {
-          this.fileContent = this.previewKind === 'markdown'
-            ? '<div class="error">Fichier introuvable</div>'
-            : 'Fichier introuvable'
         }
       } catch (error) {
         console.error('Erreur lors du chargement du fichier:', error)
