@@ -18,6 +18,13 @@ describe("App.vue - Skin / chrome impérial", () => {
     expect(bar.text()).toContain(OS.version)
   })
 
+  it("affiche un logo impérial (# en police Star Jedi) dans la barre de titre", () => {
+    const wrapper = mount(App)
+    const logo = wrapper.find(".dos-title-bar .os-logo")
+    expect(logo.exists()).toBe(true)
+    expect(logo.text()).toBe("#") // rendu en glyphe impérial par la police Star Jedi
+  })
+
   it("affiche une horloge de session (durée écoulée) démarrant à 00:00:00", async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date(2026, 0, 1, 14, 30, 45))

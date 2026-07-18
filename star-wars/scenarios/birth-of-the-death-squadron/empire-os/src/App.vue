@@ -2,7 +2,7 @@
   <div class="dos-window">
     <div class="dos-title-bar">
       <span class="dos-title">
-        <span class="os-mark">▤</span>
+        <span class="os-logo" aria-hidden="true">#</span>
         {{ OS.name }}
         <span class="os-full">— {{ OS.fullName }}</span>
       </span>
@@ -66,8 +66,21 @@ const closeTerminal = () => {
   font-size: 13px;
   letter-spacing: 0.5px;
 }
+/* Police Star Jedi (libre d'utilisation, dafont) — le « # » y rend un logo impérial. */
+@font-face {
+  font-family: 'Star Jedi';
+  src: url('./assets/starjedi/Starjedi.ttf') format('truetype');
+  font-display: swap;
+}
+
 .dos-title { display: flex; align-items: baseline; gap: 8px; font-weight: bold; text-transform: uppercase; color: var(--ink); }
-.os-mark { color: var(--accent); }
+.os-logo {
+  font-family: 'Star Jedi', monospace;
+  color: var(--accent);
+  font-size: 18px;
+  line-height: 1;
+  transform: translateY(2px); /* alignement optique du glyphe */
+}
 .os-full { font-weight: normal; text-transform: none; color: var(--ink-dim); font-size: 12px; letter-spacing: 0; }
 .dos-meta { color: var(--ink-dim); font-size: 12px; }
 .os-clock { margin-left: auto; color: var(--accent); font-variant-numeric: tabular-nums; letter-spacing: 1px; }
