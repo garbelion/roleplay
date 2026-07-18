@@ -106,6 +106,7 @@ import { marked } from 'marked';
 import { OS } from '../os-identity.js';
 import { startTransfer } from '../transfer.js';
 import { searchTree, formatCount, highlightSegments, matches } from '../search.js';
+import { pushLog, surveillanceText } from '../session-log.js';
 import BottomDock from './BottomDock.vue';
 
 export default {
@@ -137,6 +138,11 @@ export default {
     }
   },
   computed: {
+    // Libellés de surveillance surchargeables par le MJ (donnée `console.surveillance`) ;
+    // undefined => session-log.js applique ses défauts.
+    surveillanceLabels() {
+      return this.fileSystem?.console?.surveillance
+    },
     currentDirectory() {
       if (!this.fileSystem) return { children: [] }
       const dir = this.findDirectoryByPath(this.currentPath)
@@ -327,7 +333,12 @@ export default {
     fileUrl(file) {
       return `/fichiers/${file.path.split('/').pop()}`
     },
+    // Pousse une ligne de surveillance dans le journal de session (onglet Console).
+    logSurveillance(action, target) {
+      pushLog({ kind: 'surveillance', text: surveillanceText(action, target, this.surveillanceLabels) })
+    },
     async openFile(file) {
+      this.logSurveillance('open', file.name)
       this.openedFile = file
       this.previewKind = this.previewKindFor(file)
       this.fileContent = ''
@@ -411,6 +422,7 @@ export default {
         .map(i => this.currentDirectoryItems[i])
         .filter(f => f && f.type === 'file')
 
+      this.logSurveillance('extract', files.map(f => f.name).join(', '))
       this.transfer = { progress: 0 }
       this._transfer = startTransfer({
         files,
@@ -418,20 +430,24 @@ export default {
         fileUrl: this.fileUrl,
         rng: this.rng,
         onProgress: (progress) => { if (this.transfer) this.transfer.progress = progress },
-        onDone: () => { this.transfer = null }
+        onDone: () => { this.transfer = null; this.logSurveillance('extractDone') }
       })
     },
     cancelTransfer() {
       if (this._transfer) this._transfer.cancel()
+      this.logSurveillance('cancelExtract')
     }
   },
   watch: {
-    currentPath() {
+    currentPath(newPath) {
       // La sélection est indexée par position dans le répertoire courant ;
       // on la vide à chaque navigation pour éviter des index périmés.
       this.selectedFiles = []
       // La requête est préservée à la navigation, mais on repart d'une portée étroite.
       this.searchScope = 'dir'
+      // Toute navigation est un événement de surveillance (point unique : capte
+      // breadcrumb, '..', sélection depuis la recherche…).
+      this.logSurveillance('navigate', newPath)
     },
     searchQuery() {
       // Une nouvelle recherche repart du répertoire courant (portée étroite).

@@ -4,6 +4,7 @@ import JSZip from "jszip"
 import { saveAs } from "file-saver"
 import FileExplorer from "../src/components/FileExplorer.vue"
 import { OS } from "../src/os-identity.js"
+import { sessionLog, resetLog, surveillanceText } from "../src/session-log.js"
 
 // saveAs déclenche un vrai téléchargement navigateur (indisponible en jsdom) ;
 // on le mocke pour capturer le blob ZIP produit et l'inspecter.
@@ -1170,5 +1171,49 @@ describe("FileExplorer.vue - Point 7: Recherche (dock)", () => {
     await wrapper.vm.changeDirectory('/d/sous')
     await wrapper.vm.$nextTick()
     expect(wrapper.vm.searchQuery).toBe('rap')
+  })
+})
+
+describe("FileExplorer.vue - Console: surveillance des actions", () => {
+  let wrapper
+  beforeEach(async () => {
+    global.fetch = vi.fn((url) => url === '/file-system.json'
+      ? Promise.resolve({ json: () => Promise.resolve(mockFileSystem) })
+      : Promise.resolve({ ok: true, blob: () => Promise.resolve(new Blob(['x'])) }))
+    wrapper = mount(FileExplorer)
+    await wrapper.vm.loadFileSystem()
+    resetLog() // isole l'action testée du bruit du chargement
+  })
+  afterEach(() => {
+    if (wrapper.vm._transfer) wrapper.vm.cancelTransfer()
+    wrapper.unmount()
+  })
+
+  it("journalise l'ouverture d'un fichier", async () => {
+    await wrapper.vm.openFile({ name: 'rapport_mission.md', path: '/Fichiers/rapport_mission.md', type: 'file' })
+    const entry = sessionLog.at(-1)
+    expect(entry.kind).toBe('surveillance')
+    expect(entry.text).toBe(surveillanceText('open', 'rapport_mission.md'))
+  })
+
+  it("journalise la navigation (via le watcher currentPath)", async () => {
+    await wrapper.vm.changeDirectory('/Dossiers')
+    const texts = sessionLog.filter(e => e.kind === 'surveillance').map(e => e.text)
+    expect(texts).toContain(surveillanceText('navigate', '/Dossiers'))
+  })
+
+  it("journalise le lancement d'une extraction avec les fichiers visés", () => {
+    wrapper.vm.selectedFiles = [1] // rapport_mission.md (index 0 = '..')
+    wrapper.vm.downloadSelectedFiles()
+    const entry = sessionLog.find(e => e.kind === 'surveillance' && e.text.startsWith('EXTRACTION'))
+    expect(entry.text).toBe(surveillanceText('extract', 'rapport_mission.md'))
+  })
+
+  it("journalise l'annulation d'une extraction", () => {
+    wrapper.vm.selectedFiles = [1]
+    wrapper.vm.downloadSelectedFiles()
+    wrapper.vm.cancelTransfer()
+    const entry = sessionLog.at(-1)
+    expect(entry.text).toBe(surveillanceText('cancelExtract'))
   })
 })
