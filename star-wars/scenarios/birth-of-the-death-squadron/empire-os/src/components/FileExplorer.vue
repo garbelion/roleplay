@@ -124,7 +124,10 @@ export default {
       return dir || this.fileSystem
     },
     currentDirectoryItems() {
+      // Conteneurs (disques/dossiers) avant les fichiers ; ordre d'auteur préservé dans
+      // chaque groupe (tri stable). Le `..` reste toujours en tête.
       const items = [...this.currentDirectory.children]
+        .sort((a, b) => Number(this.isContainer(b)) - Number(this.isContainer(a)))
       if (this.currentPath !== '/') {
         items.unshift({
           name: '..',

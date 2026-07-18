@@ -1049,3 +1049,31 @@ describe("FileExplorer.vue - Point 8: Rendu .docx inline (mammoth)", () => {
     expect(wrapper.vm.previewKindFor({ name: 'j.docx', type: 'file', previewMode: 'full' })).toBe('docx')
   })
 })
+
+describe("FileExplorer.vue - Tri des entrées (dossiers avant fichiers)", () => {
+  // Ordre d'auteur : un fichier AVANT un dossier -> le tri doit remonter le dossier.
+  const fs = {
+    name: 'root', path: '/', type: 'directory', defaultPath: '/d',
+    children: [
+      {
+        name: 'd', path: '/d', type: 'disk',
+        children: [
+          { name: 'zeta.md', path: '/d/zeta.md', type: 'file' },
+          { name: 'alpha', path: '/d/alpha', type: 'directory', children: [] },
+          { name: 'beta.md', path: '/d/beta.md', type: 'file' }
+        ]
+      }
+    ]
+  }
+
+  it("place les dossiers avant les fichiers, ordre d'auteur préservé dans chaque groupe", async () => {
+    global.fetch = vi.fn((url) => url === '/file-system.json'
+      ? Promise.resolve({ json: () => Promise.resolve(fs) })
+      : Promise.resolve({ ok: true, blob: () => Promise.resolve(new Blob(['x'])) }))
+    const wrapper = mount(FileExplorer)
+    await wrapper.vm.loadFileSystem()
+    const names = wrapper.vm.currentDirectoryItems.map(i => i.name)
+    // '..' en tête, puis le dossier (remonté), puis les fichiers en ordre d'auteur
+    expect(names).toEqual(['..', 'alpha', 'zeta.md', 'beta.md'])
+  })
+})
