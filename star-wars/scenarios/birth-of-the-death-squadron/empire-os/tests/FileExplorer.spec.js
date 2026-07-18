@@ -1149,7 +1149,8 @@ describe("FileExplorer.vue - Point 7: Recherche (dock)", () => {
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.search-scope').text()).toContain('/d/sous') // dossier courant
 
-    await wrapper.find('.search-widen').trigger('click') // -> disque
+    // bascule explicite sur le disque via le sélecteur
+    await wrapper.findAll('.scope-btn').find(b => b.text().toLowerCase().includes('disque')).trigger('click')
     await wrapper.vm.$nextTick()
     const scope = wrapper.find('.search-scope').text()
     expect(scope.toLowerCase()).toContain('disque')
@@ -1168,20 +1169,33 @@ describe("FileExplorer.vue - Point 7: Recherche (dock)", () => {
     expect(notes.find('mark.hl').text()).toBe('notes')
   })
 
-  it("propose d'élargir au disque quand le dossier courant ne donne rien, puis trouve", async () => {
+  // Sélecteur de périmètre : on choisit explicitement dossier / disque / tous les disques.
+  const scopeBtn = (w, needle) =>
+    w.findAll('.scope-btn').find(b => b.text().toLowerCase().includes(needle))
+
+  it("permet de changer de périmètre via le sélecteur (les résultats se recalculent)", async () => {
     await wrapper.vm.loadFileSystem()
     await wrapper.vm.changeDirectory('/d/sous') // 'notes.md' n'est pas ici (il est dans /d)
     await activateSearch(wrapper)
     await wrapper.find('.search-input').setValue('notes')
     await wrapper.vm.$nextTick()
+    expect(wrapper.find('.bottom-dock').text()).not.toContain('/d/notes.md') // 0 résultat dans le dossier
 
-    const widen = wrapper.find('.search-widen')
-    expect(widen.exists()).toBe(true)
-    expect(widen.text().toLowerCase()).toContain('disque')
-
-    await widen.trigger('click') // élargit au disque courant
+    await scopeBtn(wrapper, 'tous').trigger('click') // je bascule sur « tous les disques »
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.bottom-dock').text()).toContain('/d/notes.md')
+  })
+
+  it("marque le périmètre actif dans le sélecteur", async () => {
+    await wrapper.vm.loadFileSystem()
+    await activateSearch(wrapper)
+    await wrapper.find('.search-input').setValue('rap')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.scope-btn.active').text().toLowerCase()).toContain('dossier')
+
+    await scopeBtn(wrapper, 'disque').trigger('click')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.scope-btn.active').text().toLowerCase()).toContain('disque')
   })
 
   it("Échap efface la requête", async () => {

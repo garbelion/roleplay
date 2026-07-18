@@ -93,13 +93,13 @@
       :query="searchQuery"
       :results="searchResults"
       :count-message="searchCountMessage"
-      :widen-label="widenLabel"
+      :scope="searchScope"
       :scope-label="searchScopeLabel"
       :log="sessionLog"
       :alert-level="sessionConfig.alertLevel"
       @update:query="searchQuery = $event"
       @select="onSearchSelect"
-      @widen="widenSearch"
+      @set-scope="searchScope = $event"
     />
   </div>
 </template>
@@ -183,13 +183,6 @@ export default {
     searchCountMessage() {
       return this.searchQuery.trim() ? formatCount(this.searchResults) : ''
     },
-    // Proposition d'élargissement quand la portée courante ne donne rien (dir -> disque -> tous).
-    widenLabel() {
-      if (!this.searchQuery.trim() || this.searchResults.length > 0) return ''
-      if (this.searchScope === 'dir') return 'Élargir au disque'
-      if (this.searchScope === 'disk') return 'Élargir à tous les disques'
-      return ''
-    },
     // Rappel du périmètre de recherche courant (vide sans requête).
     searchScopeLabel() {
       if (!this.searchQuery.trim()) return ''
@@ -243,10 +236,6 @@ export default {
     },
     isSearchMatch(item) {
       return item.name !== '..' && matches(item.name, this.searchQuery)
-    },
-    widenSearch() {
-      if (this.searchScope === 'dir') this.searchScope = 'disk'
-      else if (this.searchScope === 'disk') this.searchScope = 'all'
     },
     // Raccourcis : Ctrl/Cmd+F active la recherche (écrase le natif) ; Échap efface la requête.
     onKeydown(event) {

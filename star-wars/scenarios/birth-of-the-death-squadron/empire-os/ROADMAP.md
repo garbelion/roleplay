@@ -54,7 +54,7 @@ rédigée par le MJ ; `transferWeight` = poids pour la durée de transfert ficti
 
 ## 4. État livré (archive)
 
-**127 tests, build OK.** Une ligne par capacité ; le détail vit dans l'historique git.
+**132 tests, build OK.** Une ligne par capacité ; le détail vit dans l'historique git.
 
 - **Navigation** Unix (`..`, chemins relatifs/absolus, normalisation) + prompt cohérent
   (`sienar:/user-51394345/home$`).
@@ -72,8 +72,8 @@ rédigée par le MJ ; `transferWeight` = poids pour la durée de transfert ficti
 - **Recherche de fichiers** : récursive, insensible **casse+accents** (`fold` longueur préservée),
   dans un **dock inférieur à onglets** (`BottomDock.vue`). Résultats cliquables avec chemin,
   compteur typé, surlignage `<mark>` de la liste courante (distinct de la sélection cyan),
-  élargissement **dossier→disque→`/`**, **Ctrl+F**/Échap, query préservée à la navigation.
-  Cœur pur : `search.js`.
+  **sélecteur de périmètre** (dossier / disque / tous les disques) + rappel du chemin résolu,
+  **Ctrl+F**/Échap, query préservée à la navigation. Cœur pur : `search.js`.
 - **Console « big brother »** : onglet Console (affiché **par défaut**) alimenté par un journal
   de session (`session-log.js`), **plus récents en premier** — surveillance des actions,
   propagande d'ambiance sur timer (`propaganda.js`, pool MJ), avertissement > 2 h, ligne

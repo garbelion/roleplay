@@ -20,11 +20,19 @@
           placeholder="Rechercher (Ctrl+F)…"
           @input="$emit('update:query', $event.target.value)"
         >
-        <!-- Rappel du périmètre courant (dossier / disque / tous les disques) -->
+        <!-- Sélecteur de périmètre : dossier courant / disque / tous les disques -->
+        <div v-if="query" class="search-scopes" role="group" aria-label="Périmètre de recherche">
+          <button
+            v-for="opt in scopeOptions"
+            :key="opt.id"
+            class="scope-btn"
+            :class="{ active: opt.id === scope }"
+            @click="$emit('set-scope', opt.id)"
+          >{{ opt.label }}</button>
+        </div>
+        <!-- Rappel du périmètre courant résolu (avec le chemin exact) -->
         <div v-if="scopeLabel" class="search-scope">Périmètre : {{ scopeLabel }}</div>
         <div v-if="countMessage" class="search-count">{{ countMessage }}</div>
-        <!-- Proposition d'élargissement quand la portée courante ne donne rien -->
-        <button v-if="widenLabel" class="search-widen" @click="$emit('widen')">{{ widenLabel }}</button>
         <ul class="search-results">
           <li
             v-for="r in results"
@@ -75,19 +83,25 @@ export default {
     query: { type: String, default: '' },
     results: { type: Array, default: () => [] },
     countMessage: { type: String, default: '' },
-    // Libellé du bouton d'élargissement (vide = pas de proposition).
-    widenLabel: { type: String, default: '' },
-    // Rappel du périmètre de recherche courant (vide = masqué).
+    // Périmètre de recherche courant : 'dir' | 'disk' | 'all' (surligne le bon bouton).
+    scope: { type: String, default: 'dir' },
+    // Rappel du périmètre de recherche courant, chemin résolu (vide = masqué).
     scopeLabel: { type: String, default: '' },
     // Journal de session (onglet Console) : entrées { kind, level?, text, at }.
     log: { type: Array, default: () => [] },
     // Niveau d'alerte 0..5 : teinte la console (plus rouge = alerte plus haute).
     alertLevel: { type: Number, default: 0 }
   },
-  emits: ['update:query', 'select', 'widen'],
+  emits: ['update:query', 'select', 'set-scope'],
   data() {
     return {
       activeTab: 'console',
+      // Positions du sélecteur de périmètre (ids alignés sur searchScope de FileExplorer).
+      scopeOptions: [
+        { id: 'dir', label: 'Dossier' },
+        { id: 'disk', label: 'Disque' },
+        { id: 'all', label: 'Tous les disques' }
+      ],
       tabs: [
         { id: 'search', label: 'Recherche', ready: true },
         { id: 'console', label: 'Console', ready: true },
@@ -161,21 +175,24 @@ export default {
   border-radius: 0;
 }
 .search-input:focus { outline: none; border-color: var(--accent); }
-.search-scope { margin: 8px 0 4px; color: var(--accent); font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; }
-.search-count { margin: 4px 0 8px; color: var(--ink-dim); font-size: 12px; letter-spacing: 0.5px; }
-.search-widen {
-  background: transparent;
-  border: 1px solid var(--accent);
-  color: var(--accent);
-  cursor: pointer;
+/* Sélecteur segmenté de périmètre : angles nets, l'actif en accent plein. */
+.search-scopes { display: flex; gap: 1px; margin: 8px 0 4px; background: var(--line); border: 1px solid var(--line-strong); width: fit-content; }
+.scope-btn {
+  background: var(--panel);
+  color: var(--ink-dim);
+  border: none;
+  border-radius: 0;
   padding: 4px 10px;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
-  border-radius: 0;
-  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
 }
-.search-widen:hover { background: var(--accent); color: var(--bg); }
+.scope-btn:hover { color: var(--ink); }
+.scope-btn.active { background: var(--accent); color: var(--bg); }
+.search-scope { margin: 4px 0; color: var(--accent); font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; }
+.search-count { margin: 4px 0 8px; color: var(--ink-dim); font-size: 12px; letter-spacing: 0.5px; }
 .search-results { list-style: none; margin: 0; padding: 0; }
 .search-result {
   display: flex;
