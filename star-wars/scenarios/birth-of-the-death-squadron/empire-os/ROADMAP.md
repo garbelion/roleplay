@@ -158,10 +158,26 @@ Deux publics :
    - **MVP** : formule + barre bornée + annulation + download réel à la complétion + texte
      diégétique. *Reportés* : échec narratif (« CONNEXION PERDUE — 73 % »), rendu non-linéaire
      (fluctuations/paliers liés à la qualité), câblage vers la console (point 7).
-7. **Console d'ambiance réactive + barre de recherche** — logs qui réagissent aux actions ;
-   recherche par **nom, sur le répertoire courant** (v1) | messages en rouge façon big brother "l'Empire vous protège du chaos".
+7. **Dock inférieur à onglets (recherche + console) + recherche de fichiers**
+   - **Dock bas à onglets** (toujours visible) : onglet **Recherche** (v1) ; **Console** (logs
+     rouges « big brother » façon *l'Empire vous protège du chaos ») et **État de session** = onglets
+     futurs. Squelette d'onglets construit dès le v1.
+   - **Recherche de fichiers** (spec tranchée) :
+     - Par **nom**, substring, insensible **casse + accents** (`fold` à longueur préservée).
+     - **Récursive** depuis le **répertoire courant** ; si 0 résultat, **proposer** d'élargir au
+       **disque courant**, puis à **tous les disques** (`/`).
+     - Résultats dans le dock avec **chemin complet**, **cliquables** (→ navigation/ouverture) ;
+       **compteur typé** (« 4 fichiers et 2 dossiers correspondent… ») / « Aucun résultat ».
+     - **Surlignage** des matches présents dans le répertoire courant : ligne + `<mark>` sur la
+       sous-chaîne (état **distinct** de la sélection-download cyan).
+     - Query **préservée à la navigation** (résultats/surlignages recalculés pour le nouvel endroit).
+     - **Ctrl+F** (écrase le natif) active l'onglet + focus ; **Échap** efface la query. `..` jamais matché.
+     - *Plus tard* : recherche **dans le contenu** des fichiers texte / descriptions.
+   - **Avancement** : [x] `src/search.js` (`fold`, `searchTree` récursif, `highlightSegments`,
+     `formatCount`) — 8 tests. [ ] `BottomDock.vue` (onglets + panneau recherche). [ ] surlignage
+     liste principale. [ ] élargissement dossier→disque→`/`. [ ] Ctrl+F / Échap.
    - **Avertissement de session** : au-delà de **2 h** d'horloge de session, un warning système
-     défile dans la console (sécurité/traçabilité impériale). S'appuie sur l'horloge de session (point 5).
+     défile dans la **console** (onglet). S'appuie sur l'horloge de session (point 5).
 8. **Rendu `.docx` inline (mammoth)** — ✅ **livré** : un `.docx` avec `previewMode: 'full'` est
    rendu inline (mammoth docx→HTML) ; sinon il reste en **`summary`** (le journal (d) verrouillé
    garde son téléchargement forcé). Mammoth **importé dynamiquement** (code-split, chargé à la
