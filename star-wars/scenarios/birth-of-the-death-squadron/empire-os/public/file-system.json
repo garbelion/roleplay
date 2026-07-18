@@ -3,7 +3,14 @@
   "path": "/",
   "type": "directory",
   "defaultPath": "/user-51394345/home",
-  "session": { "connectionQuality": "moyenne", "alertLevel": 0 },
+  "session": {
+    "connectionQuality": "moyenne",
+    "alertLevel": 0,
+    "supabase": {
+      "url": "https://yqnbijcjcjrvyhxyfkpk.supabase.co",
+      "anonKey": "sb_publishable_48bq9dIfzBM3MkOSUehYtQ_1n8xArrU"
+    }
+  },
   "console": {
     "propaganda": [
       "L'EMPIRE VEILLE SUR VOUS.",
