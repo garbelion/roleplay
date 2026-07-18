@@ -118,13 +118,14 @@ Le MJ étant sur un **poste séparé**, deux navigateurs ne partagent aucun éta
 - **Page MJ = route `#/mj`** (routage par hash, pas de serveur ; confirmé, pas d'app séparée).
 
 **Backlog (slices TDD)** :
-1. **`session-store.js`** : extraire l'état de session (`{connectionQuality, alertLevel}`, réactif,
-   défauts depuis `file-system.json`) hors de FileExplorer ; propagande/console **et** popin de
-   transfert le consomment. *Refactor iso-comportement — le déblocage, sans dépendance à Supabase.*
-2. **`session-remote.js` (lecture)** : fetch initial + **abonnement Realtime** → applique au store ;
-   **non configuré / déconnecté ⇒ défauts statiques** (dégradation propre). Client Supabase injecté
-   (mocké en test).
-3. **Affichage live** : teinte console **+ badge d'alerte dans le chrome** (titre/statut, libellé
+1. ✅ **`session-store.js`** : état de session (`{connectionQuality, alertLevel}`) réactif, défauts
+   depuis `file-system.json`, consommé par propagande/console **et** popin de transfert. *Refactor
+   iso-comportement — le point d'injection unique des MàJ live.*
+2. ✅ **`session-remote.js` + `supabase-source.js` (lecture)** : orchestration vendor-agnostique
+   (fetch initial + abonnement Realtime → `setSessionConfig`), adaptateur Supabase (mapping +
+   canal), branché dans FileExplorer si `session.supabase` présent. **Non configuré ⇒ statique
+   inchangé** ; SDK **code-split**. Source injectée (mockée en test).
+3. ⏳ **Affichage live** : teinte console **+ badge d'alerte dans le chrome** (titre/statut, libellé
    minimal→war) suivent le store réactif. *(Absorbe le « reste » de §5.3.)*
 4. **Route `#/mj`** : mini-routage par hash + connexion MJ (Supabase Auth) + formulaire (sélecteurs
    connexion/alerte, « Appliquer », préremplis depuis l'état courant).
