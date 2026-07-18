@@ -102,37 +102,42 @@ de démo (2 disques) en attendant. *Rien à coder côté app tant que le contenu
 ### 5.2 — Back-office MJ *(premier jalon actionnable)*
 2ᵉ page (URL connue du seul MJ) pour régler **en live** `connectionQuality` / `alertLevel`.
 Le MJ étant sur un **poste séparé**, deux navigateurs ne partagent aucun état : il faut un
-**endroit inscriptible joignable par les deux machines**. Ce n'est **pas** une « vraie » DB —
-juste un **blob JSON hébergé dans un service léger**. Le MJ y **écrit**, les joueurs **pollent**.
+**store partagé joignable par les deux machines**. Choisi : **Supabase Realtime** — le MJ
+**écrit** une ligne, les joueurs la reçoivent en **push** (websocket), pas de polling.
 
 **Décisions actées** :
-- **Déploiement = URL partagée** ; **app et config découplées** : l'app reste un **frontend
-  statique**, l'état de session vit dans le **blob externe** (pas dans le bundle).
+- **Déploiement = URL partagée** ; **app reste un frontend statique** (Supabase est externe).
 - **Périmètre MVP** = `connectionQuality` + `alertLevel` **seuls** (le reste au backlog : message
   console à la volée, échec de transfert forcé, verrouillage de l'OS).
-- **Service = JSONBin.io** (lecture publique + clé d'écriture `X-Master-Key`, bins versionnés, free).
-- **URL de lecture** dans `file-system.json` (`session.remoteUrl`) ; **absente ⇒ mode 100 %
-  statique inchangé**. La **clé d'écriture n'est JAMAIS dans le bundle** : le MJ la colle à la main.
-- **Page MJ = route `#/mj`** (routage par hash, pas de serveur ; **confirmé**, pas d'app séparée).
-- **Polling ≈ 10 s** ; **pas de BaaS temps réel** au MVP (Supabase/Firebase seulement si la latence
-  du polling gêne — parqué).
+- **Service = Supabase Realtime** (push, pas de polling → **aucun quota de requêtes** grillé par
+  une page laissée ouverte). Le SDK `@supabase/supabase-js` est **importé en dynamique** (code-split).
+- **Config = `session.supabase` dans `file-system.json`** (`{ url, anonKey }`, publics par design) ;
+  **absente ⇒ mode 100 % statique inchangé**.
+- **Sécurité = RLS** : `anon` en **lecture + subscribe seulement** ; l'**écriture MJ passe par
+  Supabase Auth** (un compte MJ, connexion sur `#/mj`) — pas de clé secrète dans le bundle.
+- **Page MJ = route `#/mj`** (routage par hash, pas de serveur ; confirmé, pas d'app séparée).
 
 **Backlog (slices TDD)** :
 1. **`session-store.js`** : extraire l'état de session (`{connectionQuality, alertLevel}`, réactif,
    défauts depuis `file-system.json`) hors de FileExplorer ; propagande/console **et** popin de
-   transfert le consomment. *Refactor iso-comportement — le déblocage.*
-2. **`session-remote.js` (lecture)** : polling du blob (10 s) → applique au store ; **injoignable
-   ⇒ garde la dernière valeur** (dégradation propre). `fetch`/timer injectés.
+   transfert le consomment. *Refactor iso-comportement — le déblocage, sans dépendance à Supabase.*
+2. **`session-remote.js` (lecture)** : fetch initial + **abonnement Realtime** → applique au store ;
+   **non configuré / déconnecté ⇒ défauts statiques** (dégradation propre). Client Supabase injecté
+   (mocké en test).
 3. **Affichage live** : teinte console **+ badge d'alerte dans le chrome** (titre/statut, libellé
    minimal→war) suivent le store réactif. *(Absorbe le « reste » de §5.3.)*
-4. **Route `#/mj`** : mini-routage par hash + formulaire (champ clé d'écriture, sélecteurs
+4. **Route `#/mj`** : mini-routage par hash + connexion MJ (Supabase Auth) + formulaire (sélecteurs
    connexion/alerte, « Appliquer », préremplis depuis l'état courant).
-5. **`session-remote.js` (écriture)** : PUT JSONBin avec la clé saisie. `fetch` mocké en test.
+5. **`session-remote.js` (écriture)** : `update` de la ligne d'état (session MJ authentifiée).
+   Client mocké en test.
 6. **(option) Re-tuning live des timers** : cadence propagande redémarre quand `alertLevel` change
-   (`watch` → restart). Indépendante ; pour le « tout temps réel ».
+   (`watch` → restart). Indépendante ; pour le « tout temps réel » des émetteurs.
 
-**Prérequis hors-code (MJ)** : créer un bin JSONBin (compte free), noter l'URL de lecture publique
-+ la clé d'écriture (jamais commitée). Tout est codable/testable en **mockant le service** en attendant.
+**Prérequis hors-code (MJ)** : créer un projet Supabase (free), une table `session_state`
+(1 ligne : `connection_quality`, `alert_level`), **activer Realtime** dessus, poser la **RLS**
+(SELECT pour `anon`, UPDATE réservé à l'utilisateur authentifié), créer le **compte MJ** (Auth),
+noter **URL du projet + clé `anon`**. Tout est codable/testable en **mockant le client Supabase**
+en attendant.
 
 ### 5.3 — Immersion « big brother » (onglets du dock)
 - ✅ **Console v1 livrée** : onglet Console du dock alimenté par un **journal de session**
@@ -157,8 +162,6 @@ juste un **blob JSON hébergé dans un service léger**. Le MJ y **écrit**, les
 
 ## 6. Décisions encore ouvertes
 
-- **Push vs polling** : polling au MVP ; passer à un BaaS temps réel (Supabase/Firebase) seulement
-  si la latence du polling gêne réellement au jeu. *Parqué.*
 - **Page éditeur MJ** : route dans *cette* app (ex. `/forge`) ou outil séparé ? « Plusieurs
   tentatives de hacking » = configs qui **varient** d'une tentative à l'autre (anti méta-jeu) ou
   simple édition de confort ? *À trancher quand/si.*
