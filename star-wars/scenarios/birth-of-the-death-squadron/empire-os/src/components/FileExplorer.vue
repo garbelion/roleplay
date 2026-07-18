@@ -108,7 +108,7 @@ import { marked } from 'marked';
 import { OS } from '../os-identity.js';
 import { startTransfer } from '../transfer.js';
 import { searchTree, formatCount, highlightSegments, matches } from '../search.js';
-import { sessionLog, pushLog, surveillanceText, startSessionWarning } from '../session-log.js';
+import { sessionLog, pushLog, surveillanceText, startSessionWarning, SESSION_OPEN_TEXT } from '../session-log.js';
 import { startPropaganda } from '../propaganda.js';
 import BottomDock from './BottomDock.vue';
 
@@ -191,6 +191,8 @@ export default {
     }
   },
   async created() {
+    // Amorçage : la console s'ouvre sur une ligne système (jamais vide).
+    pushLog({ kind: 'system', text: SESSION_OPEN_TEXT })
     await this.loadFileSystem()
     // Propagande d'ambiance : démarre une fois la config chargée (pool + niveau d'alerte).
     this._propaganda = startPropaganda({

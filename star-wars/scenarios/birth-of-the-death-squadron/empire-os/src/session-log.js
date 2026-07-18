@@ -6,6 +6,7 @@
 //                text: string, at?: number (ms écoulés depuis le début de session) }.
 
 import { reactive } from 'vue'
+import { notify } from './notifications.js'
 
 export const MAX_ENTRIES = 200
 
@@ -51,12 +52,17 @@ export function pushLog(entry) {
   const stamped = entry.at === undefined ? { ...entry, at: Date.now() - sessionStart } : entry
   sessionLog.push(stamped)
   if (sessionLog.length > MAX_ENTRIES) sessionLog.splice(0, sessionLog.length - MAX_ENTRIES)
+  // Tout message non-surveillance surgit aussi en notification éphémère (notify filtre lui-même).
+  notify(stamped)
 }
 
 /** Vide le journal (usage principal : tests / nouvelle session). */
 export function resetLog() {
   sessionLog.splice(0)
 }
+
+// Ligne d'amorçage : la console n'est jamais vide au premier coup d'œil.
+export const SESSION_OPEN_TEXT = 'SESSION OUVERTE — SURVEILLANCE ACTIVE.'
 
 // Avertissement de session : au-delà de 2 h d'ouverture, l'OS « signale » la connexion.
 export const SESSION_WARNING_MS = 2 * 60 * 60 * 1000

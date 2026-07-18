@@ -41,14 +41,13 @@
 
       <div
         v-else-if="activeTab === 'console'"
-        ref="consoleScroll"
         class="console-panel"
         :class="`alert-${alertLevel}`"
       >
         <div v-if="!log.length" class="console-empty">Aucune activité enregistrée.</div>
         <ul v-else class="console-log">
           <li
-            v-for="(e, i) in log"
+            v-for="(e, i) in orderedLog"
             :key="i"
             class="console-line"
             :class="[`kind-${e.kind}`, e.level ? `level-${e.level}` : '']"
@@ -84,7 +83,7 @@ export default {
   emits: ['update:query', 'select', 'widen'],
   data() {
     return {
-      activeTab: 'search',
+      activeTab: 'console',
       tabs: [
         { id: 'search', label: 'Recherche', ready: true },
         { id: 'console', label: 'Console', ready: true },
@@ -92,20 +91,14 @@ export default {
       ]
     };
   },
-  watch: {
-    // Auto-scroll de la console : coller au bas dès qu'une ligne arrive.
-    'log.length'() {
-      if (this.activeTab !== 'console') return;
-      this.$nextTick(() => {
-        const el = this.$refs.consoleScroll;
-        if (el) el.scrollTop = el.scrollHeight;
-      });
-    }
-  },
   computed: {
     activeLabel() {
       const tab = this.tabs.find(t => t.id === this.activeTab);
       return tab ? tab.label : '';
+    },
+    // Console : plus récents en premier (le journal est empilé en ordre chronologique).
+    orderedLog() {
+      return [...this.log].reverse();
     }
   },
   methods: {

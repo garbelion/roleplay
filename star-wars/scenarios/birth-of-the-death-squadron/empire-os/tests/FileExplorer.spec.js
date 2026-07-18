@@ -4,7 +4,7 @@ import JSZip from "jszip"
 import { saveAs } from "file-saver"
 import FileExplorer from "../src/components/FileExplorer.vue"
 import { OS } from "../src/os-identity.js"
-import { sessionLog, resetLog, surveillanceText } from "../src/session-log.js"
+import { sessionLog, resetLog, surveillanceText, SESSION_OPEN_TEXT } from "../src/session-log.js"
 
 // saveAs déclenche un vrai téléchargement navigateur (indisponible en jsdom) ;
 // on le mocke pour capturer le blob ZIP produit et l'inspecter.
@@ -1111,8 +1111,12 @@ describe("FileExplorer.vue - Point 7: Recherche (dock)", () => {
     if (wrapper) wrapper.unmount()
   })
 
+  // La Console est l'onglet par défaut : on active la Recherche comme le ferait Ctrl+F.
+  const activateSearch = async (w) => { w.vm.$refs.dock.focusSearch(); await w.vm.$nextTick() }
+
   it("affiche les résultats récursifs (avec chemin) et le compteur dans le dock", async () => {
     await wrapper.vm.loadFileSystem() // currentPath = /d
+    await activateSearch(wrapper)
     await wrapper.find('.search-input').setValue('rapport')
     await wrapper.vm.$nextTick()
     const dock = wrapper.find('.bottom-dock')
@@ -1122,6 +1126,7 @@ describe("FileExplorer.vue - Point 7: Recherche (dock)", () => {
 
   it("surligne dans la liste courante les entrées qui matchent (classe + <mark>)", async () => {
     await wrapper.vm.loadFileSystem() // /d ; 'notes.md' y est directement
+    await activateSearch(wrapper)
     await wrapper.find('.search-input').setValue('notes')
     await wrapper.vm.$nextTick()
     const notes = wrapper.findAll('.file-item')
@@ -1134,6 +1139,7 @@ describe("FileExplorer.vue - Point 7: Recherche (dock)", () => {
   it("propose d'élargir au disque quand le dossier courant ne donne rien, puis trouve", async () => {
     await wrapper.vm.loadFileSystem()
     await wrapper.vm.changeDirectory('/d/sous') // 'notes.md' n'est pas ici (il est dans /d)
+    await activateSearch(wrapper)
     await wrapper.find('.search-input').setValue('notes')
     await wrapper.vm.$nextTick()
 
@@ -1215,6 +1221,15 @@ describe("FileExplorer.vue - Console: surveillance des actions", () => {
     wrapper.vm.cancelTransfer()
     const entry = sessionLog.at(-1)
     expect(entry.text).toBe(surveillanceText('cancelExtract'))
+  })
+
+  it("ouvre la session par une ligne système « Session ouverte »", async () => {
+    resetLog()
+    const w = mount(FileExplorer)
+    await flushPromises()
+    const boot = sessionLog.find(e => e.kind === 'system' && e.text === SESSION_OPEN_TEXT)
+    expect(boot).toBeTruthy()
+    w.unmount()
   })
 })
 

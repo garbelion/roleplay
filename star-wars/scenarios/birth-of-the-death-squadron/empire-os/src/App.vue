@@ -16,6 +16,17 @@
     <div class="dos-status-bar">
       <span class="status-licence">LICENCE : {{ OS.licensee }}</span>
     </div>
+
+    <!-- Notifications éphémères : tout message console non-surveillance surgit ici 5 s. -->
+    <div class="os-notifications" aria-live="polite">
+      <button
+        v-for="n in notifications"
+        :key="n.id"
+        class="os-notification"
+        :class="`kind-${n.kind}`"
+        @click="dismiss(n.id)"
+      >{{ n.text }}</button>
+    </div>
   </div>
 </template>
 
@@ -23,20 +34,17 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import FileExplorer from "./components/FileExplorer.vue";
 import { OS } from "./os-identity.js";
+import { formatSessionTime } from "./session-log.js";
+import { notifications, dismiss } from "./notifications.js";
 
 // Horloge de session : durée écoulée depuis l'ouverture (le temps narratif in-game
-// n'étant pas synchronisable). Permettra plus tard un avertissement au-delà de 2 h.
-const pad = (n) => String(n).padStart(2, "0");
-const formatElapsed = (ms) => {
-  const s = Math.floor(ms / 1000);
-  return `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
-};
-
+// n'étant pas synchronisable). Le format HH:MM:SS est canonique dans session-log.js
+// (même horloge que l'horodatage de la console).
 const sessionStart = Date.now();
-const clock = ref(formatElapsed(0));
+const clock = ref(formatSessionTime(0));
 let timer;
 onMounted(() => {
-  timer = setInterval(() => { clock.value = formatElapsed(Date.now() - sessionStart); }, 1000);
+  timer = setInterval(() => { clock.value = formatSessionTime(Date.now() - sessionStart); }, 1000);
 });
 onUnmounted(() => clearInterval(timer));
 
@@ -47,6 +55,7 @@ const closeTerminal = () => {
 
 <style scoped>
 .dos-window {
+  position: relative; /* ancre l'overlay de notifications */
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -120,5 +129,42 @@ const closeTerminal = () => {
 }
 @media (max-width: 380px) {
   .dos-status-bar { display: none; } /* licence : trop longue en très étroit */
+}
+
+/* Overlay de notifications : coin haut-droit, empilées, cliquables pour fermer. */
+.os-notifications {
+  position: absolute;
+  top: 44px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: min(360px, 80vw);
+  z-index: 20;
+  pointer-events: none;
+}
+.os-notification {
+  pointer-events: auto;
+  text-align: left;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ink);
+  background: var(--panel-raised);
+  border: 1px solid var(--line-strong);
+  border-left: 3px solid var(--accent);
+  border-radius: 0;
+  padding: 8px 12px;
+  cursor: pointer;
+  letter-spacing: 0.4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  animation: os-notif-in 0.25s ease-out;
+}
+.os-notification:hover { background: var(--panel); }
+/* Propagande / alerte : accent rouge impérial pour se distinguer du système. */
+.os-notification.kind-propaganda { border-left-color: var(--danger); }
+@keyframes os-notif-in {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 </style>

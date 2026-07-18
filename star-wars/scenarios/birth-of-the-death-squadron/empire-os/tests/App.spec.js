@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
-import { mount } from "@vue/test-utils"
+import { mount, flushPromises } from "@vue/test-utils"
 import App from "../src/App.vue"
 import { OS } from "../src/os-identity.js"
+import { notify } from "../src/notifications.js"
 
 const mockFS = { name: "root", path: "/", type: "directory", children: [] }
 
@@ -44,5 +45,14 @@ describe("App.vue - Skin / chrome impérial", () => {
     expect(clock.text()).toBe("01:00:01")
 
     vi.useRealTimers()
+  })
+
+  it("affiche une notification à l'écran pour un message non-surveillance", async () => {
+    const wrapper = mount(App)
+    await flushPromises()
+    notify({ kind: "propaganda", text: "ALERTE PROPAGANDE" })
+    await wrapper.vm.$nextTick()
+    const texts = wrapper.findAll(".os-notification").map(n => n.text())
+    expect(texts).toContain("ALERTE PROPAGANDE")
   })
 })

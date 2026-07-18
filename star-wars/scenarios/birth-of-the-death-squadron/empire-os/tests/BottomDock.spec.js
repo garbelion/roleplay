@@ -19,10 +19,11 @@ describe("BottomDock - onglet Console", () => {
 
     const lines = wrapper.findAll('.console-line')
     expect(lines.length).toBe(2)
-    expect(lines[0].text()).toContain(formatSessionTime(65000)) // 00:01:05
-    expect(lines[0].text()).toContain('ACCÈS FICHIER : rapport.md')
-    expect(lines[0].classes()).toContain('kind-surveillance')
-    expect(lines[1].classes()).toContain('kind-propaganda')
+    // Récent d'abord : la propagande (at 70000) est empilée après la surveillance (at 65000).
+    expect(lines[0].classes()).toContain('kind-propaganda')
+    expect(lines[1].text()).toContain(formatSessionTime(65000)) // 00:01:05
+    expect(lines[1].text()).toContain('ACCÈS FICHIER : rapport.md')
+    expect(lines[1].classes()).toContain('kind-surveillance')
   })
 
   it("affiche un état vide quand le journal est vide", async () => {
@@ -30,6 +31,26 @@ describe("BottomDock - onglet Console", () => {
     await openConsole(wrapper)
     expect(wrapper.find('.console-empty').exists()).toBe(true)
     expect(wrapper.findAll('.console-line').length).toBe(0)
+  })
+
+  it("ouvre sur l'onglet Console par défaut (pas de clic requis)", () => {
+    const wrapper = mount(BottomDock, { props: { log: [] } })
+    expect(wrapper.find('.console-panel').exists()).toBe(true)
+    expect(wrapper.find('.search-panel').exists()).toBe(false)
+    const active = wrapper.find('.dock-tab.active')
+    expect(active.text()).toBe('Console')
+  })
+
+  it("affiche les messages les plus récents en premier", async () => {
+    const log = [
+      { kind: 'system', text: 'ANCIEN', at: 1000 },
+      { kind: 'system', text: 'RÉCENT', at: 2000 }
+    ]
+    const wrapper = mount(BottomDock, { props: { log } })
+    await openConsole(wrapper)
+    const lines = wrapper.findAll('.console-line')
+    expect(lines[0].text()).toContain('RÉCENT')
+    expect(lines[1].text()).toContain('ANCIEN')
   })
 
   it("teinte la console selon le niveau d'alerte (classe alert-N)", async () => {
