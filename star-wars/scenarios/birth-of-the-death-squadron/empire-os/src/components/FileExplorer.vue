@@ -94,6 +94,7 @@
       :results="searchResults"
       :count-message="searchCountMessage"
       :widen-label="widenLabel"
+      :scope-label="searchScopeLabel"
       :log="sessionLog"
       :alert-level="sessionConfig.alertLevel"
       @update:query="searchQuery = $event"
@@ -188,6 +189,13 @@ export default {
       if (this.searchScope === 'dir') return 'Élargir au disque'
       if (this.searchScope === 'disk') return 'Élargir à tous les disques'
       return ''
+    },
+    // Rappel du périmètre de recherche courant (vide sans requête).
+    searchScopeLabel() {
+      if (!this.searchQuery.trim()) return ''
+      if (this.searchScope === 'all') return 'Tous les disques'
+      if (this.searchScope === 'disk') return `Ce disque : ${this.searchRootPath}`
+      return `Ce dossier : ${this.searchRootPath}`
     }
   },
   async created() {

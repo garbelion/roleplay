@@ -1124,6 +1124,38 @@ describe("FileExplorer.vue - Point 7: Recherche (dock)", () => {
     expect(dock.text().toLowerCase()).toContain('1 fichier correspond')
   })
 
+  it("rappelle le périmètre de recherche courant dans le dock", async () => {
+    await wrapper.vm.loadFileSystem() // currentPath = /d
+    await activateSearch(wrapper)
+    await wrapper.find('.search-input').setValue('rap')
+    await wrapper.vm.$nextTick()
+    const scope = wrapper.find('.search-scope')
+    expect(scope.exists()).toBe(true)
+    expect(scope.text()).toContain('/d') // périmètre = dossier courant
+  })
+
+  it("ne rappelle aucun périmètre sans requête", async () => {
+    await wrapper.vm.loadFileSystem()
+    await activateSearch(wrapper)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.search-scope').exists()).toBe(false)
+  })
+
+  it("le périmètre rappelé suit l'élargissement (dossier -> disque -> tous)", async () => {
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.changeDirectory('/d/sous')
+    await activateSearch(wrapper)
+    await wrapper.find('.search-input').setValue('notes') // absent de /d/sous
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.search-scope').text()).toContain('/d/sous') // dossier courant
+
+    await wrapper.find('.search-widen').trigger('click') // -> disque
+    await wrapper.vm.$nextTick()
+    const scope = wrapper.find('.search-scope').text()
+    expect(scope.toLowerCase()).toContain('disque')
+    expect(scope).toContain('/d')
+  })
+
   it("surligne dans la liste courante les entrées qui matchent (classe + <mark>)", async () => {
     await wrapper.vm.loadFileSystem() // /d ; 'notes.md' y est directement
     await activateSearch(wrapper)

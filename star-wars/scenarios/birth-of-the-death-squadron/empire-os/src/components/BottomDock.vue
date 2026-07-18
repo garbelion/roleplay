@@ -20,6 +20,8 @@
           placeholder="Rechercher (Ctrl+F)…"
           @input="$emit('update:query', $event.target.value)"
         >
+        <!-- Rappel du périmètre courant (dossier / disque / tous les disques) -->
+        <div v-if="scopeLabel" class="search-scope">Périmètre : {{ scopeLabel }}</div>
         <div v-if="countMessage" class="search-count">{{ countMessage }}</div>
         <!-- Proposition d'élargissement quand la portée courante ne donne rien -->
         <button v-if="widenLabel" class="search-widen" @click="$emit('widen')">{{ widenLabel }}</button>
@@ -75,6 +77,8 @@ export default {
     countMessage: { type: String, default: '' },
     // Libellé du bouton d'élargissement (vide = pas de proposition).
     widenLabel: { type: String, default: '' },
+    // Rappel du périmètre de recherche courant (vide = masqué).
+    scopeLabel: { type: String, default: '' },
     // Journal de session (onglet Console) : entrées { kind, level?, text, at }.
     log: { type: Array, default: () => [] },
     // Niveau d'alerte 0..5 : teinte la console (plus rouge = alerte plus haute).
@@ -157,7 +161,8 @@ export default {
   border-radius: 0;
 }
 .search-input:focus { outline: none; border-color: var(--accent); }
-.search-count { margin: 8px 0; color: var(--ink-dim); font-size: 12px; letter-spacing: 0.5px; }
+.search-scope { margin: 8px 0 4px; color: var(--accent); font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; }
+.search-count { margin: 4px 0 8px; color: var(--ink-dim); font-size: 12px; letter-spacing: 0.5px; }
 .search-widen {
   background: transparent;
   border: 1px solid var(--accent);
