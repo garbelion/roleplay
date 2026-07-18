@@ -173,9 +173,12 @@ Deux publics :
      - Query **préservée à la navigation** (résultats/surlignages recalculés pour le nouvel endroit).
      - **Ctrl+F** (écrase le natif) active l'onglet + focus ; **Échap** efface la query. `..` jamais matché.
      - *Plus tard* : recherche **dans le contenu** des fichiers texte / descriptions.
-   - **Avancement** : [x] `src/search.js` (`fold`, `searchTree` récursif, `highlightSegments`,
-     `formatCount`) — 8 tests. [ ] `BottomDock.vue` (onglets + panneau recherche). [ ] surlignage
-     liste principale. [ ] élargissement dossier→disque→`/`. [ ] Ctrl+F / Échap.
+   - **Avancement** : ✅ **recherche v1 complète.**
+     [x] `src/search.js` (`fold`, `matches`, `searchTree` récursif, `highlightSegments`, `formatCount`).
+     [x] `BottomDock.vue` (onglets Recherche/Console/Session ; panneau recherche : champ, résultats
+     avec chemin cliquables, compteur). [x] surlignage liste courante (ligne + `<mark>`, distinct de
+     la sélection). [x] élargissement dossier→disque→`/`. [x] Ctrl+F (écrase natif) / Échap ; query
+     préservée à la navigation. ~93 tests. *Reste : recherche dans le contenu (plus tard).*
    - **Avertissement de session** : au-delà de **2 h** d'horloge de session, un warning système
      défile dans la **console** (onglet). S'appuie sur l'horloge de session (point 5).
 8. **Rendu `.docx` inline (mammoth)** — ✅ **livré** : un `.docx` avec `previewMode: 'full'` est
