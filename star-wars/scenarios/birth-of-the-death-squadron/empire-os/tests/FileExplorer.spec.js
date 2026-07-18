@@ -1147,14 +1147,14 @@ describe("FileExplorer.vue - Point 7: Recherche (dock)", () => {
     await activateSearch(wrapper)
     await wrapper.find('.search-input').setValue('notes') // absent de /d/sous
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('.search-scope').text()).toContain('/d/sous') // dossier courant
+    expect(wrapper.find('.search-scope').text()).toContain('/d/sous') // chemin du dossier courant
 
-    // bascule explicite sur le disque via le sélecteur
+    // bascule explicite sur le disque via le sélecteur : le rappel montre la racine du disque
     await wrapper.findAll('.scope-btn').find(b => b.text().toLowerCase().includes('disque')).trigger('click')
     await wrapper.vm.$nextTick()
     const scope = wrapper.find('.search-scope').text()
-    expect(scope.toLowerCase()).toContain('disque')
     expect(scope).toContain('/d')
+    expect(scope).not.toContain('/d/sous') // périmètre remonté au disque
   })
 
   it("surligne dans la liste courante les entrées qui matchent (classe + <mark>)", async () => {

@@ -103,9 +103,9 @@ export default {
         { id: 'all', label: 'Tous les disques' }
       ],
       tabs: [
-        { id: 'search', label: 'Recherche', ready: true },
-        { id: 'console', label: 'Console', ready: true },
-        { id: 'session', label: 'Session', ready: false }
+        { id: 'search', label: 'Recherche' },
+        { id: 'console', label: 'Console' },
+        { id: 'session', label: 'Session' }
       ]
     };
   },

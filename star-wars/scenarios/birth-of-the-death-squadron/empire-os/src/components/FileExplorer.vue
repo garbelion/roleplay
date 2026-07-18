@@ -183,12 +183,11 @@ export default {
     searchCountMessage() {
       return this.searchQuery.trim() ? formatCount(this.searchResults) : ''
     },
-    // Rappel du périmètre de recherche courant (vide sans requête).
+    // Rappel du périmètre : le sélecteur nomme déjà la portée, on n'ajoute que le chemin exact
+    // résolu (rien pour 'all', dont la racine `/` n'apporte pas d'info).
     searchScopeLabel() {
-      if (!this.searchQuery.trim()) return ''
-      if (this.searchScope === 'all') return 'Tous les disques'
-      if (this.searchScope === 'disk') return `Ce disque : ${this.searchRootPath}`
-      return `Ce dossier : ${this.searchRootPath}`
+      if (!this.searchQuery.trim() || this.searchScope === 'all') return ''
+      return this.searchRootPath
     }
   },
   async created() {
