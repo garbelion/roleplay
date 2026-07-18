@@ -1124,4 +1124,19 @@ describe("FileExplorer.vue - Point 7: Recherche (dock)", () => {
     expect(notes.find('mark.hl').exists()).toBe(true)
     expect(notes.find('mark.hl').text()).toBe('notes')
   })
+
+  it("propose d'élargir au disque quand le dossier courant ne donne rien, puis trouve", async () => {
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.changeDirectory('/d/sous') // 'notes.md' n'est pas ici (il est dans /d)
+    await wrapper.find('.search-input').setValue('notes')
+    await wrapper.vm.$nextTick()
+
+    const widen = wrapper.find('.search-widen')
+    expect(widen.exists()).toBe(true)
+    expect(widen.text().toLowerCase()).toContain('disque')
+
+    await widen.trigger('click') // élargit au disque courant
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.bottom-dock').text()).toContain('/d/notes.md')
+  })
 })

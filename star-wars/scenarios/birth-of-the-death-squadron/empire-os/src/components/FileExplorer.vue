@@ -93,8 +93,10 @@
       :query="searchQuery"
       :results="searchResults"
       :count-message="searchCountMessage"
+      :widen-label="widenLabel"
       @update:query="searchQuery = $event"
       @select="onSearchSelect"
+      @widen="widenSearch"
     />
   </div>
 </template>
@@ -168,6 +170,13 @@ export default {
     },
     searchCountMessage() {
       return this.searchQuery.trim() ? formatCount(this.searchResults) : ''
+    },
+    // Proposition d'élargissement quand la portée courante ne donne rien (dir -> disque -> tous).
+    widenLabel() {
+      if (!this.searchQuery.trim() || this.searchResults.length > 0) return ''
+      if (this.searchScope === 'dir') return 'Élargir au disque'
+      if (this.searchScope === 'disk') return 'Élargir à tous les disques'
+      return ''
     }
   },
   async created() {
@@ -200,6 +209,10 @@ export default {
     },
     isSearchMatch(item) {
       return this.nameSegments(item).some(seg => seg.match)
+    },
+    widenSearch() {
+      if (this.searchScope === 'dir') this.searchScope = 'disk'
+      else if (this.searchScope === 'disk') this.searchScope = 'all'
     },
     // Icône de type (glyphe monochrome, cohérent avec le skin froid).
     iconFor(item) {
@@ -402,6 +415,12 @@ export default {
       // La sélection est indexée par position dans le répertoire courant ;
       // on la vide à chaque navigation pour éviter des index périmés.
       this.selectedFiles = []
+      // La requête est préservée à la navigation, mais on repart d'une portée étroite.
+      this.searchScope = 'dir'
+    },
+    searchQuery() {
+      // Une nouvelle recherche repart du répertoire courant (portée étroite).
+      this.searchScope = 'dir'
     }
   }
 }
