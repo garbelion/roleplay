@@ -92,12 +92,19 @@ dépaysante** avec dossiers/fichiers **leurres**, le **disque réseau** de Tana 
 (d)**. **Bloqué** : le contenu narratif n'est pas encore disponible. L'app tourne sur des données
 de démo (2 disques) en attendant. *Rien à coder côté app tant que le contenu n'est pas prêt.*
 
-### 5.2 — Back-office MJ temps réel *(premier jalon actionnable)*
+### 5.2 — Back-office MJ *(premier jalon actionnable)*
 2ᵉ page (URL connue du seul MJ) pour régler **en live** `connectionQuality` / `alertLevel`.
-Le MJ étant sur un **poste séparé**, deux navigateurs ne partagent aucun état → **exige un store
-temps réel** (Supabase/Firebase, gratuit). Conséquence assumée : **l'app cesse d'être statique.**
-Le popin lit déjà via un store de session, donc la bascule de source sera localisée.
-*Décisions à trancher au démarrage : Supabase vs Firebase ; schéma de session ; auth de la page MJ.*
+Le MJ étant sur un **poste séparé**, deux navigateurs ne partagent aucun état : il faut un
+**endroit inscriptible joignable par les deux machines**. Ce n'est **pas** une « vraie » DB —
+juste un **blob JSON hébergé dans un service léger** (JSONBin, npoint.io…). Le MJ y **écrit**,
+les joueurs le **relisent** (polling).
+
+**Décisions actées** :
+- **Déploiement = URL partagée** (pas d'hébergement local ; le jeu peut être à distance).
+- **App et config découplées** : l'app reste un **frontend statique** ; l'état de session vit
+  dans le **blob externe**, pas dans le bundle. Rien ne cesse d'être statique côté app.
+- **Store = blob JSON léger** (polling), **pas de backend maison ni de BaaS temps réel** au MVP.
+  Le popin lit déjà via un store de session → la bascule de source sera localisée.
 
 ### 5.3 — Immersion « big brother » (onglets du dock)
 - **Console** : logs rouges façon *« l'Empire vous protège du chaos »*.
@@ -116,8 +123,12 @@ Le popin lit déjà via un store de session, donc la bascule de source sera loca
 
 ## 6. Décisions encore ouvertes
 
-- **Back-office temps réel — choix du backend** : Supabase vs Firebase ; modèle d'auth de la page
-  MJ ; forme du store de session partagé. *À trancher au démarrage du jalon 5.2.*
+- **Back-office — détails du blob** : quel service (JSONBin / npoint.io / autre) ; **schéma** du
+  blob (`{connectionQuality, alertLevel, …}`) ; **secret d'écriture** protégeant la page MJ
+  (les joueurs n'ont qu'un accès lecture) ; **intervalle de polling** côté joueurs. *Approche
+  tranchée (blob JSON léger) ; ces détails restent à trancher au démarrage du jalon 5.2.*
+- **Push vs polling** : polling au MVP ; passer à un BaaS temps réel (Supabase/Firebase) seulement
+  si la latence du polling gêne réellement au jeu. *Parqué.*
 - **Page éditeur MJ** : route dans *cette* app (ex. `/forge`) ou outil séparé ? « Plusieurs
   tentatives de hacking » = configs qui **varient** d'une tentative à l'autre (anti méta-jeu) ou
   simple édition de confort ? *À trancher quand/si.*
