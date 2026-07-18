@@ -3,7 +3,7 @@
     <div class="dos-title-bar">
       <span class="dos-title">
         <span class="os-logo" aria-hidden="true">#</span>
-        {{ OS.name }}
+        <span class="os-name">{{ OS.name }}</span>
         <span class="os-full">— {{ OS.fullName }}</span>
       </span>
       <span class="dos-meta">{{ OS.version }} · {{ OS.build }}</span>
@@ -73,7 +73,8 @@ const closeTerminal = () => {
   font-display: swap;
 }
 
-.dos-title { display: flex; align-items: center; gap: 8px; font-weight: bold; text-transform: uppercase; color: var(--ink); }
+.dos-title { display: flex; align-items: center; gap: 8px; min-width: 0; font-weight: bold; text-transform: uppercase; color: var(--ink); }
+.os-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .os-logo {
   font-family: 'Star Jedi', monospace;
   color: var(--accent);
@@ -107,5 +108,17 @@ const closeTerminal = () => {
   font-size: 11px;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+}
+
+/* Responsive : sous une certaine largeur, le chrome affiche trop d'infos -> on condense.
+   Cœur conservé (logo + nom tronquable + horloge + fermeture) ; secondaire masqué. */
+@media (max-width: 640px) {
+  .dos-title-bar { gap: 10px; padding: 6px 10px; font-size: 12px; }
+  .os-full { display: none; }   /* « — Engineer Desktop Edition » */
+  .dos-meta { display: none; }  /* « version · build » */
+  .dos-status-bar { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+@media (max-width: 380px) {
+  .dos-status-bar { display: none; } /* licence : trop longue en très étroit */
 }
 </style>
