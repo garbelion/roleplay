@@ -182,6 +182,12 @@ export default {
   async created() {
     await this.loadFileSystem()
   },
+  mounted() {
+    window.addEventListener('keydown', this.onKeydown)
+  },
+  beforeUnmount() {
+    window.removeEventListener('keydown', this.onKeydown)
+  },
   methods: {
     normalizePath(path) {
       if (!path) return '/'
@@ -213,6 +219,15 @@ export default {
     widenSearch() {
       if (this.searchScope === 'dir') this.searchScope = 'disk'
       else if (this.searchScope === 'disk') this.searchScope = 'all'
+    },
+    // Raccourcis : Ctrl/Cmd+F active la recherche (écrase le natif) ; Échap efface la requête.
+    onKeydown(event) {
+      if ((event.ctrlKey || event.metaKey) && (event.key === 'f' || event.key === 'F')) {
+        event.preventDefault()
+        if (this.$refs.dock) this.$refs.dock.focusSearch()
+      } else if (event.key === 'Escape' && this.searchQuery) {
+        this.searchQuery = ''
+      }
     },
     // Icône de type (glyphe monochrome, cohérent avec le skin froid).
     iconFor(item) {

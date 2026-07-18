@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest"
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import { mount } from "@vue/test-utils"
 import JSZip from "jszip"
 import { saveAs } from "file-saver"
@@ -1105,6 +1105,11 @@ describe("FileExplorer.vue - Point 7: Recherche (dock)", () => {
     wrapper = mount(FileExplorer)
   })
 
+  afterEach(() => {
+    // Le listener clavier vit sur window : on démonte pour éviter les fuites entre tests.
+    if (wrapper) wrapper.unmount()
+  })
+
   it("affiche les résultats récursifs (avec chemin) et le compteur dans le dock", async () => {
     await wrapper.vm.loadFileSystem() // currentPath = /d
     await wrapper.find('.search-input').setValue('rapport')
@@ -1138,5 +1143,32 @@ describe("FileExplorer.vue - Point 7: Recherche (dock)", () => {
     await widen.trigger('click') // élargit au disque courant
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.bottom-dock').text()).toContain('/d/notes.md')
+  })
+
+  it("Échap efface la requête", async () => {
+    await wrapper.vm.loadFileSystem()
+    wrapper.vm.searchQuery = 'rap'
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.searchQuery).toBe('')
+  })
+
+  it("Ctrl+F focus le champ de recherche et écrase le raccourci natif", async () => {
+    wrapper.unmount() // retire le listener du wrapper du beforeEach
+    wrapper = mount(FileExplorer, { attachTo: document.body })
+    await wrapper.vm.loadFileSystem()
+    const event = new KeyboardEvent('keydown', { key: 'f', ctrlKey: true, cancelable: true })
+    window.dispatchEvent(event)
+    await wrapper.vm.$nextTick()
+    expect(event.defaultPrevented).toBe(true)
+    expect(document.activeElement).toBe(wrapper.find('.search-input').element)
+  })
+
+  it("préserve la requête à la navigation", async () => {
+    await wrapper.vm.loadFileSystem()
+    wrapper.vm.searchQuery = 'rap'
+    await wrapper.vm.changeDirectory('/d/sous')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.searchQuery).toBe('rap')
   })
 })
