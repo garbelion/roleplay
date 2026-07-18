@@ -125,13 +125,6 @@ describe("FileExplorer.vue - Feature 1: Afficher une liste de fichiers .docx", (
     expect(wrapper.emitted("files-selected")).toBeTruthy()
     expect(wrapper.emitted("files-selected")[0]).toEqual([[1]])
   })
-
-  it("devrait avoir une methode getFiles qui retourne la liste des fichiers", async () => {
-    await wrapper.vm.loadFileSystem()
-    const files = wrapper.vm.getFiles()
-    expect(files.length).toBe(5) // 4 fichiers + 1 ".."
-    expect(files[1].name).toBe("rapport_mission.md")
-  })
 })
 
 describe("FileExplorer.vue - Feature 2: Naviguer dans les répertoires", () => {

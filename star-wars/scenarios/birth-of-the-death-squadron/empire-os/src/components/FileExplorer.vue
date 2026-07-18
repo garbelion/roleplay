@@ -90,10 +90,8 @@
 
 <script>
 import { marked } from 'marked';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
 import { OS } from '../os-identity.js';
-import { computeTransferDuration } from '../transfer-duration.js';
+import { startTransfer } from '../transfer.js';
 
 export default {
   name: 'FileExplorer',
@@ -102,7 +100,7 @@ export default {
       osPrompt: OS.shortName,
       fileSystem: null,
       currentPath: '/Fichiers',
-      // Transfert en cours (popin d'attente) : null | { progress: 0..100, duration }
+      // Transfert en cours (popin d'attente) : null | { progress: 0..100 }
       transfer: null,
       // Réglages MJ (config statique pour le MVP ; store/back-office plus tard).
       sessionConfig: { connectionQuality: 'moyenne', alertLevel: 0 },
@@ -113,7 +111,7 @@ export default {
       showFileModal: false,
       openedFile: null,
       fileContent: '',
-      // Mode d'aperçu résolu à l'ouverture : 'markdown' | 'text' | 'summary' | 'binary' | 'image'.
+      // Mode d'aperçu résolu à l'ouverture : 'markdown' | 'text' | 'docx' | 'image' | 'summary' | 'binary'.
       previewKind: '',
       // Vrai tant que l'aperçu n'est pas prêt à s'afficher (fetch ou chargement image).
       previewLoading: false
@@ -178,24 +176,9 @@ export default {
         }
       } catch (error) {
         console.error('Erreur lors du chargement du file system:', error)
-        this.fileSystem = {
-          name: 'root',
-          path: '/',
-          type: 'directory',
-          children: [
-            {
-              name: 'Fichiers',
-              path: '/Fichiers',
-              type: 'directory',
-              children: [
-                { name: 'rapport_mission.md', path: '/Fichiers/rapport_mission.md', type: 'file' },
-                { name: 'ordre_executor.md', path: '/Fichiers/ordre_executor.md', type: 'file' },
-                { name: 'liste_cibles.md', path: '/Fichiers/liste_cibles.md', type: 'file' },
-                { name: 'protocole_secret.md', path: '/Fichiers/protocole_secret.md', type: 'file' }
-              ]
-            }
-          ]
-        }
+        // Pas de faux arbre en dur : on retombe sur une racine vide (le contenu est
+        // de la donnée, jamais du code).
+        this.fileSystem = { name: 'root', path: '/', type: 'directory', children: [] }
       }
     },
     findDirectoryByPath(path) {
@@ -220,7 +203,6 @@ export default {
           return
         }
         this.currentPath = '/' + parts.slice(0, -1).join('/')
-        if (this.currentPath === '/') this.currentPath = '/'
         return
       }
       
@@ -279,25 +261,16 @@ export default {
       }
     },
     async loadFileContent(file) {
+      // L'arborescence (file-system.json) est un décor : physiquement, tous les fichiers
+      // vivent à plat dans /public/fichiers/ et sont adressés par leur nom de base (fileUrl).
       try {
-        // L'arborescence (file-system.json) est un décor : physiquement, tous les
-        // fichiers vivent à plat dans /public/fichiers/ et sont adressés par leur
-        // nom de base. Deux fichiers de même nom dans des dossiers différents
-        // pointent donc volontairement vers le même contenu physique.
-        const filename = file.path.split('/').pop()
-        const response = await fetch(`/fichiers/${filename}`)
-        if (!response.ok) {
-          this.fileContent = this.previewKind === 'markdown'
-            ? '<div class="error">Fichier introuvable</div>'
-            : 'Fichier introuvable'
-          return
-        }
+        const response = await fetch(this.fileUrl(file))
+        if (!response.ok) throw new Error('Fichier introuvable')
         if (this.previewKind === 'docx') {
           // Rendu fidèle inline du .docx via mammoth (docx -> HTML), affiché en v-html.
           // Import dynamique : mammoth est volumineux, on le charge à la demande.
-          const arrayBuffer = await response.arrayBuffer()
           const mammoth = (await import('mammoth/mammoth.browser')).default
-          const result = await mammoth.convertToHtml({ arrayBuffer })
+          const result = await mammoth.convertToHtml({ arrayBuffer: await response.arrayBuffer() })
           this.fileContent = result.value
         } else {
           const raw = await response.text()
@@ -344,8 +317,8 @@ export default {
       this.$emit('files-selected', this.selectedFiles)
     },
 
-    // Lance un « transfert » : popin d'attente à durée fictive (ambiance), le vrai ZIP
-    // se construit en fond, l'enregistrement (saveAs) ne part qu'à la complétion de la barre.
+    // Ouvre la popin d'attente et délègue toute l'orchestration au module transfer.js
+    // (fausse barre + vrai ZIP en fond + saveAs à la complétion). Cf. point 6.
     downloadSelectedFiles() {
       if (this.selectedFiles.length === 0) {
         console.warn('Aucun fichier sélectionné pour téléchargement.')
@@ -357,63 +330,18 @@ export default {
         .map(i => this.currentDirectoryItems[i])
         .filter(f => f && f.type === 'file')
 
-      const duration = computeTransferDuration({
+      this.transfer = { progress: 0 }
+      this._transfer = startTransfer({
         files,
-        connectionQuality: this.sessionConfig.connectionQuality,
-        alertLevel: this.sessionConfig.alertLevel,
-        rng: this.rng
+        config: this.sessionConfig,
+        fileUrl: this.fileUrl,
+        rng: this.rng,
+        onProgress: (progress) => { if (this.transfer) this.transfer.progress = progress },
+        onDone: () => { this.transfer = null }
       })
-
-      // Vrai téléchargement en fond (annulable)
-      this._abort = new AbortController()
-      this._transferBlob = this.buildZip(files, this._abort.signal)
-      this._finishing = false
-
-      // Fausse barre, décorrélée du vrai transfert
-      this.transfer = { progress: 0, duration }
-      this._transferStart = Date.now()
-      this._transferTimer = setInterval(() => this.tickTransfer(), 100)
-    },
-    tickTransfer() {
-      if (!this.transfer) return
-      const elapsed = (Date.now() - this._transferStart) / 1000
-      this.transfer.progress = Math.min(100, (elapsed / this.transfer.duration) * 100)
-      if (this.transfer.progress >= 100 && !this._finishing) {
-        this._finishing = true
-        this.finalizeTransfer()
-      }
-    },
-    async finalizeTransfer() {
-      clearInterval(this._transferTimer)
-      try {
-        // On attend aussi le vrai ZIP s'il est plus lent que la barre.
-        const blob = await this._transferBlob
-        if (this.transfer) saveAs(blob, 'transfert_sienar.zip')
-      } catch (error) {
-        console.error('Erreur lors du transfert:', error)
-      } finally {
-        this.transfer = null
-      }
     },
     cancelTransfer() {
-      if (this._abort) this._abort.abort()
-      clearInterval(this._transferTimer)
-      this.transfer = null
-    },
-    async buildZip(files, signal) {
-      const zip = new JSZip()
-      for (const file of files) {
-        const filename = file.path.split('/').pop()
-        const response = await fetch(`/fichiers/${filename}`, { signal })
-        if (response.ok) {
-          // Lecture en blob (binaire) : .text() corromprait .docx / images / binaires.
-          zip.file(filename, await response.blob())
-        }
-      }
-      return zip.generateAsync({ type: 'blob' })
-    },
-    getFiles() {
-      return this.currentDirectoryItems
+      if (this._transfer) this._transfer.cancel()
     }
   },
   watch: {
