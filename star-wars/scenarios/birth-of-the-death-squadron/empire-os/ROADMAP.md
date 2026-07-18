@@ -152,6 +152,12 @@ Deux publics :
 - Recherche avancée (contenu, multi-disques).
 - Interface MJ **Page éditeur** (voir §7 — G) fonctionnalités pour faire intervenir le droid Bafouille et aider les PJ.
 
+**Backlog UX / responsive** *(notes à traiter)*
+- **En-tête en mode mobile** : s'affiche mal, **trop d'informations** (nom + version + build + horloge
+  + statut licence). Prévoir un chrome condensé / masquage progressif sous une largeur seuil.
+- **Tri des entrées** : afficher les **dossiers (et disques) avant les fichiers**, par ordre, dans
+  `currentDirectoryItems` (le `..` restant en tête).
+
 ## 6. Must-fix technique (à traiter avec le download `.docx`)
 
 Le téléchargement actuel fait `await response.text()` puis `zip.file(name, text)`. `.text()` décode
