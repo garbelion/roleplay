@@ -54,7 +54,7 @@ rédigée par le MJ ; `transferWeight` = poids pour la durée de transfert ficti
 
 ## 4. État livré (archive)
 
-**93 tests, build OK.** Une ligne par capacité ; le détail vit dans l'historique git.
+**118 tests, build OK.** Une ligne par capacité ; le détail vit dans l'historique git.
 
 - **Navigation** Unix (`..`, chemins relatifs/absolus, normalisation) + prompt cohérent
   (`sienar:/user-51394345/home$`).
@@ -73,7 +73,11 @@ rédigée par le MJ ; `transferWeight` = poids pour la durée de transfert ficti
   dans un **dock inférieur à onglets** (`BottomDock.vue`). Résultats cliquables avec chemin,
   compteur typé, surlignage `<mark>` de la liste courante (distinct de la sélection cyan),
   élargissement **dossier→disque→`/`**, **Ctrl+F**/Échap, query préservée à la navigation.
-  Cœur pur : `search.js`. Onglets **Console** / **Session** = coquilles prêtes.
+  Cœur pur : `search.js`.
+- **Console « big brother »** : onglet Console alimenté par un journal de session
+  (`session-log.js`) — surveillance des actions, propagande d'ambiance sur timer
+  (`propaganda.js`, pool MJ), avertissement > 2 h, teinte montant avec `alertLevel`.
+  Onglet **Session** = coquille prête.
 - **Skin impérial** : palette CSS centralisée (`index.html :root`), chrome (barre de titre :
   logo `#` **Star Jedi**, nom OS, version, build **20 AFE**, **horloge de session** ; barre de
   statut : licence), angles nets, responsive (chrome condensé <640px). Identité pilotée par
@@ -107,11 +111,16 @@ les joueurs le **relisent** (polling).
   Le popin lit déjà via un store de session → la bascule de source sera localisée.
 
 ### 5.3 — Immersion « big brother » (onglets du dock)
-- **Console** : logs rouges façon *« l'Empire vous protège du chaos »*.
-- **Avertissement de session** : au-delà de **2 h** d'horloge de session, un warning défile dans
-  la console (s'appuie sur l'horloge existante).
-- **Indicateur de niveau d'alerte** : dès `alertLevel > 0`, badge dans le chrome (libellé
-  minimal→war, teinte montante jusqu'au rouge impérial).
+- ✅ **Console v1 livrée** : onglet Console du dock alimenté par un **journal de session**
+  (`session-log.js`, store réactif capé, horodaté à l'horloge de session). Trois sources :
+  **surveillance** des actions (ouverture/navigation/extraction/annulation), **propagande**
+  d'ambiance sur timer (`propaganda.js`, pool en donnée MJ `console.propaganda`, cadence qui se
+  resserre avec l'alerte), **avertissements système** (dont le warning **> 2 h**). Couleur par
+  nature (surveillance cyan, propagande/alerte rouge) et **teinte de la console montant avec
+  `alertLevel`**. ~29 tests dédiés.
+- ⏳ **Reste** : **indicateur de niveau d'alerte dans le chrome** (badge titre/statut, libellé
+  minimal→war) — distinct de la teinte de la console, déplacé au besoin. Éventuelle ligne de
+  « session ouverte » à l'amorçage (console non vide au premier coup d'œil).
 
 ### 5.4 — Plus tard / parqué
 - **Recherche dans le contenu** des fichiers texte / descriptions (v2 de la recherche).
