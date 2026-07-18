@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
-import { mount } from "@vue/test-utils"
+import { mount, flushPromises } from "@vue/test-utils"
 import JSZip from "jszip"
 import { saveAs } from "file-saver"
 import FileExplorer from "../src/components/FileExplorer.vue"
@@ -1215,5 +1215,38 @@ describe("FileExplorer.vue - Console: surveillance des actions", () => {
     wrapper.vm.cancelTransfer()
     const entry = sessionLog.at(-1)
     expect(entry.text).toBe(surveillanceText('cancelExtract'))
+  })
+})
+
+describe("FileExplorer.vue - Console: propagande d'ambiance", () => {
+  const fsProp = {
+    name: 'root', path: '/', type: 'directory',
+    children: [{ name: 'd', path: '/d', type: 'disk', children: [] }],
+    session: { alertLevel: 0 },
+    console: { propaganda: ["SLOGAN TEST"] }
+  }
+  beforeEach(() => {
+    resetLog()
+    vi.useFakeTimers()
+    global.fetch = vi.fn((url) => url === '/file-system.json'
+      ? Promise.resolve({ json: () => Promise.resolve(fsProp) })
+      : Promise.resolve({ ok: true, blob: () => Promise.resolve(new Blob(['x'])) }))
+  })
+  afterEach(() => vi.useRealTimers())
+
+  it("émet la propagande (pool MJ) sur timer, puis s'arrête au démontage", async () => {
+    const wrapper = mount(FileExplorer)
+    await flushPromises() // laisse created()/loadFileSystem se résoudre
+    resetLog() // ignore le bruit du chargement (navigation initiale)
+
+    await vi.advanceTimersByTimeAsync(45000) // cadence de base (alerte 0)
+    const propa = sessionLog.filter(e => e.kind === 'propaganda')
+    expect(propa.length).toBeGreaterThanOrEqual(1)
+    expect(propa[0].text).toBe("SLOGAN TEST")
+
+    wrapper.unmount()
+    const before = sessionLog.length
+    await vi.advanceTimersByTimeAsync(90000)
+    expect(sessionLog.length).toBe(before) // plus rien après démontage
   })
 })

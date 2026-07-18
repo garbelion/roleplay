@@ -108,6 +108,7 @@ import { OS } from '../os-identity.js';
 import { startTransfer } from '../transfer.js';
 import { searchTree, formatCount, highlightSegments, matches } from '../search.js';
 import { sessionLog, pushLog, surveillanceText } from '../session-log.js';
+import { startPropaganda } from '../propaganda.js';
 import BottomDock from './BottomDock.vue';
 
 export default {
@@ -190,12 +191,19 @@ export default {
   },
   async created() {
     await this.loadFileSystem()
+    // Propagande d'ambiance : démarre une fois la config chargée (pool + niveau d'alerte).
+    this._propaganda = startPropaganda({
+      pool: this.fileSystem?.console?.propaganda,
+      alertLevel: this.sessionConfig.alertLevel,
+      rng: this.rng
+    })
   },
   mounted() {
     window.addEventListener('keydown', this.onKeydown)
   },
   beforeUnmount() {
     window.removeEventListener('keydown', this.onKeydown)
+    if (this._propaganda) this._propaganda.stop()
   },
   methods: {
     normalizePath(path) {

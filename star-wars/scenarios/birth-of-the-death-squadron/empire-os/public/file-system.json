@@ -4,6 +4,17 @@
   "type": "directory",
   "defaultPath": "/user-51394345/home",
   "session": { "connectionQuality": "moyenne", "alertLevel": 0 },
+  "console": {
+    "propaganda": [
+      "L'EMPIRE VEILLE.",
+      "TOUTE ACTIVITÉ SUR CE TERMINAL EST ENREGISTRÉE.",
+      "LA LOYAUTÉ EST RÉCOMPENSÉE. LA TRAHISON, PUNIE.",
+      "L'ORDRE NOUVEAU GARANTIT VOTRE SÉCURITÉ.",
+      "SIGNALEZ TOUTE ACTIVITÉ SÉDITIEUSE AU BUREAU DES TRANSMISSIONS.",
+      "GLOIRE À L'EMPEREUR.",
+      "UN CITOYEN SURVEILLÉ EST UN CITOYEN PROTÉGÉ."
+    ]
+  },
   "children": [
     {
       "name": "user-51394345",
