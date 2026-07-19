@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Éditeur d'arborescence — empire-os</title>
   <style>
-    :root { --bg:#0b0f0b; --fg:#33ff66; --dim:#1c6b32; --warn:#ffcc33; --danger:#ff4444; --line:#123; }
+    :root { --bg:#0b0f0b; --fg:#33ff66; --dim:#1c6b32; --warn:#ffcc33; --danger:#ff4444; }
     * { box-sizing: border-box; }
     body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.5 "Consolas","Courier New",monospace; }
     header { padding:12px 16px; border-bottom:1px solid var(--dim); display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
@@ -70,32 +70,19 @@
   <script type="module">
     import { diffFileSystem } from "./fs-sync.js"
 
-    let root = null          // racine JSON complète (session/console/children…)
-    let files = []           // fichiers réellement présents sur le disque
-    const collapsed = new Set()
-    let uid = 0
-    const idOf = new WeakMap()
+    let root = null            // racine JSON complète (session/console/children…)
+    let files = []             // fichiers réellement présents sur le disque
+    const collapsed = new Set() // nœuds repliés, par identité : survit aux renommages/déplacements
+    let dragged = null, draggedParent = null
     const el = (id) => document.getElementById(id)
 
-    function nodeId(node) {
-      if (!idOf.has(node)) idOf.set(node, "n" + uid++)
-      return idOf.get(node)
+    function isAncestor(a, b) { // a contient-il b (ou a === b) ?
+      return a === b || (a.children || []).some((c) => isAncestor(c, b))
     }
-    function byId(id, node = root) {
-      if (nodeId(node) === id) return node
-      for (const c of node.children || []) { const hit = byId(id, c); if (hit) return hit }
-      return null
-    }
-    function parentOf(target, node = root) {
-      for (const c of node.children || []) {
-        if (c === target) return node
-        const hit = parentOf(target, c); if (hit) return hit
-      }
-      return null
-    }
-    function isAncestor(a, b) { // a est-il ancêtre de (ou égal à) b ?
-      if (a === b) return true
-      return (a.children || []).some((c) => isAncestor(c, b))
+    function countFiles(node) {
+      let n = node.type === "file" ? 1 : 0
+      for (const c of node.children || []) n += countFiles(c)
+      return n
     }
 
     async function load() {
@@ -106,35 +93,35 @@
     // --- rendu ---------------------------------------------------------------
     function refresh() {
       const diff = diffFileSystem(root, files)
-      const missPaths = new Set(diff.missing.map((m) => m.path))
-      const dupPaths = new Set(diff.duplicates.flatMap((d) => d.paths))
-      el("tree").innerHTML = ""
-      el("tree").appendChild(renderChildren(root, "/", missPaths, dupPaths))
+      const miss = new Set(diff.missing.map((m) => m.path))
+      const dup = new Set(diff.duplicates.flatMap((d) => d.paths))
+      el("tree").replaceChildren(renderChildren(root, "/", miss, dup))
       renderStats(diff)
     }
 
-    function renderChildren(node, basePath, miss, dup) {
+    function renderChildren(parent, basePath, miss, dup) {
       const ul = document.createElement("ul")
-      for (const child of node.children || []) {
+      for (const child of parent.children || []) {
         const path = basePath === "/" ? "/" + child.name : basePath + "/" + child.name
-        ul.appendChild(renderNode(child, path, miss, dup))
+        ul.appendChild(renderNode(child, parent, path, miss, dup))
       }
       return ul
     }
 
-    function renderNode(node, path, miss, dup) {
+    function renderNode(node, parent, path, miss, dup) {
       const li = document.createElement("li")
       const row = document.createElement("div")
       row.className = "row"
       const isFolder = node.type === "directory" || node.type === "disk"
-      const problem = node.type === "file" && (miss.has(path) || dup.has(path))
-      if (problem) row.classList.add("problem", miss.has(path) ? "miss" : "dup")
+      const isMiss = node.type === "file" && miss.has(path)
+      const isDup = node.type === "file" && dup.has(path)
+      if (isMiss || isDup) row.classList.add("problem", isMiss ? "miss" : "dup")
 
       const twist = document.createElement("span")
       twist.className = "twist"
       if (isFolder && (node.children || []).length) {
-        twist.textContent = collapsed.has(path) ? "▸" : "▾"
-        twist.onclick = () => { collapsed.has(path) ? collapsed.delete(path) : collapsed.add(path); refresh() }
+        twist.textContent = collapsed.has(node) ? "▸" : "▾"
+        twist.onclick = () => { collapsed.has(node) ? collapsed.delete(node) : collapsed.add(node); refresh() }
       } else twist.textContent = " "
       row.appendChild(twist)
 
@@ -147,68 +134,61 @@
       nm.className = "nm"
       nm.textContent = node.name
       nm.draggable = true
-      nm.ondragstart = (e) => e.dataTransfer.setData("id", nodeId(node))
+      nm.ondragstart = (e) => {
+        dragged = node; draggedParent = parent
+        e.dataTransfer.setData("text/plain", node.name); e.dataTransfer.effectAllowed = "move"
+      }
       row.appendChild(nm)
 
       if (node.type === "disk") row.appendChild(badge("disque"))
-      if (problem) row.appendChild(badge(miss.has(path) ? "manquant" : "doublon"))
+      if (isMiss || isDup) row.appendChild(badge(isMiss ? "manquant" : "doublon"))
 
       const acts = document.createElement("span")
       acts.className = "acts"
-      const parent = parentOf(node)
       if (isFolder) {
         acts.appendChild(mkBtn("＋📄", "Nouveau fichier", () => addChild(node, "file")))
         acts.appendChild(mkBtn("＋📁", "Nouveau dossier", () => addChild(node, "directory")))
       }
       acts.appendChild(mkBtn("✎", "Renommer", () => rename(node)))
-      if (parent) {
-        acts.appendChild(mkBtn("⬆", "Monter", () => reorder(node, -1)))
-        acts.appendChild(mkBtn("⬇", "Descendre", () => reorder(node, +1)))
-        acts.appendChild(mkBtn("✖", "Retirer", () => remove(node)))
-      }
+      acts.appendChild(mkBtn("⬆", "Monter", () => reorder(parent, node, -1)))
+      acts.appendChild(mkBtn("⬇", "Descendre", () => reorder(parent, node, +1)))
+      acts.appendChild(mkBtn("✖", "Retirer", () => remove(parent, node)))
       row.appendChild(acts)
 
-      // cible de drop : dossiers uniquement
-      if (isFolder) {
+      if (isFolder) { // cible de drop : dossiers uniquement
         row.ondragover = (e) => { e.preventDefault(); row.classList.add("drop") }
         row.ondragleave = () => row.classList.remove("drop")
-        row.ondrop = (e) => { e.preventDefault(); row.classList.remove("drop"); drop(e.dataTransfer.getData("id"), node) }
+        row.ondrop = (e) => { e.preventDefault(); row.classList.remove("drop"); moveInto(node) }
       }
 
       li.appendChild(row)
-      if (isFolder && !collapsed.has(path)) li.appendChild(renderChildren(node, path, miss, dup))
+      if (isFolder && !collapsed.has(node)) li.appendChild(renderChildren(node, path, miss, dup))
       return li
     }
 
     function badge(t) { const b = document.createElement("span"); b.className = "badge"; b.textContent = t; return b }
     function mkBtn(label, title, fn) {
-      const b = document.createElement("button"); b.textContent = label; b.title = title
-      b.onclick = fn; return b
+      const b = document.createElement("button"); b.textContent = label; b.title = title; b.onclick = fn; return b
     }
+    function spanText(t) { const s = document.createElement("span"); s.textContent = t; return s }
 
     function renderStats(diff) {
-      const ok = countFiles(root) - diff.missing.length
-      el("stats").innerHTML = ""
-      addStat("ok", "✔ fichiers OK", Math.max(ok, 0))
+      el("stats").replaceChildren()
+      addStat("ok", "✔ fichiers OK", Math.max(countFiles(root) - diff.missing.length, 0))
       addStat("miss", "⚠ manquants", diff.missing.length)
       addStat("orph", "⚠ orphelins", diff.orphans.length)
       addStat("dup", "⚠ doublons", diff.duplicates.length)
-      const d = el("details"); d.innerHTML = ""
+      el("details").replaceChildren()
       diff.missing.forEach((m) => addDetail("miss", `manquant : ${m.name}  (${m.path})`))
       diff.orphans.forEach((o) => addDetail("orph", `orphelin : ${o}  (présent, non déclaré)`))
       diff.duplicates.forEach((x) => addDetail("dup", `doublon : ${x.name}  → ${x.paths.join(" , ")}`))
     }
     function addStat(cls, label, n) {
       const s = document.createElement("div"); s.className = "stat " + (n ? cls : "ok")
-      s.innerHTML = `<span>${label}</span><span>${n}</span>`; el("stats").appendChild(s)
+      s.append(spanText(label), spanText(String(n))); el("stats").appendChild(s)
     }
     function addDetail(cls, txt) {
       const d = document.createElement("div"); d.className = cls; d.textContent = txt; el("details").appendChild(d)
-    }
-    function countFiles(node) {
-      let n = node.type === "file" ? 1 : 0
-      for (const c of node.children || []) n += countFiles(c)
-      return n
     }
 
     // --- mutations -----------------------------------------------------------
@@ -217,40 +197,28 @@
       if (!name) return
       folder.children = folder.children || []
       folder.children.push(type === "file" ? { name, type } : { name, type, children: [] })
-      collapsed.delete(pathString(folder))
-      refresh()
+      collapsed.delete(folder); refresh()
     }
     function rename(node) {
       const v = prompt("Nouveau nom", node.name)
       if (v && v !== node.name) { node.name = v; refresh() }
     }
-    function remove(node) {
-      const p = parentOf(node); if (!p) return
+    function remove(parent, node) {
       if ((node.children || []).length && !confirm(`Retirer « ${node.name} » et tout son contenu ?`)) return
-      p.children.splice(p.children.indexOf(node), 1); refresh()
+      parent.children.splice(parent.children.indexOf(node), 1); refresh()
     }
-    function reorder(node, dir) {
-      const p = parentOf(node); if (!p) return
-      const i = p.children.indexOf(node), j = i + dir
-      if (j < 0 || j >= p.children.length) return
-      ;[p.children[i], p.children[j]] = [p.children[j], p.children[i]]; refresh()
+    function reorder(parent, node, dir) {
+      const i = parent.children.indexOf(node), j = i + dir
+      if (j < 0 || j >= parent.children.length) return
+      ;[parent.children[i], parent.children[j]] = [parent.children[j], parent.children[i]]; refresh()
     }
-    function drop(id, folder) {
-      const node = byId(id); if (!node || node === folder) return
-      if (isAncestor(node, folder)) { flash("Impossible : cible dans le nœud déplacé.", true); return }
-      const p = parentOf(node); if (!p) return
-      p.children.splice(p.children.indexOf(node), 1)
+    function moveInto(folder) {
+      if (!dragged || dragged === folder) return
+      if (isAncestor(dragged, folder)) { flash("Impossible : cible dans le nœud déplacé.", true); return }
+      draggedParent.children.splice(draggedParent.children.indexOf(dragged), 1)
       folder.children = folder.children || []
-      folder.children.push(node)
-      collapsed.delete(pathString(folder)); refresh()
-    }
-    function pathString(target, node = root, base = "/") {
-      if (node === target) return base
-      for (const c of node.children || []) {
-        const p = base === "/" ? "/" + c.name : base + "/" + c.name
-        const hit = pathString(target, c, p); if (hit) return hit
-      }
-      return null
+      folder.children.push(dragged)
+      collapsed.delete(folder); refresh()
     }
 
     // --- actions -------------------------------------------------------------
@@ -261,7 +229,7 @@
         })).json()
         if (r.error) throw new Error(r.error)
         files = r.files; refresh()
-        const d = r.diff, warn = d.missing.length + d.orphans.length + d.duplicates.length
+        const warn = r.diff.missing.length + r.diff.orphans.length + r.diff.duplicates.length
         flash(warn ? `Enregistré — ${warn} alerte(s) de synchro.` : "Enregistré. Synchro OK.", warn > 0)
       } catch (e) { flash("Échec : " + e.message, true) }
     }

@@ -43,7 +43,8 @@ empire-os/
 │   ├── os-identity.js       # identité de l'OS (nom, version, build 20 AFE, licence) — source unique
 │   ├── assets/starjedi/     # police Star Jedi
 │   └── main.js
-├── tests/                   # FileExplorer.spec.js, App.spec.js, transfer-duration.spec.js
+├── tests/                   # FileExplorer.spec.js, App.spec.js, transfer-duration.spec.js…
+├── tools/fs-editor/         # éditeur d'arborescence local (MJ) + contrôle de synchro (dev-only)
 ├── vite.config.js
 └── index.html               # palette impériale en variables CSS (:root)
 ```
@@ -57,6 +58,27 @@ npm run build      # build de production
 npm run test:unit  # tests (Vitest)
 npm run test:coverage
 ```
+
+## Outil d'édition de l'arborescence (MJ, local)
+
+Pour éditer `file-system.json` et garder `public/fichiers/` cohérent sans manipuler le JSON à la
+main :
+
+```bash
+npm run fs:editor  # -> http://localhost:5177
+```
+
+Éditeur web local (dev-only, `tools/fs-editor/`, sans dépendance — hors bundle appli) :
+
+- **Arbre éditable** : ajouter / renommer / retirer un nœud, réordonner (⬆⬇) et **déplacer par
+  glisser-déposer** sur un dossier. Les fichiers vivant à plat, déplacer un nœud ne bouge aucun
+  fichier physique — seul l'emplacement logique change ; l'invariant à tenir est l'unicité des noms.
+- **Contrôle de synchro en direct** : panneau listant **manquants** (déclarés, absents du disque),
+  **orphelins** (présents, non déclarés) et **doublons** de noms ; les nœuds fautifs sont surlignés.
+- **Enregistrer** (bouton ou `Ctrl+S`) réécrit `public/file-system.json` directement.
+
+Le cœur de comparaison (`fs-sync.js`, `diffFileSystem`) est une fonction pure testée, réutilisée
+par le serveur et l'UI pour un diagnostic identique des deux côtés.
 
 ## Fonctionnalités livrées
 
