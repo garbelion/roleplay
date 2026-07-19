@@ -34,11 +34,26 @@ export function createSupabaseSource(client, table = TABLE) {
 /**
  * Glue d'amorçage : depuis la config `session.supabase` de file-system.json, importe le SDK
  * (dynamique, code-split), crée le client et connecte le store au Realtime. Config absente /
- * incomplète => handle inerte (mode 100 % statique, aucun SDK chargé). Renvoie `{ disconnect }`.
+ * incomplète => handle inerte (mode 100 % statique, aucun SDK chargé).
+ *
+ * Renvoie un handle `{ disconnect }` **synchrone** : le chargement du SDK et la connexion se
+ * font en fond, et `disconnect()` est sûr qu'ils soient terminés ou non (la course est gérée
+ * ici, pas dans l'appelant). Échec d'import/connexion => on reste en mode statique.
  */
-export async function connectSupabaseSession(config) {
+export function connectSupabaseSession(config) {
   if (!config?.url || !config?.anonKey) return { disconnect() {} }
-  const { createClient } = await import('@supabase/supabase-js')
-  const client = createClient(config.url, config.anonKey)
-  return connectSessionRemote(createSupabaseSource(client))
+  let inner = null
+  let stopped = false
+  ;(async () => {
+    try {
+      const { createClient } = await import('@supabase/supabase-js')
+      if (stopped) return
+      const client = createClient(config.url, config.anonKey)
+      inner = await connectSessionRemote(createSupabaseSource(client))
+      if (stopped) inner.disconnect()
+    } catch {
+      // SDK ou connexion indisponible : on garde les défauts statiques.
+    }
+  })()
+  return { disconnect() { stopped = true; if (inner) inner.disconnect() } }
 }

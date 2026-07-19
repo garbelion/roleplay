@@ -203,12 +203,9 @@ export default {
       alertLevel: sessionState.alertLevel,
       rng: this.rng
     })
-    // Back-office MJ : si un projet Supabase est configuré, brancher l'état de session en live
-    // (fire-and-forget : le SDK se charge en dynamique, sans bloquer l'UI). Absent => statique.
-    connectSupabaseSession(this.fileSystem?.session?.supabase).then((remote) => {
-      if (this._unmounted) remote.disconnect()
-      else this._remote = remote
-    })
+    // Back-office MJ : si un projet Supabase est configuré, brancher l'état de session en live.
+    // Handle synchrone (le SDK se charge en dynamique en fond) ; absent => mode statique.
+    this._remote = connectSupabaseSession(this.fileSystem?.session?.supabase)
   },
   mounted() {
     window.addEventListener('keydown', this.onKeydown)
@@ -216,7 +213,6 @@ export default {
   beforeUnmount() {
     window.removeEventListener('keydown', this.onKeydown)
     if (this._console) this._console.stop()
-    this._unmounted = true
     if (this._remote) this._remote.disconnect()
   },
   methods: {

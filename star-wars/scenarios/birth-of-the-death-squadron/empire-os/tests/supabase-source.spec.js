@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest"
-import { createSupabaseSource } from "../src/supabase-source.js"
+import { createSupabaseSource, connectSupabaseSession } from "../src/supabase-source.js"
 
 // Faux client Supabase : reproduit l'API chaînable dont l'adaptateur a besoin.
 function fakeClient({ row = null } = {}) {
@@ -42,5 +42,14 @@ describe("createSupabaseSource", () => {
 
     unsub()
     expect(client.removeChannel).toHaveBeenCalled()
+  })
+})
+
+describe("connectSupabaseSession (mode statique)", () => {
+  it("sans config, renvoie un handle synchrone inerte (aucun SDK chargé)", () => {
+    const handle = connectSupabaseSession(undefined)
+    expect(typeof handle.disconnect).toBe("function") // synchrone, pas une Promise
+    expect(() => handle.disconnect()).not.toThrow()
+    expect(connectSupabaseSession({ url: "x" }).disconnect).toBeTypeOf("function") // config incomplète
   })
 })
