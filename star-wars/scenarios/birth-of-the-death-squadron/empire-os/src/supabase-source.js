@@ -46,15 +46,16 @@ export function createSupabaseSource(client, table = TABLE) {
  * (dynamique, code-split), crée le client et connecte le store au Realtime. Config absente /
  * incomplète => handle inerte (mode 100 % statique, aucun SDK chargé).
  *
- * Renvoie un handle `{ disconnect }` **synchrone** : le chargement du SDK et la connexion se
- * font en fond, et `disconnect()` est sûr qu'ils soient terminés ou non (la course est gérée
- * ici, pas dans l'appelant). Échec d'import/connexion => on reste en mode statique.
+ * Renvoie un handle `{ disconnect, ready }` **synchrone** : le chargement du SDK et la connexion
+ * se font en fond ; `disconnect()` est sûr qu'ils soient terminés ou non (la course est gérée
+ * ici, pas dans l'appelant), et `ready` se résout après le premier settle (fetch initial appliqué)
+ * ou l'échec — l'hôte s'en sert pour ne router qu'une fois l'état connu. Échec => mode statique.
  */
 export function connectSupabaseSession(config) {
-  if (!config?.url || !config?.anonKey) return { disconnect() {} }
+  if (!config?.url || !config?.anonKey) return { disconnect() {}, ready: Promise.resolve() }
   let inner = null
   let stopped = false
-  ;(async () => {
+  const ready = (async () => {
     try {
       const client = await loadSupabaseClient(config)
       if (stopped) return
@@ -64,5 +65,5 @@ export function connectSupabaseSession(config) {
       // SDK ou connexion indisponible : on garde les défauts statiques.
     }
   })()
-  return { disconnect() { stopped = true; if (inner) inner.disconnect() } }
+  return { disconnect() { stopped = true; if (inner) inner.disconnect() }, ready }
 }

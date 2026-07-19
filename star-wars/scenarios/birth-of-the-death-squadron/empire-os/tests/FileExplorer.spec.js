@@ -5,7 +5,6 @@ import { saveAs } from "file-saver"
 import FileExplorer from "../src/components/FileExplorer.vue"
 import { OS } from "../src/os-identity.js"
 import { sessionLog, resetLog, surveillanceText, SESSION_OPEN_TEXT } from "../src/session-log.js"
-import { sessionState } from "../src/session-store.js"
 
 // saveAs déclenche un vrai téléchargement navigateur (indisponible en jsdom) ;
 // on le mocke pour capturer le blob ZIP produit et l'inspecter.
@@ -934,13 +933,9 @@ describe("FileExplorer.vue - Point 6: Popin d'attente (transfert)", () => {
     vi.useRealTimers()
   })
 
-  it("lit les réglages MJ (connexion/alerte) depuis la racine de file-system.json", async () => {
-    global.fetch = vi.fn((url) => url === '/file-system.json'
-      ? Promise.resolve({ json: () => Promise.resolve({ ...fs, session: { connectionQuality: 'critique', alertLevel: 3 } }) })
-      : Promise.resolve({ ok: true, blob: () => Promise.resolve(new Blob(['x'])) }))
-    await wrapper.vm.loadFileSystem()
-    expect(sessionState).toMatchObject({ connectionQuality: 'critique', alertLevel: 3 })
-  })
+  // Note : l'application des réglages de session depuis file-system.json est désormais
+  // portée par App (hôte persistant) — cf. tests/App.spec.js. FileExplorer ne fait plus
+  // que lire le store partagé.
 })
 
 describe("FileExplorer.vue - Point 9: Icônes par type", () => {

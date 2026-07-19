@@ -2,6 +2,13 @@
   <!-- Route MJ (#/mj) : back-office, séparé de l'OS joueur. -->
   <MjPanel v-if="isMj" :ops="mjOps" />
 
+  <!-- Amorçage : on attend le premier settle de l'état de session avant de router
+       (évite un replay du défilement d'intrusion au refresh). -->
+  <div v-else-if="!booted" class="os-boot" aria-live="polite">CONNEXION AU RÉSEAU IMPÉRIAL…</div>
+
+  <!-- Phase d'intrusion (avant l'accès OS) : shell plein écran piloté par le MJ. -->
+  <IntrusionShell v-else-if="!showOs" :intrusion="fileSystem && fileSystem.intrusion" />
+
   <div v-else class="dos-window">
     <!-- Filigrane décoratif : logo impérial (Star Jedi) estompé en fond de l'OS. -->
     <div class="os-watermark" aria-hidden="true">#</div>
@@ -42,18 +49,32 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import FileExplorer from "./components/FileExplorer.vue";
+import IntrusionShell from "./components/IntrusionShell.vue";
 import MjPanel from "./components/MjPanel.vue";
 import { createMjOpsFromConfig } from "./supabase-mj.js";
+import { connectSupabaseSession } from "./supabase-source.js";
 import { OS } from "./os-identity.js";
 import { formatSessionTime } from "./session-log.js";
 import { notifications, dismiss } from "./notifications.js";
-import { sessionState } from "./session-store.js";
+import { sessionState, setSessionConfig } from "./session-store.js";
 import { ALERT_LABELS } from "./transfer-duration.js";
 
 // Routage minimal par hash : #/mj => back-office MJ, sinon l'OS joueur.
 const route = ref(window.location.hash);
 const onHashChange = () => { route.value = window.location.hash; };
 const isMj = computed(() => route.value === "#/mj");
+
+// Contenu (file-system.json) + état d'amorçage. `App` est l'hôte persistant du côté
+// joueur : il possède la config de session et la connexion live (qui doit survivre à la
+// bascule intrusion <-> OS), puis route selon l'écran d'intrusion courant.
+const fileSystem = ref(null);
+const booted = ref(false);
+const showOs = computed(() => sessionState.intrusion === "os");
+let remote = null;
+
+// Gate d'amorçage : on borne l'attente du premier settle pour ne jamais bloquer le boot.
+const GATE_TIMEOUT_MS = 1500;
+const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // Opérations MJ (Supabase) construites à la demande quand on entre sur la page MJ.
 const mjOps = ref(null);
@@ -71,13 +92,27 @@ const alertLabel = computed(() => (ALERT_LABELS[sessionState.alertLevel] || "").
 const sessionStart = Date.now();
 const clock = ref(formatSessionTime(0));
 let timer;
-onMounted(() => {
+onMounted(async () => {
   timer = setInterval(() => { clock.value = formatSessionTime(Date.now() - sessionStart); }, 1000);
   window.addEventListener("hashchange", onHashChange);
+  try {
+    const res = await fetch("/file-system.json");
+    fileSystem.value = await res.json();
+    // Réglages de session statiques (défauts) puis connexion live (Supabase Realtime) :
+    // possédées ici pour survivre à la bascule intrusion <-> OS.
+    setSessionConfig(fileSystem.value.session);
+    remote = connectSupabaseSession(fileSystem.value.session?.supabase);
+    // Attendre le premier settle (borné) : le shell naît alors à l'état courant (pas de replay).
+    await Promise.race([remote.ready, delay(GATE_TIMEOUT_MS)]);
+  } catch {
+    // Contenu injoignable : on démarre en mode dégradé (défauts statiques).
+  }
+  booted.value = true;
 });
 onUnmounted(() => {
   clearInterval(timer);
   window.removeEventListener("hashchange", onHashChange);
+  if (remote) remote.disconnect();
 });
 
 const closeTerminal = () => {

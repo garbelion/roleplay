@@ -110,8 +110,7 @@ import { OS } from '../os-identity.js';
 import { startTransfer } from '../transfer.js';
 import { searchTree, formatCount, highlightSegments, matches } from '../search.js';
 import { sessionLog, pushLog, surveillanceText, SESSION_OPEN_TEXT } from '../session-log.js';
-import { sessionState, setSessionConfig } from '../session-store.js';
-import { connectSupabaseSession } from '../supabase-source.js';
+import { sessionState } from '../session-store.js';
 import { startConsoleAmbience } from '../console-ambience.js';
 import { assignPaths } from '../file-tree.js';
 import BottomDock from './BottomDock.vue';
@@ -204,9 +203,6 @@ export default {
       alertLevel: sessionState.alertLevel,
       rng: this.rng
     })
-    // Back-office MJ : si un projet Supabase est configuré, brancher l'état de session en live.
-    // Handle synchrone (le SDK se charge en dynamique en fond) ; absent => mode statique.
-    this._remote = connectSupabaseSession(this.fileSystem?.session?.supabase)
   },
   mounted() {
     window.addEventListener('keydown', this.onKeydown)
@@ -214,7 +210,6 @@ export default {
   beforeUnmount() {
     window.removeEventListener('keydown', this.onKeydown)
     if (this._console) this._console.stop()
-    if (this._remote) this._remote.disconnect()
   },
   methods: {
     normalizePath(path) {
@@ -276,8 +271,6 @@ export default {
         if (this.fileSystem.defaultPath) {
           this.currentPath = this.fileSystem.defaultPath
         }
-        // Réglages de session (MJ) : qualité de connexion / niveau d'alerte -> store partagé.
-        setSessionConfig(this.fileSystem.session)
       } catch (error) {
         console.error('Erreur lors du chargement du file system:', error)
         // Pas de faux arbre en dur : on retombe sur une racine vide (le contenu est
