@@ -98,6 +98,45 @@ describe("App.vue - Skin / chrome impérial (dans l'OS)", () => {
     }
   })
 
+  it("démarre l'horloge depuis l'heure réglée par le MJ (clockStart) et la fait avancer", async () => {
+    vi.useFakeTimers()
+    try {
+      vi.setSystemTime(new Date(2026, 0, 1, 10, 0, 0))
+      setSessionConfig({ intrusion: "os", clockStart: 3661 }) // 01:01:01
+      const wrapper = mount(App)
+      await flushPromises()
+      expect(wrapper.find(".os-clock").text()).toBe("01:01:01")
+
+      vi.advanceTimersByTime(1000)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find(".os-clock").text()).toBe("01:01:02")
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it("ne démarre l'horloge qu'à l'entrée dans l'OS (pas au chargement pendant l'intrusion)", async () => {
+    vi.useFakeTimers()
+    try {
+      vi.setSystemTime(new Date(2026, 0, 1, 10, 0, 0))
+      setSessionConfig({ intrusion: "boot" }) // on démarre dans la phase d'intrusion
+      const wrapper = mount(App)
+      await flushPromises()
+
+      vi.advanceTimersByTime(5000) // 5 s s'écoulent avant l'entrée dans l'OS
+      setSessionConfig({ intrusion: "os" }) // entrée dans EmpireOS maintenant
+      await wrapper.vm.$nextTick()
+      // l'horloge démarre à l'entrée, pas au chargement : elle repart de la base (0)
+      expect(wrapper.find(".os-clock").text()).toBe("00:00:00")
+
+      vi.advanceTimersByTime(1000)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find(".os-clock").text()).toBe("00:00:01")
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it("affiche un filigrane du logo impérial en fond (décoratif)", async () => {
     const wrapper = await mountOs()
     const mark = wrapper.find(".os-watermark")

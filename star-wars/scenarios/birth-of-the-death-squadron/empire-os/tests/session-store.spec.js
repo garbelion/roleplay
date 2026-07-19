@@ -9,11 +9,18 @@ import {
 describe("session-store", () => {
   beforeEach(() => resetSessionState())
 
-  it("expose les défauts (connexion moyenne, alerte 0, intrusion boot)", () => {
+  it("expose les défauts (connexion moyenne, alerte 0, intrusion boot, horloge 0)", () => {
     expect(sessionState.connectionQuality).toBe("moyenne")
     expect(sessionState.alertLevel).toBe(0)
     expect(sessionState.intrusion).toBe("boot")
-    expect(DEFAULT_SESSION).toEqual({ connectionQuality: "moyenne", alertLevel: 0, intrusion: "boot" })
+    expect(sessionState.clockStart).toBe(0)
+    expect(DEFAULT_SESSION).toEqual({ connectionQuality: "moyenne", alertLevel: 0, intrusion: "boot", clockStart: 0 })
+  })
+
+  it("setSessionConfig applique l'heure de départ (clockStart, en secondes) sans écraser les autres clés", () => {
+    setSessionConfig({ clockStart: 3600 })
+    expect(sessionState.clockStart).toBe(3600)
+    expect(sessionState.intrusion).toBe("boot") // inchangé
   })
 
   it("setSessionConfig applique une config partielle sans écraser les clés absentes", () => {

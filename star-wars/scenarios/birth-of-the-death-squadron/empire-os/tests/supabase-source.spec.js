@@ -43,6 +43,12 @@ describe("mapRow / toRow", () => {
     expect(toRow({ intrusion: "os" })).toMatchObject({ intrusion: "os" })
   })
 
+  it("mapRow/toRow portent l'heure de départ (clock_start <-> clockStart)", () => {
+    expect(mapRow({ connection_quality: "moyenne", alert_level: 0, intrusion: "boot", clock_start: 3600 }))
+      .toMatchObject({ clockStart: 3600 })
+    expect(toRow({ clockStart: 3600 })).toMatchObject({ clock_start: 3600 })
+  })
+
   it("onChange mappe payload.new et fournit un désabonnement", () => {
     const client = fakeClient()
     const src = createSupabaseSource(client)

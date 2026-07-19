@@ -5,7 +5,7 @@
 
 import { reactive } from 'vue'
 
-export const DEFAULT_SESSION = { connectionQuality: 'moyenne', alertLevel: 0, intrusion: 'boot' }
+export const DEFAULT_SESSION = { connectionQuality: 'moyenne', alertLevel: 0, intrusion: 'boot', clockStart: 0 }
 
 export const sessionState = reactive({ ...DEFAULT_SESSION })
 

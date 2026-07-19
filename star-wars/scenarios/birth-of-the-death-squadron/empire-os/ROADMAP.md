@@ -174,7 +174,7 @@ en attendant.
 - ✅ **Badge d'alerte dans le chrome** livré via la **slice 3 du back-office** (§5.2) : barre de
   titre, libellé `ALERT_LABELS`, teinte montante, piloté par le store réactif (source unique).
 
-### 5.4 — Phase d'intrusion (amorçage « shell ») *(livré — prérequis live : colonne Supabase `intrusion`)*
+### 5.4 — Phase d'intrusion (amorçage « shell ») *(livré — prérequis live : colonnes Supabase `intrusion`, `clock_start`)*
 Séquence diégétique **façon shell** jouée **avant** l'accès à EmpireOS, figurant l'effraction sur le
 réseau. **Non interactive côté joueur, réactive au MJ** : le hack se résout à la table (**3 jets de
 dé**) ; à chaque jet le MJ **pose l'écran correspondant** depuis `/mj`, poussé en Realtime. Réutilise
@@ -213,8 +213,14 @@ accès accordé → bascule sur `FileExplorer`.
    transition d'état, affichés **anti-chronologiquement** (le plus récent en tête, façon terminal
    qui défile) ; seul le nouveau bloc défile (les précédents figés/estompés), amorçage au repos au
    chargement ; teinte `refus` **par bloc** (`isRefus`). Présentation : **fenêtre de terminal
-   centrée sur fond noir** (barre de titre + station). *(Retours de test : ne plus remplacer
-   l'écran à chaque changement ; rendu moins artificiel via une simili-console centrée.)*
+   centrée sur fond noir**, barre de titre reprenant le **chrome EmpireOS** (logo impérial `#`
+   Star Jedi, nom, version/build) + station. *(Retours de test : ne plus remplacer l'écran à chaque
+   changement ; rendu moins artificiel via une simili-console centrée, cohérente avec l'OS.)*
+
+**Horloge de session réglable (MJ).** Champ de session `clockStart` (secondes, colonne `clock_start`) :
+le MJ règle une **heure de départ** (`#/mj`, format HH:MM:SS) ; l'horloge **démarre à l'entrée dans
+EmpireOS** (ancrée sur la bascule `intrusion → os`, pas au chargement) et **compte le temps qui
+passe**. Piloté par le store réactif (même tuyau Realtime), affiché dans le chrome de l'OS.
 4. ✅ **Routage `App` + propriété de session** : `App` devient l'hôte persistant — fetch de
    `file-system.json`, application des réglages de session, **connexion live** (remontée de
    `FileExplorer` : elle doit survivre à la bascule intrusion ⇄ OS) — puis route `IntrusionShell`

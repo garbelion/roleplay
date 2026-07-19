@@ -28,6 +28,9 @@
             <option v-for="(label, i) in alertLabels" :key="i" :value="i">{{ i }} — {{ label }}</option>
           </select>
         </label>
+        <label class="mj-field">Heure de session (départ, démarre à l'entrée dans l'OS)
+          <input v-model="clockHms" type="time" step="1" class="mj-input mj-clock" />
+        </label>
         <button type="submit" class="mj-btn" :disabled="busy">Appliquer</button>
         <p v-if="applied" class="mj-ok">Réglages appliqués.</p>
         <p v-if="error" class="mj-error">{{ error }}</p>
@@ -59,6 +62,7 @@
 import { OS } from '../os-identity.js';
 import { ALERT_LABELS, CONNECTION_FACTORS } from '../transfer-duration.js';
 import { INTRUSION_SCREENS, isRefus } from '../intrusion.js';
+import { formatSessionTime } from '../session-log.js';
 
 export default {
   name: 'MjPanel',
@@ -80,6 +84,7 @@ export default {
       password: '',
       connectionQuality: 'moyenne',
       alertLevel: 0,
+      clockHms: '00:00:00',
       currentIntrusion: 'boot',
       intrusionError: ''
     };
@@ -97,6 +102,7 @@ export default {
           if (state.connectionQuality !== undefined) this.connectionQuality = state.connectionQuality;
           if (state.alertLevel !== undefined) this.alertLevel = state.alertLevel;
           if (state.intrusion !== undefined) this.currentIntrusion = state.intrusion;
+          if (state.clockStart !== undefined) this.clockHms = this.secondsToHms(state.clockStart);
         }
       } catch (e) {
         this.error = e?.message || 'Connexion impossible.';
@@ -109,7 +115,11 @@ export default {
       this.applied = false;
       this.busy = true;
       try {
-        await this.ops.updateState({ connectionQuality: this.connectionQuality, alertLevel: this.alertLevel });
+        await this.ops.updateState({
+          connectionQuality: this.connectionQuality,
+          alertLevel: this.alertLevel,
+          clockStart: this.hmsToSeconds(this.clockHms)
+        });
         this.applied = true;
       } catch (e) {
         this.error = e?.message || 'Échec de la mise à jour.';
@@ -119,6 +129,14 @@ export default {
     },
     screenIsRefus(state) {
       return isRefus(state);
+    },
+    // Heure de départ <-> secondes. Formatage via le formateur canonique (session-log).
+    secondsToHms(seconds) {
+      return formatSessionTime((seconds || 0) * 1000);
+    },
+    hmsToSeconds(hms) {
+      const [h = 0, m = 0, s = 0] = String(hms || '').split(':').map(Number);
+      return (h * 3600) + (m * 60) + s;
     },
     // Contrôle libre : chaque clic pousse l'écran choisi (le refus est un écran de repos).
     async setIntrusion(state) {

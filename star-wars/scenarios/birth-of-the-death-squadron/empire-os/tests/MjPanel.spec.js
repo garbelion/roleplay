@@ -85,7 +85,22 @@ describe("MjPanel.vue", () => {
     await wrapper.find(".mj-controls").trigger("submit")
     await flushPromises()
 
-    expect(ops.updateState).toHaveBeenCalledWith({ connectionQuality: "faible", alertLevel: 4 })
+    expect(ops.updateState).toHaveBeenCalledWith({ connectionQuality: "faible", alertLevel: 4, clockStart: 0 })
+  })
+
+  it("« Appliquer » envoie l'heure de départ réglée (clockStart en secondes)", async () => {
+    const ops = fakeOps()
+    const wrapper = await login(ops)
+    await wrapper.find("input.mj-clock").setValue("01:00:00")
+    await wrapper.find(".mj-controls").trigger("submit")
+    await flushPromises()
+    expect(ops.updateState).toHaveBeenCalledWith(expect.objectContaining({ clockStart: 3600 }))
+  })
+
+  it("préremplit l'heure de départ depuis l'état courant", async () => {
+    const ops = fakeOps({ state: { connectionQuality: "moyenne", alertLevel: 0, clockStart: 3600 } })
+    const wrapper = await login(ops)
+    expect(wrapper.find("input.mj-clock").element.value).toBe("01:00:00")
   })
 
   it("après connexion, affiche les contrôles de la phase d'intrusion (un bouton par écran + reset)", async () => {

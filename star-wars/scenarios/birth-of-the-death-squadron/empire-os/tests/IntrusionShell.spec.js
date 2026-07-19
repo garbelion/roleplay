@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 import { mount } from "@vue/test-utils"
 import IntrusionShell from "../src/components/IntrusionShell.vue"
 import { setSessionConfig, resetSessionState } from "../src/session-store.js"
+import { OS } from "../src/os-identity.js"
 
 const FIXTURE = {
   station: "Kessel-Tho",
@@ -16,6 +17,15 @@ const mountShell = () => mount(IntrusionShell, { props: { intrusion: FIXTURE } }
 
 describe("IntrusionShell.vue", () => {
   beforeEach(() => resetSessionState())
+
+  it("habille la barre de titre avec l'identité EmpireOS (logo impérial + nom + version)", () => {
+    setSessionConfig({ intrusion: "boot" })
+    const wrapper = mountShell()
+    const bar = wrapper.find(".intrusion-titlebar")
+    expect(bar.find(".intrusion-logo").text()).toBe("#") // rendu en glyphe impérial (Star Jedi)
+    expect(bar.text()).toContain(OS.name)
+    expect(bar.text()).toContain(OS.version)
+  })
 
   it("au chargement, amorce la console avec l'écran courant au repos (lignes + bannière interpolée)", () => {
     setSessionConfig({ intrusion: "public_ok" })

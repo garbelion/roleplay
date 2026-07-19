@@ -85,10 +85,13 @@ par le serveur et l'UI pour un diagnostic identique des deux côtés.
 
 ## Fonctionnalités livrées
 
-- **Phase d'intrusion** (avant l'accès OS) : shell plein écran figurant l'effraction réseau,
-  **non interactif mais piloté en direct par le MJ** depuis `#/mj` (3 jets → écrans posables, refus
-  possible, `Reset → boot`). Contenu en donnée (`file-system.json` › `intrusion`). *Prérequis live :
-  colonne `intrusion` (text) dans la table Supabase `session_state`.*
+- **Phase d'intrusion** (avant l'accès OS) : simili-console de terminal (chrome EmpireOS) figurant
+  l'effraction réseau, **non interactive mais pilotée en direct par le MJ** depuis `#/mj` (3 jets →
+  écrans posables, refus possible, `Reset → boot`) ; la console **accumule l'historique** (récent en
+  tête). Contenu en donnée (`file-system.json` › `intrusion`).
+- **Horloge de session réglable (MJ)** : le MJ règle une heure de départ (`#/mj`) ; l'horloge
+  **démarre à l'entrée dans EmpireOS** et compte le temps écoulé.
+- *Prérequis live (Supabase `session_state`) : colonnes `intrusion` (text) et `clock_start` (int).*
 - **Navigation** : chemins relatifs/absolus, `..`, normalisation, prompt unix cohérent
   (`sienar:/user-51394345/home$`).
 - **Multi-disques** : la racine liste les disques (machine locale + disque réseau) ; atterrissage

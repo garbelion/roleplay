@@ -86,14 +86,22 @@ watch(isMj, async (on) => {
 const alertLevel = computed(() => sessionState.alertLevel);
 const alertLabel = computed(() => (ALERT_LABELS[sessionState.alertLevel] || "").toUpperCase());
 
-// Horloge de session : durée écoulée depuis l'ouverture (le temps narratif in-game
-// n'étant pas synchronisable). Le format HH:MM:SS est canonique dans session-log.js
-// (même horloge que l'horodatage de la console).
-const sessionStart = Date.now();
+// Horloge de session : part de l'heure réglée par le MJ (`clockStart`, en secondes) et
+// **démarre à l'entrée dans EmpireOS** (pas au chargement) — le temps narratif in-game
+// n'étant pas synchronisable. Format HH:MM:SS canonique (session-log.js).
 const clock = ref(formatSessionTime(0));
+let osEnteredAt = null;
+function tickClock() {
+  const base = sessionState.clockStart * 1000;
+  const elapsed = osEnteredAt != null ? Date.now() - osEnteredAt : 0;
+  clock.value = formatSessionTime(base + elapsed);
+}
+// L'entrée dans l'OS ancre le départ de l'horloge (ré-ancrée à chaque nouvelle entrée).
+watch(showOs, (on) => { if (on) { osEnteredAt = Date.now(); tickClock(); } }, { immediate: true });
+
 let timer;
 onMounted(async () => {
-  timer = setInterval(() => { clock.value = formatSessionTime(Date.now() - sessionStart); }, 1000);
+  timer = setInterval(tickClock, 1000);
   window.addEventListener("hashchange", onHashChange);
   try {
     const res = await fetch("/file-system.json");

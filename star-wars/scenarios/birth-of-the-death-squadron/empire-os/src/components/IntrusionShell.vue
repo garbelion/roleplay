@@ -3,9 +3,9 @@
     <!-- Simili-console (fenêtre de terminal) centrée dans la page, sur fond noir. -->
     <div class="intrusion-window">
       <div class="intrusion-titlebar">
-        <span class="intrusion-dot" aria-hidden="true"></span>
-        <span class="intrusion-dot" aria-hidden="true"></span>
-        <span class="intrusion-dot" aria-hidden="true"></span>
+        <span class="intrusion-logo" aria-hidden="true">#</span>
+        <span class="intrusion-name">{{ OS.name }}</span>
+        <span class="intrusion-meta">{{ OS.version }} · {{ OS.build }}</span>
         <span class="intrusion-tt">console d'accès<template v-if="station"> — {{ station }}</template></span>
       </div>
       <!-- Une seule console qui accumule l'historique, le plus récent en tête (anti-chronologique). -->
@@ -28,6 +28,7 @@
 <script>
 import { sessionState } from "../session-store.js"
 import { intrusionScreen, isRefus } from "../intrusion.js"
+import { OS } from "../os-identity.js"
 
 // Cadence de révélation des lignes du dernier bloc (défilement « shell »).
 const REVEAL_MS = 260
@@ -40,7 +41,7 @@ export default {
   data() {
     // `entries` : un bloc par transition d'état (historique conservé). `revealed` ne
     // s'applique qu'au dernier bloc (le seul qui défile) ; les précédents restent figés.
-    return { sessionState, entries: [], revealed: 0 }
+    return { OS, sessionState, entries: [], revealed: 0 }
   },
   computed: {
     state() { return this.sessionState.intrusion },
@@ -127,27 +128,22 @@ export default {
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
   overflow: hidden;
 }
-/* Barre de titre facon terminal : trois pastilles + intitulé. */
+/* Barre de titre : chrome EmpireOS (logo imperial + nom + version), coherent avec l'OS. */
 .intrusion-titlebar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
+  gap: 10px;
+  padding: 7px 14px;
   background: var(--panel-raised);
   border-bottom: 1px solid var(--line-strong);
   flex: none;
-}
-.intrusion-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--line-strong); }
-.intrusion-dot:nth-child(1) { background: #d05a4a; }
-.intrusion-dot:nth-child(2) { background: #c9a24a; }
-.intrusion-dot:nth-child(3) { background: #5aa06a; }
-.intrusion-tt {
-  margin-left: 8px;
   font-size: 12px;
   letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: var(--ink-dim);
 }
+.intrusion-logo { font-family: 'Star Jedi', monospace; color: var(--accent); font-size: 18px; line-height: 1; }
+.intrusion-name { font-weight: bold; text-transform: uppercase; color: var(--ink); }
+.intrusion-meta { color: var(--ink-dim); }
+.intrusion-tt { margin-left: auto; text-transform: uppercase; color: var(--ink-dim); }
 /* Corps : la console qui accumule et défile (le plus récent en tête). */
 .intrusion-console {
   flex: 1;
