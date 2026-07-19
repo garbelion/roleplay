@@ -174,22 +174,44 @@ en attendant.
 - ✅ **Badge d'alerte dans le chrome** livré via la **slice 3 du back-office** (§5.2) : barre de
   titre, libellé `ALERT_LABELS`, teinte montante, piloté par le store réactif (source unique).
 
-### 5.4 — Phase d'intrusion (amorçage « shell ») *(nouveau — à concevoir)*
-Aujourd'hui l'app démarre **après** le hack réussi (l'OS est la récompense). Il manque la **phase
-d'entrée** : une séquence diégétique **façon shell** (messages qui défilent) figurant l'effraction
-sur le réseau, jouée **avant** l'accès à EmpireOS.
+### 5.4 — Phase d'intrusion (amorçage « shell ») *(conçu — prêt à coder)*
+Séquence diégétique **façon shell** jouée **avant** l'accès à EmpireOS, figurant l'effraction sur le
+réseau. **Non interactive côté joueur, réactive au MJ** : le hack se résout à la table (**3 jets de
+dé**) ; à chaque jet le MJ **pose l'écran correspondant** depuis `/mj`, poussé en Realtime. Réutilise
+le back-office (§5.2) : nouvelle donnée de session, même tuyau que `alertLevel`.
 
-**À trancher (conception) avant tout code** :
-- **Rôle** : purement **cosmétique** — animation de récompense du hack **déjà résolu à la table**,
-  non interactive (cohérent avec « l'OS est une récompense, le hack se résout hors app »).
-  *Défaut recommandé* : toute interactivité rouvrirait un puzzle censé être résolu à la table.
-- **Enchaînement** : écran d'amorçage → défilement → bascule **auto** vers l'OS (`defaultPath`).
-  Skippable ? rejouable par le MJ ?
-- **Contenu** : lignes de boot / scan / *bruteforce* en **donnée** (comme la propagande), rédigées
-  MJ ; vitesse de défilement ; skin cohérent (froid, **pas de vert MS-DOS**).
-- **Où** : écran monté **avant** `FileExplorer` (bascule par état, pas d'URL).
+**Modèle** — état partagé = **une énumération d'écrans** (un refus n'est pas un événement fugace :
+c'est un **écran de repos** où les joueurs restent jusqu'au clic suivant) :
+`boot → public_ok | public_refus → interne_ok | interne_refus → os | os_refus`.
+Les 3 jets : **firewall extérieur** (réseau public de Kessel-Tho) → **réseau interne** → **localiser
+`user-51394345` + entrer**. **Chaque jet peut échouer à l'écran** (y compris le dernier). `os` =
+accès accordé → bascule sur `FileExplorer`.
+
+**Décisions actées (grilling)** :
+- **Un seul écran partagé** à la table (pas de synchro multi-device).
+- **Contrôle libre** depuis `/mj` : le MJ pose **n'importe quel écran** (correction live / retour arrière).
+- **Animation au changement d'état seulement** ; au chargement/refresh, **saut direct à l'écran de
+  repos** (pas de replay du boot).
+- **Aucune logique dans l'app** : ni compteur de tentatives, ni règle de re-jet — tout reste à la
+  table. L'app **affiche** l'écran posé, point.
+- **Alerte découplée** : un refus **n'incrémente pas** `alertLevel` automatiquement (le MJ le règle à
+  la main ; trop d'échecs = sa décision, pas de couplage magique).
+- **Reset explicite** : bouton `/mj` « **Reset → boot** » (jamais d'auto-reset ; `session_state`
+  persiste, sinon les joueurs rechargeraient direct dans l'OS).
+
+**Contenu (donnée, éditable via `fs:editor`)** : par étape `{ lignes: [...], banniere, refus: [...] }`
++ **nom de station en donnée** (« Kessel-Tho »). Skin cohérent (froid, **pas de vert MS-DOS**).
+
+**Implémentation (/tdd)** : colonne `intrusion` dans `session_state` (+ mapping `supabase-source` /
+`session-store`), écran `IntrusionShell.vue` piloté par le store réactif, **monté avant
+`FileExplorer`** (bascule par état, pas d'URL), contrôles + reset dans `MjPanel`, contenu dans
+`file-system.json`. *Prérequis hors-code : ajouter la colonne `intrusion` (text) à la table Supabase.*
 
 ### 5.5 — Plus tard / parqué
+- **Déconnexion forcée par le MJ** : action `/mj` pour **éjecter le joueur de l'OS** (écran
+  « CONNEXION PERDUE / SESSION TERMINÉE »). Recoupe l'**échec narratif** de la popin et le
+  **verrouillage de l'OS** (§5.2) ; note que le **contrôle libre** de §5.4 permet déjà de reculer
+  l'état d'intrusion (= éjection vers le shell) — reste à décider si on veut un écran de coupure dédié.
 - **Recherche dans le contenu** des fichiers texte / descriptions (v2 de la recherche).
 - **Options popin** : rendu **non-linéaire** (débit qui fluctue, paliers, « reconnexion au
   nœud relais… »), **échec narratif** (« CONNEXION PERDUE — 73 % », MJ-only, retryable).
