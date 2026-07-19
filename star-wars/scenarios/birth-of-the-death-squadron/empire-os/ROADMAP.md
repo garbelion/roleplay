@@ -125,8 +125,9 @@ Le MJ étant sur un **poste séparé**, deux navigateurs ne partagent aucun éta
    (fetch initial + abonnement Realtime → `setSessionConfig`), adaptateur Supabase (mapping +
    canal), branché dans FileExplorer si `session.supabase` présent. **Non configuré ⇒ statique
    inchangé** ; SDK **code-split**. Source injectée (mockée en test).
-3. ⏳ **Affichage live** : teinte console **+ badge d'alerte dans le chrome** (titre/statut, libellé
-   minimal→war) suivent le store réactif. *(Absorbe le « reste » de §5.3.)*
+3. ✅ **Affichage live** : teinte console **+ badge d'alerte dans le chrome** (barre de titre,
+   libellé canonique `ALERT_LABELS` minimal→war, teinte montante + pulse au niveau war) suivent
+   le store réactif → réagissent en live à un push. *(Absorbe le « reste » de §5.3.)*
 4. **Route `#/mj`** : mini-routage par hash + connexion MJ (Supabase Auth) + formulaire (sélecteurs
    connexion/alerte, « Appliquer », préremplis depuis l'état courant).
 5. **`session-remote.js` (écriture)** : `update` de la ligne d'état (session MJ authentifiée).
@@ -150,8 +151,8 @@ en attendant.
   `alertLevel`**. Console **récent-d'abord**, onglet **par défaut**, ligne d'amorçage
   « SESSION OUVERTE », et **notifications OS 5 s** pour tout message non-surveillance
   (`notifications.js`). ~40 tests dédiés.
-- ⏳ **Reste** : **badge d'alerte dans le chrome** (titre/statut, libellé minimal→war) — **rattaché
-  à la slice 3 du back-office** (§5.2), pour n'avoir qu'une source réactive de `alertLevel`.
+- ✅ **Badge d'alerte dans le chrome** livré via la **slice 3 du back-office** (§5.2) : barre de
+  titre, libellé `ALERT_LABELS`, teinte montante, piloté par le store réactif (source unique).
 
 ### 5.4 — Plus tard / parqué
 - **Recherche dans le contenu** des fichiers texte / descriptions (v2 de la recherche).
