@@ -35,16 +35,34 @@
           "name": "home",
           "type": "directory",
           "children": [
-            { "name": "rapport_mission.md", "type": "file" },
-            { "name": "ordre_executor.md", "type": "file" },
-            { "name": "liste_cibles.md", "type": "file" },
+            {
+              "name": "rapport_mission.md",
+              "type": "file"
+            },
+            {
+              "name": "ordre_executor.md",
+              "type": "file"
+            },
+            {
+              "name": "liste_cibles.md",
+              "type": "file"
+            },
             {
               "name": "surveillance",
               "type": "directory",
               "children": [
-                { "name": "executor_chantier.jpg", "type": "file" },
-                { "name": "flotte_escorte.webp", "type": "file" },
-                { "name": "destroyer_orbite.webp", "type": "file" }
+                {
+                  "name": "executor_chantier.jpg",
+                  "type": "file"
+                },
+                {
+                  "name": "flotte_escorte.webp",
+                  "type": "file"
+                },
+                {
+                  "name": "destroyer_orbite.webp",
+                  "type": "file"
+                }
               ]
             }
           ]
@@ -53,21 +71,31 @@
           "name": "etc",
           "type": "directory",
           "children": [
-            { "name": "reseau.config", "type": "file" }
+            {
+              "name": "reseau.config",
+              "type": "file"
+            }
           ]
         },
         {
           "name": "var",
           "type": "directory",
           "children": [
-            { "name": "log", "type": "directory", "children": [] }
+            {
+              "name": "log",
+              "type": "directory",
+              "children": []
+            }
           ]
         },
         {
           "name": "tmp",
           "type": "directory",
           "children": [
-            { "name": "protocole_secret.md", "type": "file" }
+            {
+              "name": "protocole_secret.md",
+              "type": "file"
+            }
           ]
         }
       ]
@@ -94,6 +122,21 @@
           "children": []
         }
       ]
+    },
+    {
+      "name": "srv-data",
+      "type": "disk",
+      "children": []
+    },
+    {
+      "name": "srv-tools",
+      "type": "disk",
+      "children": []
+    },
+    {
+      "name": "srv-reporting",
+      "type": "disk",
+      "children": []
     }
   ]
 }
