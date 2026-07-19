@@ -16,27 +16,49 @@
     </form>
 
     <!-- Authentifié : réglages en direct -->
-    <form v-else class="mj-controls" @submit.prevent="onApply">
-      <label class="mj-field">Qualité de connexion
-        <select v-model="connectionQuality" class="mj-input mj-connection">
-          <option v-for="q in connections" :key="q" :value="q">{{ q }}</option>
-        </select>
-      </label>
-      <label class="mj-field">Niveau d'alerte
-        <select v-model.number="alertLevel" class="mj-input mj-alert">
-          <option v-for="(label, i) in alertLabels" :key="i" :value="i">{{ i }} — {{ label }}</option>
-        </select>
-      </label>
-      <button type="submit" class="mj-btn" :disabled="busy">Appliquer</button>
-      <p v-if="applied" class="mj-ok">Réglages appliqués.</p>
-      <p v-if="error" class="mj-error">{{ error }}</p>
-    </form>
+    <div v-else class="mj-authed">
+      <form class="mj-controls" @submit.prevent="onApply">
+        <label class="mj-field">Qualité de connexion
+          <select v-model="connectionQuality" class="mj-input mj-connection">
+            <option v-for="q in connections" :key="q" :value="q">{{ q }}</option>
+          </select>
+        </label>
+        <label class="mj-field">Niveau d'alerte
+          <select v-model.number="alertLevel" class="mj-input mj-alert">
+            <option v-for="(label, i) in alertLabels" :key="i" :value="i">{{ i }} — {{ label }}</option>
+          </select>
+        </label>
+        <button type="submit" class="mj-btn" :disabled="busy">Appliquer</button>
+        <p v-if="applied" class="mj-ok">Réglages appliqués.</p>
+        <p v-if="error" class="mj-error">{{ error }}</p>
+      </form>
+
+      <!-- Phase d'intrusion : chaque bouton pose l'écran vu par les joueurs (contrôle libre). -->
+      <section class="mj-intrusion">
+        <h2 class="mj-subtitle">Phase d'intrusion</h2>
+        <div class="mj-screens">
+          <button
+            v-for="s in intrusionScreens"
+            :key="s.state"
+            type="button"
+            class="mj-screen-btn"
+            :class="{ active: currentIntrusion === s.state, refus: screenIsRefus(s.state) }"
+            :data-state="s.state"
+            :disabled="busy"
+            @click="setIntrusion(s.state)"
+          >{{ s.label }}</button>
+        </div>
+        <button type="button" class="mj-btn mj-reset" :disabled="busy" @click="setIntrusion('boot')">⟲ Reset → boot</button>
+        <p v-if="intrusionError" class="mj-error">{{ intrusionError }}</p>
+      </section>
+    </div>
   </div>
 </template>
 
 <script>
 import { OS } from '../os-identity.js';
 import { ALERT_LABELS, CONNECTION_FACTORS } from '../transfer-duration.js';
+import { INTRUSION_SCREENS, isRefus } from '../intrusion.js';
 
 export default {
   name: 'MjPanel',
@@ -49,6 +71,7 @@ export default {
       OS,
       alertLabels: ALERT_LABELS,
       connections: Object.keys(CONNECTION_FACTORS),
+      intrusionScreens: INTRUSION_SCREENS,
       authed: false,
       busy: false,
       error: '',
@@ -56,7 +79,9 @@ export default {
       email: '',
       password: '',
       connectionQuality: 'moyenne',
-      alertLevel: 0
+      alertLevel: 0,
+      currentIntrusion: 'boot',
+      intrusionError: ''
     };
   },
   methods: {
@@ -71,6 +96,7 @@ export default {
         if (state) {
           if (state.connectionQuality !== undefined) this.connectionQuality = state.connectionQuality;
           if (state.alertLevel !== undefined) this.alertLevel = state.alertLevel;
+          if (state.intrusion !== undefined) this.currentIntrusion = state.intrusion;
         }
       } catch (e) {
         this.error = e?.message || 'Connexion impossible.';
@@ -87,6 +113,22 @@ export default {
         this.applied = true;
       } catch (e) {
         this.error = e?.message || 'Échec de la mise à jour.';
+      } finally {
+        this.busy = false;
+      }
+    },
+    screenIsRefus(state) {
+      return isRefus(state);
+    },
+    // Contrôle libre : chaque clic pousse l'écran choisi (le refus est un écran de repos).
+    async setIntrusion(state) {
+      this.intrusionError = '';
+      this.busy = true;
+      try {
+        await this.ops.updateState({ intrusion: state });
+        this.currentIntrusion = state;
+      } catch (e) {
+        this.intrusionError = e?.message || 'Échec de la mise à jour.';
       } finally {
         this.busy = false;
       }
@@ -137,4 +179,27 @@ export default {
 .mj-unconfigured code { color: var(--accent); }
 .mj-error { color: var(--danger); font-size: 12px; }
 .mj-ok { color: var(--accent); font-size: 12px; }
+
+/* Contrôles d'intrusion : liste d'écrans posables + reset. */
+.mj-authed { display: flex; flex-direction: column; gap: 20px; }
+.mj-intrusion { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line); padding-top: 16px; }
+.mj-subtitle { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-dim); margin: 0; }
+.mj-screens { display: flex; flex-direction: column; gap: 6px; }
+.mj-screen-btn {
+  text-align: left;
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  color: var(--ink-dim);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 7px 10px;
+  border-radius: 0;
+  cursor: pointer;
+}
+.mj-screen-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--ink); }
+.mj-screen-btn.active { border-color: var(--accent); color: var(--accent); background: var(--panel-raised); }
+.mj-screen-btn.refus { border-left: 3px solid var(--danger); }
+.mj-screen-btn.active.refus { color: var(--danger); border-color: var(--danger); }
+.mj-screen-btn:disabled { opacity: 0.5; cursor: default; }
+.mj-reset { align-self: flex-start; }
 </style>

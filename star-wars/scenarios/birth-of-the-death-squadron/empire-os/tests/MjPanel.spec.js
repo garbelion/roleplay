@@ -13,6 +13,15 @@ function fakeOps({ signInOk = true, state = { connectionQuality: "moyenne", aler
 
 const mountPanel = (ops) => mount(MjPanel, { props: { ops } })
 
+async function login(ops) {
+  const wrapper = mountPanel(ops)
+  await wrapper.find(".mj-login input[type=email]").setValue("mj@example.com")
+  await wrapper.find(".mj-login input[type=password]").setValue("secret")
+  await wrapper.find(".mj-login").trigger("submit")
+  await flushPromises()
+  return wrapper
+}
+
 describe("MjPanel.vue", () => {
   it("sans ops (back-office non configuré), affiche un message et pas de login", () => {
     const wrapper = mount(MjPanel, { props: { ops: null } })
@@ -77,5 +86,28 @@ describe("MjPanel.vue", () => {
     await flushPromises()
 
     expect(ops.updateState).toHaveBeenCalledWith({ connectionQuality: "faible", alertLevel: 4 })
+  })
+
+  it("après connexion, affiche les contrôles de la phase d'intrusion (un bouton par écran + reset)", async () => {
+    const wrapper = await login(fakeOps())
+    expect(wrapper.find(".mj-intrusion").exists()).toBe(true)
+    expect(wrapper.findAll(".mj-screen-btn").length).toBeGreaterThanOrEqual(6)
+    expect(wrapper.find(".mj-reset").exists()).toBe(true)
+  })
+
+  it("clic sur un écran d'intrusion pousse cet état via updateState", async () => {
+    const ops = fakeOps()
+    const wrapper = await login(ops)
+    await wrapper.find('.mj-screen-btn[data-state="interne_ok"]').trigger("click")
+    await flushPromises()
+    expect(ops.updateState).toHaveBeenCalledWith({ intrusion: "interne_ok" })
+  })
+
+  it("le bouton Reset repose l'état d'intrusion sur boot", async () => {
+    const ops = fakeOps()
+    const wrapper = await login(ops)
+    await wrapper.find(".mj-reset").trigger("click")
+    await flushPromises()
+    expect(ops.updateState).toHaveBeenCalledWith({ intrusion: "boot" })
   })
 })

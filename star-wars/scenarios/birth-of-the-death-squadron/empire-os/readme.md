@@ -85,6 +85,10 @@ par le serveur et l'UI pour un diagnostic identique des deux côtés.
 
 ## Fonctionnalités livrées
 
+- **Phase d'intrusion** (avant l'accès OS) : shell plein écran figurant l'effraction réseau,
+  **non interactif mais piloté en direct par le MJ** depuis `#/mj` (3 jets → écrans posables, refus
+  possible, `Reset → boot`). Contenu en donnée (`file-system.json` › `intrusion`). *Prérequis live :
+  colonne `intrusion` (text) dans la table Supabase `session_state`.*
 - **Navigation** : chemins relatifs/absolus, `..`, normalisation, prompt unix cohérent
   (`sienar:/user-51394345/home$`).
 - **Multi-disques** : la racine liste les disques (machine locale + disque réseau) ; atterrissage

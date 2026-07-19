@@ -174,7 +174,7 @@ en attendant.
 - ✅ **Badge d'alerte dans le chrome** livré via la **slice 3 du back-office** (§5.2) : barre de
   titre, libellé `ALERT_LABELS`, teinte montante, piloté par le store réactif (source unique).
 
-### 5.4 — Phase d'intrusion (amorçage « shell ») *(conçu — prêt à coder)*
+### 5.4 — Phase d'intrusion (amorçage « shell ») *(livré — prérequis live : colonne Supabase `intrusion`)*
 Séquence diégétique **façon shell** jouée **avant** l'accès à EmpireOS, figurant l'effraction sur le
 réseau. **Non interactive côté joueur, réactive au MJ** : le hack se résout à la table (**3 jets de
 dé**) ; à chaque jet le MJ **pose l'écran correspondant** depuis `/mj`, poussé en Realtime. Réutilise
@@ -219,7 +219,9 @@ accès accordé → bascule sur `FileExplorer`.
    seulement après le premier settle (`connectSupabaseSession().ready`, borné) → le shell naît à
    l'état courant, pas de replay au refresh. *Dette assumée : `file-system.json` fetché aussi par
    `FileExplorer` (arbre) — servi par le cache, correctif disproportionné.*
-5. **Contrôles `/mj`** : boutons posant chaque écran (contrôle libre) + **Reset → boot** (`updateState`).
+5. ✅ **Contrôles `/mj`** : section « Phase d'intrusion » dans `MjPanel` — un bouton par écran
+   (`INTRUSION_SCREENS`, contrôle libre, clic = push immédiat via `updateState`), écran courant
+   surligné, écrans d'échec teintés, + **Reset → boot**.
 
 *Prérequis hors-code (pour le live) : ajouter la colonne `intrusion` (text, défaut `'boot'`) à la
 table Supabase `session_state`. Tout est codable/testable avec le client mocké en attendant.*
