@@ -55,8 +55,10 @@ const server = createServer(async (req, res) => {
     if (req.method === "GET" && (req.url === "/" || req.url === "/index.html")) {
       return serveFile(res, join(HERE, "index.html"), "text/html; charset=utf-8")
     }
-    if (req.method === "GET" && req.url === "/fs-sync.js") {
-      return serveFile(res, join(HERE, "fs-sync.js"), "text/javascript; charset=utf-8")
+    // Modules ES du dossier outil (fs-sync.js, fs-ops.js…), réutilisés côté navigateur.
+    // Regex sans slash ni point d'échappement : pas de traversée de répertoire.
+    if (req.method === "GET" && /^\/[\w-]+\.js$/.test(req.url)) {
+      return serveFile(res, join(HERE, req.url.slice(1)), "text/javascript; charset=utf-8")
     }
     if (req.method === "GET" && req.url === "/api/state") {
       const [tree, files] = await Promise.all([readTree(), listFiles()])

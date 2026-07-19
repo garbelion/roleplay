@@ -47,6 +47,7 @@
     <h1>▚ ÉDITEUR D'ARBORESCENCE</h1>
     <span class="grow"></span>
     <span id="msg"></span>
+    <button id="add-disk">🖴 ＋ disque</button>
     <button id="rescan">↻ Rescan disque</button>
     <button id="reload">⟲ Recharger JSON</button>
     <button id="save" class="primary">💾 Enregistrer</button>
@@ -69,6 +70,7 @@
 
   <script type="module">
     import { diffFileSystem } from "./fs-sync.js"
+    import { addDisk } from "./fs-ops.js"
 
     let root = null            // racine JSON complète (session/console/children…)
     let files = []             // fichiers réellement présents sur le disque
@@ -235,6 +237,11 @@
     }
     function flash(t, err = false) { const m = el("msg"); m.textContent = t; m.className = err ? "err" : "" }
 
+    el("add-disk").onclick = () => {
+      const name = prompt("Nom du disque (ex: srv-archives)")
+      if (name === null) return
+      try { addDisk(root, name); refresh() } catch (e) { flash(e.message, true) }
+    }
     el("save").onclick = save
     el("reload").onclick = load
     el("rescan").onclick = async () => {

@@ -70,9 +70,10 @@ npm run fs:editor  # -> http://localhost:5177
 
 Éditeur web local (dev-only, `tools/fs-editor/`, sans dépendance — hors bundle appli) :
 
-- **Arbre éditable** : ajouter / renommer / retirer un nœud, réordonner (⬆⬇) et **déplacer par
-  glisser-déposer** sur un dossier. Les fichiers vivant à plat, déplacer un nœud ne bouge aucun
-  fichier physique — seul l'emplacement logique change ; l'invariant à tenir est l'unicité des noms.
+- **Arbre éditable** : **ajouter un disque** à la racine (nom unique), ajouter / renommer / retirer
+  un nœud, réordonner (⬆⬇) et **déplacer par glisser-déposer** sur un dossier. Les fichiers vivant à
+  plat, déplacer un nœud ne bouge aucun fichier physique — seul l'emplacement logique change ;
+  l'invariant à tenir est l'unicité des noms.
 - **Contrôle de synchro en direct** : panneau listant **manquants** (déclarés, absents du disque),
   **orphelins** (présents, non déclarés) et **doublons** de noms ; les nœuds fautifs sont surlignés.
 - **Enregistrer** (bouton ou `Ctrl+S`) réécrit `public/file-system.json` directement.
