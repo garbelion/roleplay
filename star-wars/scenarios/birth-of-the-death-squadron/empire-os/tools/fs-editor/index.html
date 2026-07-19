@@ -40,6 +40,11 @@
     .detail div.miss { color:var(--danger); }
     #msg { min-height:18px; font-size:12px; }
     #msg.err { color:var(--danger); }
+    h2 .add { float:right; padding:0 6px; font-size:12px; line-height:18px; }
+    .prop { display:flex; align-items:center; gap:4px; padding:1px 0; }
+    .prop > span { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--fg); }
+    .prop button { padding:0 5px; font-size:12px; line-height:18px; }
+    #propaganda { max-height:38vh; overflow:auto; }
   </style>
 </head>
 <body>
@@ -58,6 +63,8 @@
       <h2>SYNCHRONISATION</h2>
       <div id="stats"></div>
       <div id="details" class="detail"></div>
+      <h2 style="margin-top:16px">PROPAGANDE <button id="add-prop" class="add" title="Nouveau message">＋</button></h2>
+      <div id="propaganda"></div>
       <h2 style="margin-top:16px">AIDE</h2>
       <div class="detail" style="color:var(--dim)">
         Glisser un nœud sur un dossier pour l'y déplacer.<br>
@@ -70,7 +77,7 @@
 
   <script type="module">
     import { diffFileSystem } from "./fs-sync.js"
-    import { addDisk } from "./fs-ops.js"
+    import { addDisk, addPropaganda, editPropaganda, removePropaganda } from "./fs-ops.js"
 
     let root = null            // racine JSON complète (session/console/children…)
     let files = []             // fichiers réellement présents sur le disque
@@ -99,6 +106,36 @@
       const dup = new Set(diff.duplicates.flatMap((d) => d.paths))
       el("tree").replaceChildren(renderChildren(root, "/", miss, dup))
       renderStats(diff)
+      renderPropaganda()
+    }
+
+    function renderPropaganda() {
+      const box = el("propaganda"); box.replaceChildren()
+      const list = (root.console && root.console.propaganda) || []
+      if (!list.length) {
+        const d = document.createElement("div"); d.className = "detail"; d.textContent = "(aucun message)"
+        box.appendChild(d); return
+      }
+      list.forEach((msg, i) => {
+        const row = document.createElement("div"); row.className = "prop"
+        const t = spanText(msg); t.title = msg
+        row.append(t, mkBtn("✎", "Éditer", () => editProp(i)), mkBtn("✖", "Retirer", () => removeProp(i)))
+        box.appendChild(row)
+      })
+    }
+    function addProp() {
+      const v = prompt("Nouveau message de propagande")
+      if (v === null) return
+      try { addPropaganda(root, v); renderPropaganda() } catch (e) { flash(e.message, true) }
+    }
+    function editProp(i) {
+      const v = prompt("Éditer le message", root.console.propaganda[i])
+      if (v === null) return
+      try { editPropaganda(root, i, v); renderPropaganda() } catch (e) { flash(e.message, true) }
+    }
+    function removeProp(i) {
+      if (!confirm("Retirer ce message ?\n\n" + root.console.propaganda[i])) return
+      try { removePropaganda(root, i); renderPropaganda() } catch (e) { flash(e.message, true) }
     }
 
     function renderChildren(parent, basePath, miss, dup) {
@@ -237,6 +274,7 @@
     }
     function flash(t, err = false) { const m = el("msg"); m.textContent = t; m.className = err ? "err" : "" }
 
+    el("add-prop").onclick = addProp
     el("add-disk").onclick = () => {
       const name = prompt("Nom du disque (ex: srv-archives)")
       if (name === null) return

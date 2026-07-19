@@ -76,6 +76,8 @@ npm run fs:editor  # -> http://localhost:5177
   l'invariant à tenir est l'unicité des noms.
 - **Contrôle de synchro en direct** : panneau listant **manquants** (déclarés, absents du disque),
   **orphelins** (présents, non déclarés) et **doublons** de noms ; les nœuds fautifs sont surlignés.
+- **Messages de propagande** : ajouter / éditer / retirer les slogans (`console.propaganda`) depuis
+  le panneau latéral.
 - **Enregistrer** (bouton ou `Ctrl+S`) réécrit `public/file-system.json` directement.
 
 Le cœur de comparaison (`fs-sync.js`, `diffFileSystem`) est une fonction pure testée, réutilisée

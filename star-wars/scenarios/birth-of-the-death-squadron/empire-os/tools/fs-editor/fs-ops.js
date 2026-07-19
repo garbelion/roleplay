@@ -1,10 +1,16 @@
 // Opérations d'édition de l'arbre, pures et testables (l'UI ne fait que les câbler).
 
+// Trim + refus du vide, avec un libellé pour le message d'erreur.
+function requireText(value, label) {
+  const clean = (value || "").trim()
+  if (!clean) throw new Error(label + " vide")
+  return clean
+}
+
 // Ajoute un disque à la racine. Un disque est un nœud de premier niveau `type: 'disk'` ;
 // l'app change de disque *par nom*, donc les noms doivent rester uniques.
 export function addDisk(root, name) {
-  const clean = (name || "").trim()
-  if (!clean) throw new Error("Nom de disque vide")
+  const clean = requireText(name, "Nom de disque")
   root.children = root.children || []
   if (root.children.some((c) => c.type === "disk" && c.name === clean)) {
     throw new Error("Disque déjà existant : " + clean)
@@ -12,4 +18,33 @@ export function addDisk(root, name) {
   const disk = { name: clean, type: "disk", children: [] }
   root.children.push(disk)
   return disk
+}
+
+// Ajoute un message de propagande (pool `console.propaganda`, tiré à l'ambiance de la console).
+export function addPropaganda(root, message) {
+  const clean = requireText(message, "Message")
+  root.console = root.console || {}
+  root.console.propaganda = root.console.propaganda || []
+  root.console.propaganda.push(clean)
+  return clean
+}
+
+// Renvoie le pool de propagande après avoir validé que `index` le vise bien.
+function propagandaAt(root, index) {
+  const list = (root.console && root.console.propaganda) || []
+  if (!Number.isInteger(index) || index < 0 || index >= list.length) {
+    throw new Error("Index de propagande hors bornes : " + index)
+  }
+  return list
+}
+
+export function editPropaganda(root, index, message) {
+  const clean = requireText(message, "Message")
+  const list = propagandaAt(root, index)
+  list[index] = clean
+  return clean
+}
+
+export function removePropaganda(root, index) {
+  return propagandaAt(root, index).splice(index, 1)[0]
 }

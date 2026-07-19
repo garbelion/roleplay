@@ -51,9 +51,10 @@ arbre ↔ disque.
 (`tools/fs-editor/`) + éditeur web : arbre éditable (ajout de **disque** à la racine, ajout /
 retrait / renommage / déplacement drag-and-drop de nœuds), enregistrement direct dans
 `file-system.json`, et **panneau de synchro live** — manquants / orphelins / doublons — via
-`fs-sync.js` (`diffFileSystem`, cœur pur testé) ; opérations pures dans `fs-ops.js`. **C'est l'outil
-d'auteur pour la *structure* des disques** (tranche §6 : structure = outil séparé, livré).
-*À venir* : édition des **messages de propagande** (`console.propaganda`) depuis l'outil.
+`fs-sync.js` (`diffFileSystem`, cœur pur testé) ; opérations pures dans `fs-ops.js`. Gère aussi les
+**messages de propagande** (`console.propaganda`) : ajout / édition / retrait. **C'est l'outil
+d'auteur pour la *structure* des disques et la propagande** (tranche §6 : structure = outil séparé,
+livré).
 
 **Métadonnées par fichier.** `type`/extension pilote l'affichage ; `previewMode` = `full`
 (lisible in-app) ou `summary` (aperçu = résumé, lecture = téléchargement) ; `summary` = accroche
