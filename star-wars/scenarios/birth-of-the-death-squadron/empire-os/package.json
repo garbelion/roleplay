@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test:unit": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "fs:editor": "node tools/fs-editor/server.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.7",

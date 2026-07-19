@@ -42,6 +42,16 @@ aucun verrou logiciel, savoir *où* chercher est l'énigme (résolue à la table
 position dans l'arbre (chaîne des noms d'ancêtres) au chargement (`file-tree.js` `assignPaths`).
 La structure fait autorité ; le JSON reste minimal et sans redondance à maintenir.
 
+**Fichiers réels à plat.** Tous les fichiers vivent à plat dans `public/fichiers/`, adressés par
+leur **nom de base** (`fileUrl`). L'arbre est purement logique : déplacer un nœud ne déplace aucun
+fichier physique. Invariant à surveiller : **unicité des noms** (adressage à plat) + cohérence
+arbre ↔ disque.
+
+**Outil d'édition dev-only (`npm run fs:editor`).** Petit serveur Node sans dépendance
+(`tools/fs-editor/`) + éditeur web : arbre éditable (ajout/retrait/déplacement drag-and-drop),
+enregistrement direct dans `file-system.json`, et **panneau de synchro live** — manquants /
+orphelins / doublons — via `fs-sync.js` (`diffFileSystem`, cœur pur testé, réutilisé serveur+UI).
+
 **Métadonnées par fichier.** `type`/extension pilote l'affichage ; `previewMode` = `full`
 (lisible in-app) ou `summary` (aperçu = résumé, lecture = téléchargement) ; `summary` = accroche
 rédigée par le MJ ; `transferWeight` = poids pour la durée de transfert fictive.

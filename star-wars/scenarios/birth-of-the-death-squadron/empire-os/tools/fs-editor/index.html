@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Éditeur d'arborescence — empire-os</title>
+  <style>
+    :root { --bg:#0b0f0b; --fg:#33ff66; --dim:#1c6b32; --warn:#ffcc33; --danger:#ff4444; --line:#123; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.5 "Consolas","Courier New",monospace; }
+    header { padding:12px 16px; border-bottom:1px solid var(--dim); display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    header h1 { font-size:15px; margin:0; letter-spacing:1px; }
+    .grow { flex:1; }
+    button { font:inherit; background:#0d160d; color:var(--fg); border:1px solid var(--dim); padding:3px 9px; cursor:pointer; border-radius:3px; }
+    button:hover { background:var(--dim); color:var(--bg); }
+    button.primary { border-color:var(--fg); }
+    .layout { display:flex; gap:0; align-items:stretch; min-height:calc(100vh - 52px); }
+    #tree { flex:1; padding:12px 16px; overflow:auto; }
+    aside { width:300px; border-left:1px solid var(--dim); padding:12px 16px; background:#0a0d0a; }
+    ul { list-style:none; margin:0; padding-left:20px; }
+    #tree > ul { padding-left:0; }
+    li { position:relative; }
+    .row { display:flex; align-items:center; gap:6px; padding:2px 4px; border-radius:3px; }
+    .row:hover { background:#0f1a0f; }
+    .row.drop { outline:1px dashed var(--fg); background:#0f1a0f; }
+    .row.problem { color:var(--warn); }
+    .row.problem.miss { color:var(--danger); }
+    .twist { width:14px; display:inline-block; cursor:pointer; color:var(--dim); user-select:none; }
+    .icon { opacity:.75; }
+    .nm { cursor:grab; }
+    .badge { font-size:11px; border:1px solid currentColor; border-radius:3px; padding:0 4px; margin-left:4px; }
+    .acts { display:flex; gap:2px; margin-left:6px; opacity:0; }
+    .row:hover .acts { opacity:1; }
+    .acts button { padding:0 6px; font-size:12px; line-height:20px; }
+    aside h2 { font-size:13px; margin:0 0 8px; border-bottom:1px solid var(--dim); padding-bottom:4px; }
+    .stat { display:flex; justify-content:space-between; padding:2px 0; }
+    .stat.ok { color:var(--fg); } .stat.miss { color:var(--danger); } .stat.orph { color:var(--warn); } .stat.dup { color:var(--warn); }
+    .detail { font-size:12px; color:var(--dim); margin:6px 0 10px; }
+    .detail div { color:var(--warn); }
+    .detail div.miss { color:var(--danger); }
+    #msg { min-height:18px; font-size:12px; }
+    #msg.err { color:var(--danger); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>▚ ÉDITEUR D'ARBORESCENCE</h1>
+    <span class="grow"></span>
+    <span id="msg"></span>
+    <button id="rescan">↻ Rescan disque</button>
+    <button id="reload">⟲ Recharger JSON</button>
+    <button id="save" class="primary">💾 Enregistrer</button>
+  </header>
+  <div class="layout">
+    <main id="tree"></main>
+    <aside>
+      <h2>SYNCHRONISATION</h2>
+      <div id="stats"></div>
+      <div id="details" class="detail"></div>
+      <h2 style="margin-top:16px">AIDE</h2>
+      <div class="detail" style="color:var(--dim)">
+        Glisser un nœud sur un dossier pour l'y déplacer.<br>
+        ⬆⬇ ordonne · ✎ renomme · ✖ retire.<br>
+        Les fichiers réels restent à plat dans <b>public/fichiers/</b> :
+        déplacer un nœud ne bouge aucun fichier. Un nom = un fichier physique.
+      </div>
+    </aside>
+  </div>
+
+  <script type="module">
+    import { diffFileSystem } from "./fs-sync.js"
+
+    let root = null          // racine JSON complète (session/console/children…)
+    let files = []           // fichiers réellement présents sur le disque
+    const collapsed = new Set()
+    let uid = 0
+    const idOf = new WeakMap()
+    const el = (id) => document.getElementById(id)
+
+    function nodeId(node) {
+      if (!idOf.has(node)) idOf.set(node, "n" + uid++)
+      return idOf.get(node)
+    }
+    function byId(id, node = root) {
+      if (nodeId(node) === id) return node
+      for (const c of node.children || []) { const hit = byId(id, c); if (hit) return hit }
+      return null
+    }
+    function parentOf(target, node = root) {
+      for (const c of node.children || []) {
+        if (c === target) return node
+        const hit = parentOf(target, c); if (hit) return hit
+      }
+      return null
+    }
+    function isAncestor(a, b) { // a est-il ancêtre de (ou égal à) b ?
+      if (a === b) return true
+      return (a.children || []).some((c) => isAncestor(c, b))
+    }
+
+    async function load() {
+      const { tree, files: f } = await (await fetch("/api/state")).json()
+      root = tree; files = f; refresh(); flash("Chargé.")
+    }
+
+    // --- rendu ---------------------------------------------------------------
+    function refresh() {
+      const diff = diffFileSystem(root, files)
+      const missPaths = new Set(diff.missing.map((m) => m.path))
+      const dupPaths = new Set(diff.duplicates.flatMap((d) => d.paths))
+      el("tree").innerHTML = ""
+      el("tree").appendChild(renderChildren(root, "/", missPaths, dupPaths))
+      renderStats(diff)
+    }
+
+    function renderChildren(node, basePath, miss, dup) {
+      const ul = document.createElement("ul")
+      for (const child of node.children || []) {
+        const path = basePath === "/" ? "/" + child.name : basePath + "/" + child.name
+        ul.appendChild(renderNode(child, path, miss, dup))
+      }
+      return ul
+    }
+
+    function renderNode(node, path, miss, dup) {
+      const li = document.createElement("li")
+      const row = document.createElement("div")
+      row.className = "row"
+      const isFolder = node.type === "directory" || node.type === "disk"
+      const problem = node.type === "file" && (miss.has(path) || dup.has(path))
+      if (problem) row.classList.add("problem", miss.has(path) ? "miss" : "dup")
+
+      const twist = document.createElement("span")
+      twist.className = "twist"
+      if (isFolder && (node.children || []).length) {
+        twist.textContent = collapsed.has(path) ? "▸" : "▾"
+        twist.onclick = () => { collapsed.has(path) ? collapsed.delete(path) : collapsed.add(path); refresh() }
+      } else twist.textContent = " "
+      row.appendChild(twist)
+
+      const icon = document.createElement("span")
+      icon.className = "icon"
+      icon.textContent = node.type === "disk" ? "🖴" : node.type === "directory" ? "📁" : "📄"
+      row.appendChild(icon)
+
+      const nm = document.createElement("span")
+      nm.className = "nm"
+      nm.textContent = node.name
+      nm.draggable = true
+      nm.ondragstart = (e) => e.dataTransfer.setData("id", nodeId(node))
+      row.appendChild(nm)
+
+      if (node.type === "disk") row.appendChild(badge("disque"))
+      if (problem) row.appendChild(badge(miss.has(path) ? "manquant" : "doublon"))
+
+      const acts = document.createElement("span")
+      acts.className = "acts"
+      const parent = parentOf(node)
+      if (isFolder) {
+        acts.appendChild(mkBtn("＋📄", "Nouveau fichier", () => addChild(node, "file")))
+        acts.appendChild(mkBtn("＋📁", "Nouveau dossier", () => addChild(node, "directory")))
+      }
+      acts.appendChild(mkBtn("✎", "Renommer", () => rename(node)))
+      if (parent) {
+        acts.appendChild(mkBtn("⬆", "Monter", () => reorder(node, -1)))
+        acts.appendChild(mkBtn("⬇", "Descendre", () => reorder(node, +1)))
+        acts.appendChild(mkBtn("✖", "Retirer", () => remove(node)))
+      }
+      row.appendChild(acts)
+
+      // cible de drop : dossiers uniquement
+      if (isFolder) {
+        row.ondragover = (e) => { e.preventDefault(); row.classList.add("drop") }
+        row.ondragleave = () => row.classList.remove("drop")
+        row.ondrop = (e) => { e.preventDefault(); row.classList.remove("drop"); drop(e.dataTransfer.getData("id"), node) }
+      }
+
+      li.appendChild(row)
+      if (isFolder && !collapsed.has(path)) li.appendChild(renderChildren(node, path, miss, dup))
+      return li
+    }
+
+    function badge(t) { const b = document.createElement("span"); b.className = "badge"; b.textContent = t; return b }
+    function mkBtn(label, title, fn) {
+      const b = document.createElement("button"); b.textContent = label; b.title = title
+      b.onclick = fn; return b
+    }
+
+    function renderStats(diff) {
+      const ok = countFiles(root) - diff.missing.length
+      el("stats").innerHTML = ""
+      addStat("ok", "✔ fichiers OK", Math.max(ok, 0))
+      addStat("miss", "⚠ manquants", diff.missing.length)
+      addStat("orph", "⚠ orphelins", diff.orphans.length)
+      addStat("dup", "⚠ doublons", diff.duplicates.length)
+      const d = el("details"); d.innerHTML = ""
+      diff.missing.forEach((m) => addDetail("miss", `manquant : ${m.name}  (${m.path})`))
+      diff.orphans.forEach((o) => addDetail("orph", `orphelin : ${o}  (présent, non déclaré)`))
+      diff.duplicates.forEach((x) => addDetail("dup", `doublon : ${x.name}  → ${x.paths.join(" , ")}`))
+    }
+    function addStat(cls, label, n) {
+      const s = document.createElement("div"); s.className = "stat " + (n ? cls : "ok")
+      s.innerHTML = `<span>${label}</span><span>${n}</span>`; el("stats").appendChild(s)
+    }
+    function addDetail(cls, txt) {
+      const d = document.createElement("div"); d.className = cls; d.textContent = txt; el("details").appendChild(d)
+    }
+    function countFiles(node) {
+      let n = node.type === "file" ? 1 : 0
+      for (const c of node.children || []) n += countFiles(c)
+      return n
+    }
+
+    // --- mutations -----------------------------------------------------------
+    function addChild(folder, type) {
+      const name = prompt(type === "file" ? "Nom du fichier (ex: note.md)" : "Nom du dossier")
+      if (!name) return
+      folder.children = folder.children || []
+      folder.children.push(type === "file" ? { name, type } : { name, type, children: [] })
+      collapsed.delete(pathString(folder))
+      refresh()
+    }
+    function rename(node) {
+      const v = prompt("Nouveau nom", node.name)
+      if (v && v !== node.name) { node.name = v; refresh() }
+    }
+    function remove(node) {
+      const p = parentOf(node); if (!p) return
+      if ((node.children || []).length && !confirm(`Retirer « ${node.name} » et tout son contenu ?`)) return
+      p.children.splice(p.children.indexOf(node), 1); refresh()
+    }
+    function reorder(node, dir) {
+      const p = parentOf(node); if (!p) return
+      const i = p.children.indexOf(node), j = i + dir
+      if (j < 0 || j >= p.children.length) return
+      ;[p.children[i], p.children[j]] = [p.children[j], p.children[i]]; refresh()
+    }
+    function drop(id, folder) {
+      const node = byId(id); if (!node || node === folder) return
+      if (isAncestor(node, folder)) { flash("Impossible : cible dans le nœud déplacé.", true); return }
+      const p = parentOf(node); if (!p) return
+      p.children.splice(p.children.indexOf(node), 1)
+      folder.children = folder.children || []
+      folder.children.push(node)
+      collapsed.delete(pathString(folder)); refresh()
+    }
+    function pathString(target, node = root, base = "/") {
+      if (node === target) return base
+      for (const c of node.children || []) {
+        const p = base === "/" ? "/" + c.name : base + "/" + c.name
+        const hit = pathString(target, c, p); if (hit) return hit
+      }
+      return null
+    }
+
+    // --- actions -------------------------------------------------------------
+    async function save() {
+      try {
+        const r = await (await fetch("/api/save", {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(root),
+        })).json()
+        if (r.error) throw new Error(r.error)
+        files = r.files; refresh()
+        const d = r.diff, warn = d.missing.length + d.orphans.length + d.duplicates.length
+        flash(warn ? `Enregistré — ${warn} alerte(s) de synchro.` : "Enregistré. Synchro OK.", warn > 0)
+      } catch (e) { flash("Échec : " + e.message, true) }
+    }
+    function flash(t, err = false) { const m = el("msg"); m.textContent = t; m.className = err ? "err" : "" }
+
+    el("save").onclick = save
+    el("reload").onclick = load
+    el("rescan").onclick = async () => {
+      const { files: f } = await (await fetch("/api/state")).json(); files = f; refresh(); flash("Disque re-scanné.")
+    }
+    document.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "s") { e.preventDefault(); save() }
+    })
+
+    load()
+  </script>
+</body>
+</html>
