@@ -212,8 +212,9 @@ accès accordé → bascule sur `FileExplorer`.
 3. ✅ **`IntrusionShell.vue`** : **console unique qui accumule l'historique** — un bloc par
    transition d'état, affichés **anti-chronologiquement** (le plus récent en tête, façon terminal
    qui défile) ; seul le nouveau bloc défile (les précédents figés/estompés), amorçage au repos au
-   chargement ; teinte `refus` **par bloc** (`isRefus`). *(Retour de test : ne plus remplacer
-   l'écran à chaque changement — donner l'impression d'une seule console continue.)*
+   chargement ; teinte `refus` **par bloc** (`isRefus`). Présentation : **fenêtre de terminal
+   centrée sur fond noir** (barre de titre + station). *(Retours de test : ne plus remplacer
+   l'écran à chaque changement ; rendu moins artificiel via une simili-console centrée.)*
 4. ✅ **Routage `App` + propriété de session** : `App` devient l'hôte persistant — fetch de
    `file-system.json`, application des réglages de session, **connexion live** (remontée de
    `FileExplorer` : elle doit survivre à la bascule intrusion ⇄ OS) — puis route `IntrusionShell`

@@ -1,16 +1,25 @@
 <template>
   <div class="intrusion">
-    <!-- Une seule console qui accumule l'historique, le plus récent en tête (anti-chronologique). -->
-    <div class="intrusion-console">
-      <div
-        v-for="block in blocks"
-        :key="block.id"
-        class="intrusion-block"
-        :class="{ refus: block.refus }"
-        :data-state="block.state"
-      >
-        <div v-if="block.showBanner" class="intrusion-banner">{{ block.banniere }}</div>
-        <p v-for="(ligne, i) in block.lignes" :key="i" class="intrusion-line">{{ ligne }}</p>
+    <!-- Simili-console (fenêtre de terminal) centrée dans la page, sur fond noir. -->
+    <div class="intrusion-window">
+      <div class="intrusion-titlebar">
+        <span class="intrusion-dot" aria-hidden="true"></span>
+        <span class="intrusion-dot" aria-hidden="true"></span>
+        <span class="intrusion-dot" aria-hidden="true"></span>
+        <span class="intrusion-tt">console d'accès<template v-if="station"> — {{ station }}</template></span>
+      </div>
+      <!-- Une seule console qui accumule l'historique, le plus récent en tête (anti-chronologique). -->
+      <div class="intrusion-console">
+        <div
+          v-for="block in blocks"
+          :key="block.id"
+          class="intrusion-block"
+          :class="{ refus: block.refus }"
+          :data-state="block.state"
+        >
+          <div v-if="block.showBanner" class="intrusion-banner">{{ block.banniere }}</div>
+          <p v-for="(ligne, i) in block.lignes" :key="i" class="intrusion-line">{{ ligne }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -35,6 +44,7 @@ export default {
   },
   computed: {
     state() { return this.sessionState.intrusion },
+    station() { return this.intrusion?.station || "" },
     blocks() {
       const last = this.entries.length - 1
       return this.entries
@@ -96,21 +106,59 @@ export default {
 </script>
 
 <style scoped>
-/* Shell d'intrusion : une console plein écran, ancrée en haut, qui accumule et défile. */
+/* Shell d'intrusion : une fenêtre de terminal centrée dans la page. */
 .intrusion {
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4vmin;
   background: var(--bg);
-  color: var(--accent);
   font-family: "Consolas", "Courier New", monospace;
-  padding: 6vmin 8vmin;
-  overflow-y: auto;
 }
-.intrusion-console {
+.intrusion-window {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  width: min(920px, 100%);
+  height: min(74vh, 100%);
+  background: #000;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
 }
-/* Un bloc = un écran posé (le plus récent en tête). Bannière puis log de l'étape. */
+/* Barre de titre facon terminal : trois pastilles + intitulé. */
+.intrusion-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--panel-raised);
+  border-bottom: 1px solid var(--line-strong);
+  flex: none;
+}
+.intrusion-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--line-strong); }
+.intrusion-dot:nth-child(1) { background: #d05a4a; }
+.intrusion-dot:nth-child(2) { background: #c9a24a; }
+.intrusion-dot:nth-child(3) { background: #5aa06a; }
+.intrusion-tt {
+  margin-left: 8px;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+/* Corps : la console qui accumule et défile (le plus récent en tête). */
+.intrusion-console {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 22px 26px;
+}
+/* Un bloc = un écran posé. Bannière puis log de l'étape. */
 .intrusion-block {
   display: flex;
   flex-direction: column;
@@ -120,28 +168,28 @@ export default {
 .intrusion-banner {
   align-self: flex-start;
   max-width: 100%;
-  font-size: clamp(18px, 4vmin, 34px);
+  font-size: clamp(16px, 2.8vmin, 24px);
   font-weight: bold;
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--accent);
-  border-left: 4px solid var(--accent);
-  padding: 10px 18px;
-  background: var(--panel);
+  border-left: 3px solid var(--accent);
+  padding: 8px 14px;
 }
 .intrusion-line {
   margin: 0;
-  font-size: clamp(13px, 2.4vmin, 18px);
-  line-height: 1.5;
-  color: var(--ink-dim);
+  font-size: clamp(13px, 1.9vmin, 16px);
+  line-height: 1.6;
+  color: var(--accent);
+  opacity: 0.85;
   white-space: pre-wrap;
   animation: intrusion-in 0.18s ease-out;
 }
 /* Écran d'échec : le bloc bascule en rouge impérial. */
-.intrusion-block.refus .intrusion-line { color: var(--danger); opacity: 0.85; }
+.intrusion-block.refus .intrusion-line { color: var(--danger); }
 .intrusion-block.refus .intrusion-banner { color: var(--danger); border-left-color: var(--danger); }
-/* Les blocs plus anciens s'estompent légèrement (profondeur d'historique). */
-.intrusion-block:not(:first-child) { opacity: 0.6; }
+/* Les blocs plus anciens s'estompent (profondeur d'historique). */
+.intrusion-block:not(:first-child) { opacity: 0.5; }
 @keyframes intrusion-in {
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
