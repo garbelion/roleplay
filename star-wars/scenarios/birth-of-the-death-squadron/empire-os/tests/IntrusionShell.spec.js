@@ -31,7 +31,9 @@ describe("IntrusionShell.vue", () => {
     setSessionConfig({ intrusion: "public_ok" })
     const wrapper = mountShell()
     expect(wrapper.findAll(".intrusion-line")).toHaveLength(3)
-    expect(wrapper.find(".intrusion-banner").text()).toBe("PUBLIC — Kessel-Tho")
+    const banner = wrapper.find(".intrusion-banner").text()
+    expect(banner).toContain("PUBLIC — Kessel-Tho")
+    expect(banner).toContain("|*") // rendu en encadré ASCII, comme des lignes de console
   })
 
   it("un changement d'état AJOUTE à la console sans effacer l'historique, en animant les nouvelles lignes", async () => {
@@ -50,8 +52,8 @@ describe("IntrusionShell.vue", () => {
       // boot (2) + public_ok (3) accumulés
       expect(wrapper.findAll(".intrusion-line")).toHaveLength(5)
       const banners = wrapper.findAll(".intrusion-banner").map((b) => b.text())
-      expect(banners).toContain("LIAISON — Kessel-Tho")
-      expect(banners).toContain("PUBLIC — Kessel-Tho")
+      expect(banners.some((b) => b.includes("LIAISON — Kessel-Tho"))).toBe(true)
+      expect(banners.some((b) => b.includes("PUBLIC — Kessel-Tho"))).toBe(true)
     } finally {
       vi.useRealTimers()
     }

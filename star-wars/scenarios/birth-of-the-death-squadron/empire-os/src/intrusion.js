@@ -7,6 +7,17 @@ const interpolate = (text, station) => String(text).replaceAll('{station}', stat
 /** Un écran d'échec suit la convention `*_refus` (teinte danger côté UI). */
 export const isRefus = (state) => typeof state === 'string' && state.endsWith('_refus')
 
+// Encadre un message de changement de phase dans une boîte ASCII (3 lignes), pour l'afficher
+// comme des lignes de console plutôt qu'un bandeau. Ex. asciiBanner('Kessel-Tho') ->
+//   /**************|
+//   |* Kessel-Tho *|
+//   |**************/
+export function asciiBanner(text) {
+  const inner = `* ${text} *`
+  const bar = '*'.repeat(inner.length)
+  return [`/${bar}|`, `|${inner}|`, `|${bar}/`]
+}
+
 // Énumération canonique des écrans d'intrusion, dans l'ordre des 3 jets, avec le libellé MJ.
 // Source unique du panneau de contrôle (/mj). `os` = accès accordé -> bascule sur l'OS.
 export const INTRUSION_SCREENS = [

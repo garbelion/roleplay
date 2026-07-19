@@ -17,7 +17,7 @@
           :class="{ refus: block.refus }"
           :data-state="block.state"
         >
-          <div v-if="block.showBanner" class="intrusion-banner">{{ block.banniere }}</div>
+          <pre v-if="block.bannerText" class="intrusion-banner">{{ block.bannerText }}</pre>
           <p v-for="(ligne, i) in block.lignes" :key="i" class="intrusion-line">{{ ligne }}</p>
         </div>
       </div>
@@ -27,7 +27,7 @@
 
 <script>
 import { sessionState } from "../session-store.js"
-import { intrusionScreen, isRefus } from "../intrusion.js"
+import { intrusionScreen, isRefus, asciiBanner } from "../intrusion.js"
 import { OS } from "../os-identity.js"
 
 // Cadence de révélation des lignes du dernier bloc (défilement « shell »).
@@ -51,13 +51,14 @@ export default {
       return this.entries
         .map((e, i) => {
           const count = i === last ? this.revealed : e.lignes.length
+          const withBanner = !!e.banniere && count >= e.lignes.length
           return {
             id: e.id,
             state: e.state,
             refus: e.refus,
             lignes: e.lignes.slice(0, count),
-            banniere: e.banniere,
-            showBanner: !!e.banniere && count >= e.lignes.length,
+            // La bannière de changement de phase est rendue en encadré ASCII (lignes de console).
+            bannerText: withBanner ? asciiBanner(e.banniere).join("\n") : "",
           }
         })
         .reverse() // le plus récent en tête
@@ -148,7 +149,7 @@ export default {
 .intrusion-console {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   gap: 22px;
@@ -161,16 +162,16 @@ export default {
   gap: 8px;
   animation: intrusion-in 0.2s ease-out;
 }
+/* Bannière de phase : encadré ASCII rendu comme des lignes de console (monospace, aligné). */
 .intrusion-banner {
+  margin: 0;
   align-self: flex-start;
-  max-width: 100%;
-  font-size: clamp(16px, 2.8vmin, 24px);
-  font-weight: bold;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  font-family: inherit;
+  font-size: clamp(13px, 1.9vmin, 16px);
+  line-height: 1.25;
   color: var(--accent);
-  border-left: 3px solid var(--accent);
-  padding: 8px 14px;
+  white-space: pre;
+  animation: intrusion-in 0.2s ease-out;
 }
 .intrusion-line {
   margin: 0;
@@ -182,8 +183,8 @@ export default {
   animation: intrusion-in 0.18s ease-out;
 }
 /* Écran d'échec : le bloc bascule en rouge impérial. */
-.intrusion-block.refus .intrusion-line { color: var(--danger); }
-.intrusion-block.refus .intrusion-banner { color: var(--danger); border-left-color: var(--danger); }
+.intrusion-block.refus .intrusion-line,
+.intrusion-block.refus .intrusion-banner { color: var(--danger); }
 /* Les blocs plus anciens s'estompent (profondeur d'historique). */
 .intrusion-block:not(:first-child) { opacity: 0.5; }
 @keyframes intrusion-in {
