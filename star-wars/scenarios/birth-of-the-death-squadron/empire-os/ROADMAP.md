@@ -128,10 +128,12 @@ Le MJ étant sur un **poste séparé**, deux navigateurs ne partagent aucun éta
 3. ✅ **Affichage live** : teinte console **+ badge d'alerte dans le chrome** (barre de titre,
    libellé canonique `ALERT_LABELS` minimal→war, teinte montante + pulse au niveau war) suivent
    le store réactif → réagissent en live à un push. *(Absorbe le « reste » de §5.3.)*
-4. **Route `#/mj`** : mini-routage par hash + connexion MJ (Supabase Auth) + formulaire (sélecteurs
-   connexion/alerte, « Appliquer », préremplis depuis l'état courant).
-5. **`session-remote.js` (écriture)** : `update` de la ligne d'état (session MJ authentifiée).
-   Client mocké en test.
+4. ✅ **Route `#/mj`** : routage par hash (`MjPanel.vue`) + connexion MJ (Supabase Auth) +
+   formulaire (sélecteurs connexion/alerte, « Appliquer », préremplis). `loadSupabaseClient`
+   partagé lecture/MJ ; état « non configuré » si Supabase absent.
+5. ✅ **Écriture MJ** (`supabase-mj.js` `updateState`) : `update` de la ligne (id=1) par le MJ
+   authentifié — **validé de bout en bout** (login → write → relecture). RLS : `anon` lecture,
+   `authenticated` lecture+écriture. Client mocké en test.
 6. **(option) Re-tuning live des timers** : cadence propagande redémarre quand `alertLevel` change
    (`watch` → restart). Indépendante ; pour le « tout temps réel » des émetteurs.
 
