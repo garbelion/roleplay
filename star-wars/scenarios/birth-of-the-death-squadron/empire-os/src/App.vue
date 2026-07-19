@@ -9,6 +9,10 @@
         <span class="os-full">— {{ OS.fullName }}</span>
       </span>
       <span class="dos-meta">{{ OS.version }} · {{ OS.build }}</span>
+      <!-- Badge d'alerte : n'apparaît qu'au-dessus de la normale, teinte montante -->
+      <span v-if="alertLevel > 0" class="os-alert" :class="`alert-${alertLevel}`">
+        ALERTE — {{ alertLabel }}
+      </span>
       <span class="os-clock">{{ clock }}</span>
       <button class="dos-close-button" @click="closeTerminal">X</button>
     </div>
@@ -33,11 +37,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import FileExplorer from "./components/FileExplorer.vue";
 import { OS } from "./os-identity.js";
 import { formatSessionTime } from "./session-log.js";
 import { notifications, dismiss } from "./notifications.js";
+import { sessionState } from "./session-store.js";
+import { ALERT_LABELS } from "./transfer-duration.js";
+
+// Niveau d'alerte MJ (live via le store réactif) + son libellé canonique.
+const alertLevel = computed(() => sessionState.alertLevel);
+const alertLabel = computed(() => (ALERT_LABELS[sessionState.alertLevel] || "").toUpperCase());
 
 // Horloge de session : durée écoulée depuis l'ouverture (le temps narratif in-game
 // n'étant pas synchronisable). Le format HH:MM:SS est canonique dans session-log.js
@@ -117,6 +127,23 @@ const closeTerminal = () => {
 }
 .os-full { font-weight: normal; text-transform: none; color: var(--ink-dim); font-size: 12px; letter-spacing: 0; }
 .dos-meta { color: var(--ink-dim); font-size: 12px; }
+/* Badge d'alerte : encadré anguleux, teinte montant du orangé au rouge impérial. */
+.os-alert {
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  border: 1px solid currentColor;
+  color: var(--danger);
+  white-space: nowrap;
+}
+.os-alert.alert-1 { color: #cf9b45; }
+.os-alert.alert-2 { color: #cf7b45; }
+.os-alert.alert-3 { color: #cf5b45; }
+.os-alert.alert-4 { color: var(--danger); }
+.os-alert.alert-5 { color: var(--bg); background: var(--danger); animation: os-alert-pulse 1s steps(2) infinite; }
+@keyframes os-alert-pulse { 50% { opacity: 0.55; } }
 .os-clock { margin-left: auto; color: var(--accent); font-variant-numeric: tabular-nums; letter-spacing: 1px; }
 .dos-close-button {
   background: transparent;

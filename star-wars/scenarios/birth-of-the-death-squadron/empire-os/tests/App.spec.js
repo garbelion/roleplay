@@ -3,6 +3,7 @@ import { mount, flushPromises } from "@vue/test-utils"
 import App from "../src/App.vue"
 import { OS } from "../src/os-identity.js"
 import { notify } from "../src/notifications.js"
+import { setSessionConfig } from "../src/session-store.js"
 
 const mockFS = { name: "root", path: "/", type: "directory", children: [] }
 
@@ -53,6 +54,18 @@ describe("App.vue - Skin / chrome impérial", () => {
     expect(mark.exists()).toBe(true)
     expect(mark.text()).toBe("#") // même glyphe impérial que le logo de la barre de titre
     expect(mark.attributes("aria-hidden")).toBe("true")
+  })
+
+  it("affiche un badge d'alerte dans le chrome dès que alertLevel > 0 (live)", async () => {
+    const wrapper = mount(App)
+    await flushPromises()
+    expect(wrapper.find(".os-alert").exists()).toBe(false) // niveau 0 par défaut : pas de badge
+
+    setSessionConfig({ alertLevel: 2 }) // simule un push back-office
+    await wrapper.vm.$nextTick()
+    const badge = wrapper.find(".os-alert")
+    expect(badge.exists()).toBe(true)
+    expect(badge.text().toLowerCase()).toContain("major") // ALERT_LABELS[2]
   })
 
   it("affiche une notification à l'écran pour un message non-surveillance", async () => {
