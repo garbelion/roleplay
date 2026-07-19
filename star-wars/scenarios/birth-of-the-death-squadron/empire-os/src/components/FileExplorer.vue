@@ -113,6 +113,7 @@ import { sessionLog, pushLog, surveillanceText, SESSION_OPEN_TEXT } from '../ses
 import { sessionState, setSessionConfig } from '../session-store.js';
 import { connectSupabaseSession } from '../supabase-source.js';
 import { startConsoleAmbience } from '../console-ambience.js';
+import { assignPaths } from '../file-tree.js';
 import BottomDock from './BottomDock.vue';
 
 export default {
@@ -268,7 +269,8 @@ export default {
     async loadFileSystem() {
       try {
         const response = await fetch('/file-system.json')
-        this.fileSystem = await response.json()
+        // Les chemins sont dérivés de la structure (jamais stockés dans le JSON).
+        this.fileSystem = assignPaths(await response.json())
         // Point d'entrée piloté par la donnée : le MJ décide où l'on atterrit
         // (ex. le home de la machine piratée). Défaut conservé sinon.
         if (this.fileSystem.defaultPath) {

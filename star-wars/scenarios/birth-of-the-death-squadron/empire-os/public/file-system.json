@@ -1,6 +1,5 @@
 {
   "name": "root",
-  "path": "/",
   "type": "directory",
   "defaultPath": "/user-51394345/home",
   "session": {
@@ -19,7 +18,7 @@
       "L'ORDRE GARANTIT VOTRE SÉCURITÉ.",
       "SIGNALEZ TOUTE ACTIVITÉ SÉDITIEUSE AU BUREAU DES TRANSMISSIONS.",
       "GLOIRE À L'EMPEREUR PALPATINE.",
-      "UN CITOYEN SURVEILLÉ EST UN CITOYEN PROTÉGÉ.", 
+      "UN CITOYEN SURVEILLÉ EST UN CITOYEN PROTÉGÉ.",
       "LES TERRORISTES NE RECULERONT PAS DEVANT L'ORDRE IMPÉRIAL.",
       "L'ORDRE IMPÉRIAL LA SEULE GARANTIE DE PAIX DANS LA GALAXIE.",
       "L'EMPIRE EST VERTUEUX. LA CORRUPTION EST UN POISON.",
@@ -30,68 +29,59 @@
   "children": [
     {
       "name": "user-51394345",
-      "path": "/user-51394345",
       "type": "disk",
       "children": [
         {
           "name": "home",
-          "path": "/user-51394345/home",
           "type": "directory",
           "children": [
-            { "name": "rapport_mission.md", "path": "/user-51394345/home/rapport_mission.md", "type": "file" },
-            { "name": "ordre_executor.md", "path": "/user-51394345/home/ordre_executor.md", "type": "file" },
-            { "name": "liste_cibles.md", "path": "/user-51394345/home/liste_cibles.md", "type": "file" },
+            { "name": "rapport_mission.md", "type": "file" },
+            { "name": "ordre_executor.md", "type": "file" },
+            { "name": "liste_cibles.md", "type": "file" },
             {
               "name": "surveillance",
-              "path": "/user-51394345/home/surveillance",
               "type": "directory",
               "children": [
-                { "name": "executor_chantier.jpg", "path": "/user-51394345/home/surveillance/executor_chantier.jpg", "type": "file" },
-                { "name": "flotte_escorte.webp", "path": "/user-51394345/home/surveillance/flotte_escorte.webp", "type": "file" },
-                { "name": "destroyer_orbite.webp", "path": "/user-51394345/home/surveillance/destroyer_orbite.webp", "type": "file" }
+                { "name": "executor_chantier.jpg", "type": "file" },
+                { "name": "flotte_escorte.webp", "type": "file" },
+                { "name": "destroyer_orbite.webp", "type": "file" }
               ]
             }
           ]
         },
         {
           "name": "etc",
-          "path": "/user-51394345/etc",
           "type": "directory",
           "children": [
-            { "name": "reseau.config", "path": "/user-51394345/etc/reseau.config", "type": "file" }
+            { "name": "reseau.config", "type": "file" }
           ]
         },
         {
           "name": "var",
-          "path": "/user-51394345/var",
           "type": "directory",
           "children": [
-            { "name": "log", "path": "/user-51394345/var/log", "type": "directory", "children": [] }
+            { "name": "log", "type": "directory", "children": [] }
           ]
         },
         {
           "name": "tmp",
-          "path": "/user-51394345/tmp",
           "type": "directory",
           "children": [
-            { "name": "protocole_secret.md", "path": "/user-51394345/tmp/protocole_secret.md", "type": "file" }
+            { "name": "protocole_secret.md", "type": "file" }
           ]
         }
       ]
     },
     {
       "name": "srv-transmissions",
-      "path": "/srv-transmissions",
       "type": "disk",
       "children": [
         {
           "name": "partages",
-          "path": "/srv-transmissions/partages",
           "type": "directory",
           "children": [
             {
               "name": "journal_transmissions.md",
-              "path": "/srv-transmissions/partages/journal_transmissions.md",
               "type": "file",
               "previewMode": "summary",
               "summary": "Journal des transmissions du poste — 214 entrées clients. Deux colonnes (message, destinataire) apparaissent illisibles : données chiffrées."
@@ -100,7 +90,6 @@
         },
         {
           "name": "incoming",
-          "path": "/srv-transmissions/incoming",
           "type": "directory",
           "children": []
         }
