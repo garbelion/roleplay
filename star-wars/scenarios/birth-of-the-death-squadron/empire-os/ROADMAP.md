@@ -213,7 +213,7 @@ accès accordé → bascule sur `FileExplorer`.
    transition d'état, affichés **anti-chronologiquement** (le plus récent en tête, façon terminal
    qui défile) ; seul le nouveau bloc défile (les précédents figés/estompés), amorçage au repos au
    chargement ; teinte `refus` **par bloc** (`isRefus`). Les **bannières de phase** sont rendues
-   comme des **lignes de console en encadré ASCII** (`asciiBanner`), pas un bandeau CSS.
+   comme des **lignes de console en encadré box-drawing** `┌┐└┘` (`asciiBanner`), pas un bandeau CSS.
    Présentation : **fenêtre de terminal centrée sur fond noir**, barre de titre reprenant le
    **chrome EmpireOS** (logo impérial `#` Star Jedi, nom, version/build) + station. *(Retours de test : ne plus remplacer l'écran à chaque
    changement ; rendu moins artificiel via une simili-console centrée, cohérente avec l'OS.)*

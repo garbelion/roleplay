@@ -33,7 +33,7 @@ describe("IntrusionShell.vue", () => {
     expect(wrapper.findAll(".intrusion-line")).toHaveLength(3)
     const banner = wrapper.find(".intrusion-banner").text()
     expect(banner).toContain("PUBLIC — Kessel-Tho")
-    expect(banner).toContain("|*") // rendu en encadré ASCII, comme des lignes de console
+    expect(banner).toContain("┌") // rendu en encadré box-drawing, comme des lignes de console
   })
 
   it("un changement d'état AJOUTE à la console sans effacer l'historique, en animant les nouvelles lignes", async () => {
