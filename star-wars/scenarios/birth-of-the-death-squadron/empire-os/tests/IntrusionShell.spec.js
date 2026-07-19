@@ -12,47 +12,58 @@ const FIXTURE = {
   },
 }
 
+const mountShell = () => mount(IntrusionShell, { props: { intrusion: FIXTURE } })
+
 describe("IntrusionShell.vue", () => {
   beforeEach(() => resetSessionState())
 
-  it("au chargement, affiche directement l'écran de repos (toutes les lignes + bannière interpolée)", () => {
+  it("au chargement, amorce la console avec l'écran courant au repos (lignes + bannière interpolée)", () => {
     setSessionConfig({ intrusion: "public_ok" })
-    const wrapper = mount(IntrusionShell, { props: { intrusion: FIXTURE } })
+    const wrapper = mountShell()
     expect(wrapper.findAll(".intrusion-line")).toHaveLength(3)
     expect(wrapper.find(".intrusion-banner").text()).toBe("PUBLIC — Kessel-Tho")
   })
 
-  it("au changement d'état (push MJ), rejoue le défilement depuis zéro puis atteint le repos", async () => {
+  it("un changement d'état AJOUTE à la console sans effacer l'historique, en animant les nouvelles lignes", async () => {
     vi.useFakeTimers()
     try {
       setSessionConfig({ intrusion: "boot" })
-      const wrapper = mount(IntrusionShell, { props: { intrusion: FIXTURE } })
-      // repos immédiat : boot montré en entier sans avancer le temps (pas de replay au chargement)
+      const wrapper = mountShell()
+      expect(wrapper.findAll(".intrusion-line")).toHaveLength(2) // boot au repos
+
+      setSessionConfig({ intrusion: "public_ok" }) // push MJ
+      await wrapper.vm.$nextTick()
+      // l'historique boot est conservé ; le nouvel écran n'est pas encore défilé
       expect(wrapper.findAll(".intrusion-line")).toHaveLength(2)
 
-      setSessionConfig({ intrusion: "public_ok" }) // simule un push
-      await wrapper.vm.$nextTick()
-      // le défilement repart de zéro
-      expect(wrapper.findAll(".intrusion-line")).toHaveLength(0)
-      expect(wrapper.find(".intrusion-banner").exists()).toBe(false) // bannière retenue tant que ça défile
-
       await vi.advanceTimersByTimeAsync(2000)
-      // atteint le repos : les 3 lignes + la bannière
-      expect(wrapper.findAll(".intrusion-line")).toHaveLength(3)
-      expect(wrapper.find(".intrusion-banner").exists()).toBe(true)
+      // boot (2) + public_ok (3) accumulés
+      expect(wrapper.findAll(".intrusion-line")).toHaveLength(5)
+      const banners = wrapper.findAll(".intrusion-banner").map((b) => b.text())
+      expect(banners).toContain("LIAISON — Kessel-Tho")
+      expect(banners).toContain("PUBLIC — Kessel-Tho")
     } finally {
       vi.useRealTimers()
     }
   })
 
-  it("teinte les écrans d'échec (classe refus) et pas les autres", () => {
+  it("affiche les blocs en ordre anti-chronologique (le plus récent en tête)", async () => {
+    setSessionConfig({ intrusion: "boot" })
+    const wrapper = mountShell()
+    setSessionConfig({ intrusion: "public_ok" })
+    await wrapper.vm.$nextTick()
+
+    const blocks = wrapper.findAll(".intrusion-block")
+    expect(blocks[0].attributes("data-state")).toBe("public_ok") // le plus récent d'abord
+    expect(blocks[1].attributes("data-state")).toBe("boot")
+  })
+
+  it("teinte le bloc d'un écran d'échec (refus) et pas celui d'un succès", () => {
     setSessionConfig({ intrusion: "interne_refus" })
-    const refus = mount(IntrusionShell, { props: { intrusion: FIXTURE } })
-    expect(refus.find(".intrusion").classes()).toContain("refus")
+    expect(mountShell().find(".intrusion-block").classes()).toContain("refus")
 
     resetSessionState()
     setSessionConfig({ intrusion: "public_ok" })
-    const ok = mount(IntrusionShell, { props: { intrusion: FIXTURE } })
-    expect(ok.find(".intrusion").classes()).not.toContain("refus")
+    expect(mountShell().find(".intrusion-block").classes()).not.toContain("refus")
   })
 })

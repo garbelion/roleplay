@@ -1,9 +1,18 @@
 <template>
-  <div class="intrusion" :class="{ refus: isRefus }">
-    <div class="intrusion-log">
-      <p v-for="(ligne, i) in visibleLignes" :key="i" class="intrusion-line">{{ ligne }}</p>
+  <div class="intrusion">
+    <!-- Une seule console qui accumule l'historique, le plus récent en tête (anti-chronologique). -->
+    <div class="intrusion-console">
+      <div
+        v-for="block in blocks"
+        :key="block.id"
+        class="intrusion-block"
+        :class="{ refus: block.refus }"
+        :data-state="block.state"
+      >
+        <div v-if="block.showBanner" class="intrusion-banner">{{ block.banniere }}</div>
+        <p v-for="(ligne, i) in block.lignes" :key="i" class="intrusion-line">{{ ligne }}</p>
+      </div>
     </div>
-    <div v-if="banniere && bannerVisible" class="intrusion-banner">{{ banniere }}</div>
   </div>
 </template>
 
@@ -11,7 +20,7 @@
 import { sessionState } from "../session-store.js"
 import { intrusionScreen, isRefus } from "../intrusion.js"
 
-// Cadence de révélation des lignes (défilement « shell »).
+// Cadence de révélation des lignes du dernier bloc (défilement « shell »).
 const REVEAL_MS = 260
 
 export default {
@@ -20,32 +29,62 @@ export default {
     intrusion: { type: Object, default: null },
   },
   data() {
-    return { sessionState, revealed: 0 }
+    // `entries` : un bloc par transition d'état (historique conservé). `revealed` ne
+    // s'applique qu'au dernier bloc (le seul qui défile) ; les précédents restent figés.
+    return { sessionState, entries: [], revealed: 0 }
   },
   computed: {
     state() { return this.sessionState.intrusion },
-    screen() { return intrusionScreen(this.intrusion, this.state) },
-    lignes() { return this.screen ? this.screen.lignes : [] },
-    banniere() { return this.screen ? this.screen.banniere : "" },
-    visibleLignes() { return this.lignes.slice(0, this.revealed) },
-    bannerVisible() { return this.revealed >= this.lignes.length },
-    isRefus() { return isRefus(this.state) },
+    blocks() {
+      const last = this.entries.length - 1
+      return this.entries
+        .map((e, i) => {
+          const count = i === last ? this.revealed : e.lignes.length
+          return {
+            id: e.id,
+            state: e.state,
+            refus: e.refus,
+            lignes: e.lignes.slice(0, count),
+            banniere: e.banniere,
+            showBanner: !!e.banniere && count >= e.lignes.length,
+          }
+        })
+        .reverse() // le plus récent en tête
+    },
   },
   created() {
-    // Au chargement : saut direct à l'image de repos (toutes les lignes, pas d'animation).
-    this.revealed = this.lignes.length
+    this._seq = 0
+    // Amorçage : l'écran courant apparaît d'emblée au repos (pas d'animation au chargement).
+    const seeded = this.pushScreen(this.state)
+    if (seeded) this.revealed = seeded.lignes.length
   },
   watch: {
-    // Changement d'état (push MJ) : on rejoue le défilement depuis le début.
-    state() { this.animate() },
+    // Changement d'état (push MJ) : on AJOUTE le nouvel écran et on l'anime — l'historique reste.
+    state() {
+      if (this.pushScreen(this.state)) this.animate()
+    },
   },
   beforeUnmount() { this.stop() },
   methods: {
+    pushScreen(state) {
+      const screen = intrusionScreen(this.intrusion, state)
+      if (!screen) return null
+      const entry = {
+        id: ++this._seq,
+        state,
+        refus: isRefus(state),
+        lignes: screen.lignes,
+        banniere: screen.banniere,
+      }
+      this.entries.push(entry)
+      return entry
+    },
     animate() {
       this.stop()
       this.revealed = 0
+      const total = this.entries[this.entries.length - 1].lignes.length
       this._timer = setInterval(() => {
-        if (this.revealed >= this.lignes.length) { this.stop(); return }
+        if (this.revealed >= total) { this.stop(); return }
         this.revealed++
       }, REVEAL_MS)
     },
@@ -57,31 +96,26 @@ export default {
 </script>
 
 <style scoped>
-/* Shell d'intrusion : plein écran, froid, anguleux. Le log défile, la bannière conclut. */
+/* Shell d'intrusion : une console plein écran, ancrée en haut, qui accumule et défile. */
 .intrusion {
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 28px;
-  padding: 8vmin;
   background: var(--bg);
   color: var(--accent);
   font-family: "Consolas", "Courier New", monospace;
+  padding: 6vmin 8vmin;
+  overflow-y: auto;
 }
-.intrusion-log {
+.intrusion-console {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-size: clamp(13px, 2.4vmin, 18px);
-  line-height: 1.5;
-  min-height: 30vh;
+  gap: 24px;
 }
-.intrusion-line {
-  margin: 0;
-  color: var(--ink-dim);
-  white-space: pre-wrap;
-  animation: intrusion-line-in 0.18s ease-out;
+/* Un bloc = un écran posé (le plus récent en tête). Bannière puis log de l'étape. */
+.intrusion-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: intrusion-in 0.2s ease-out;
 }
 .intrusion-banner {
   align-self: flex-start;
@@ -94,14 +128,22 @@ export default {
   border-left: 4px solid var(--accent);
   padding: 10px 18px;
   background: var(--panel);
-  animation: intrusion-line-in 0.25s ease-out;
 }
-/* Écran d'échec : bascule en rouge impérial. */
-.intrusion.refus { color: var(--danger); }
-.intrusion.refus .intrusion-line { color: var(--danger); opacity: 0.8; }
-.intrusion.refus .intrusion-banner { color: var(--danger); border-left-color: var(--danger); }
-@keyframes intrusion-line-in {
-  from { opacity: 0; transform: translateY(4px); }
+.intrusion-line {
+  margin: 0;
+  font-size: clamp(13px, 2.4vmin, 18px);
+  line-height: 1.5;
+  color: var(--ink-dim);
+  white-space: pre-wrap;
+  animation: intrusion-in 0.18s ease-out;
+}
+/* Écran d'échec : le bloc bascule en rouge impérial. */
+.intrusion-block.refus .intrusion-line { color: var(--danger); opacity: 0.85; }
+.intrusion-block.refus .intrusion-banner { color: var(--danger); border-left-color: var(--danger); }
+/* Les blocs plus anciens s'estompent légèrement (profondeur d'historique). */
+.intrusion-block:not(:first-child) { opacity: 0.6; }
+@keyframes intrusion-in {
+  from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 </style>

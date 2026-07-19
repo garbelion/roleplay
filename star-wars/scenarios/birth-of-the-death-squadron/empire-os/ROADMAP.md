@@ -209,9 +209,11 @@ accès accordé → bascule sur `FileExplorer`.
 2. ✅ **Modèle de contenu** : bloc `intrusion` dans `file-system.json` (`{ station, screens }`,
    un écran `{lignes, banniere}` par état) + helper pur `intrusion.js` `intrusionScreen(intrusion,
    state)` → écran interpolé (`{station}` = source unique) ou `null`.
-3. ✅ **`IntrusionShell.vue`** : rend l'écran de repos de l'état courant (prop `intrusion` +
-   `sessionState.intrusion`) ; anime le défilement **au changement d'état seulement**, saute à
-   l'image de repos au chargement ; teinte `refus` sur les écrans d'échec (`isRefus`).
+3. ✅ **`IntrusionShell.vue`** : **console unique qui accumule l'historique** — un bloc par
+   transition d'état, affichés **anti-chronologiquement** (le plus récent en tête, façon terminal
+   qui défile) ; seul le nouveau bloc défile (les précédents figés/estompés), amorçage au repos au
+   chargement ; teinte `refus` **par bloc** (`isRefus`). *(Retour de test : ne plus remplacer
+   l'écran à chaque changement — donner l'impression d'une seule console continue.)*
 4. ✅ **Routage `App` + propriété de session** : `App` devient l'hôte persistant — fetch de
    `file-system.json`, application des réglages de session, **connexion live** (remontée de
    `FileExplorer` : elle doit survivre à la bascule intrusion ⇄ OS) — puis route `IntrusionShell`
