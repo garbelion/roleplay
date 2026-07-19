@@ -38,6 +38,10 @@ on redescend à la racine pour changer de disque. Chaque disque a son propre arb
 clé **(d)** — le journal de Tana — vit sur un **disque réseau**, *pas* sur la machine piratée :
 aucun verrou logiciel, savoir *où* chercher est l'énigme (résolue à la table).
 
+**Un nœud = `{ name, type, children? }`.** Le **chemin n'est pas stocké** : il est dérivé de la
+position dans l'arbre (chaîne des noms d'ancêtres) au chargement (`file-tree.js` `assignPaths`).
+La structure fait autorité ; le JSON reste minimal et sans redondance à maintenir.
+
 **Métadonnées par fichier.** `type`/extension pilote l'affichage ; `previewMode` = `full`
 (lisible in-app) ou `summary` (aperçu = résumé, lecture = téléchargement) ; `summary` = accroche
 rédigée par le MJ ; `transferWeight` = poids pour la durée de transfert fictive.
