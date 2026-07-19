@@ -152,14 +152,14 @@ export default {
   overflow: auto;
   display: flex;
   flex-direction: column;
-  gap: 22px;
-  padding: 22px 26px;
+  gap: 16px;
+  padding: 20px 26px;
 }
-/* Un bloc = un écran posé. Bannière puis log de l'étape. */
+/* Un bloc = un écran posé. Bannière puis log de l'étape (lignes resserrées, look terminal). */
 .intrusion-block {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
   animation: intrusion-in 0.2s ease-out;
 }
 /* Bannière de phase : encadré ASCII rendu comme des lignes de console (monospace, aligné). */
@@ -168,7 +168,7 @@ export default {
   align-self: flex-start;
   font-family: inherit;
   font-size: clamp(13px, 1.9vmin, 16px);
-  line-height: 1.25;
+  line-height: 1.15;
   color: var(--accent);
   white-space: pre;
   animation: intrusion-in 0.2s ease-out;
@@ -176,7 +176,7 @@ export default {
 .intrusion-line {
   margin: 0;
   font-size: clamp(13px, 1.9vmin, 16px);
-  line-height: 1.6;
+  line-height: 1.3;
   color: var(--accent);
   opacity: 0.85;
   white-space: pre-wrap;
