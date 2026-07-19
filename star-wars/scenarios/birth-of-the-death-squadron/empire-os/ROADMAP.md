@@ -48,9 +48,12 @@ fichier physique. Invariant à surveiller : **unicité des noms** (adressage à 
 arbre ↔ disque.
 
 **Outil d'édition dev-only (`npm run fs:editor`).** Petit serveur Node sans dépendance
-(`tools/fs-editor/`) + éditeur web : arbre éditable (ajout/retrait/déplacement drag-and-drop),
-enregistrement direct dans `file-system.json`, et **panneau de synchro live** — manquants /
-orphelins / doublons — via `fs-sync.js` (`diffFileSystem`, cœur pur testé, réutilisé serveur+UI).
+(`tools/fs-editor/`) + éditeur web : arbre éditable (ajout de **disque** à la racine, ajout /
+retrait / renommage / déplacement drag-and-drop de nœuds), enregistrement direct dans
+`file-system.json`, et **panneau de synchro live** — manquants / orphelins / doublons — via
+`fs-sync.js` (`diffFileSystem`, cœur pur testé) ; opérations pures dans `fs-ops.js`. **C'est l'outil
+d'auteur pour la *structure* des disques** (tranche §6 : structure = outil séparé, livré).
+*À venir* : édition des **messages de propagande** (`console.propaganda`) depuis l'outil.
 
 **Métadonnées par fichier.** `type`/extension pilote l'affichage ; `previewMode` = `full`
 (lisible in-app) ou `summary` (aperçu = résumé, lecture = téléchargement) ; `summary` = accroche
@@ -170,19 +173,37 @@ en attendant.
 - ✅ **Badge d'alerte dans le chrome** livré via la **slice 3 du back-office** (§5.2) : barre de
   titre, libellé `ALERT_LABELS`, teinte montante, piloté par le store réactif (source unique).
 
-### 5.4 — Plus tard / parqué
+### 5.4 — Phase d'intrusion (amorçage « shell ») *(nouveau — à concevoir)*
+Aujourd'hui l'app démarre **après** le hack réussi (l'OS est la récompense). Il manque la **phase
+d'entrée** : une séquence diégétique **façon shell** (messages qui défilent) figurant l'effraction
+sur le réseau, jouée **avant** l'accès à EmpireOS.
+
+**À trancher (conception) avant tout code** :
+- **Rôle** : purement **cosmétique** — animation de récompense du hack **déjà résolu à la table**,
+  non interactive (cohérent avec « l'OS est une récompense, le hack se résout hors app »).
+  *Défaut recommandé* : toute interactivité rouvrirait un puzzle censé être résolu à la table.
+- **Enchaînement** : écran d'amorçage → défilement → bascule **auto** vers l'OS (`defaultPath`).
+  Skippable ? rejouable par le MJ ?
+- **Contenu** : lignes de boot / scan / *bruteforce* en **donnée** (comme la propagande), rédigées
+  MJ ; vitesse de défilement ; skin cohérent (froid, **pas de vert MS-DOS**).
+- **Où** : écran monté **avant** `FileExplorer` (bascule par état, pas d'URL).
+
+### 5.5 — Plus tard / parqué
 - **Recherche dans le contenu** des fichiers texte / descriptions (v2 de la recherche).
 - **Options popin** : rendu **non-linéaire** (débit qui fluctue, paliers, « reconnexion au
   nœud relais… »), **échec narratif** (« CONNEXION PERDUE — 73 % », MJ-only, retryable).
 - **Droïde Bafouille** : programme diégétique d'aide au déchiffrement, actif **seulement si les PJ
   sont corrects avec lui**. À écrire ultérieurement.
-- **Page éditeur / générateur MJ** : rédiger/structurer les disques depuis l'app (voir §6).
+- **Éditeur de *contenu* MJ in-app** : rédiger les documents depuis l'app (voir §6). *La
+  **structure** des disques est déjà couverte hors app par `fs:editor` (§3) ; ne reste ici que la
+  rédaction du contenu.*
 
 ## 6. Décisions encore ouvertes
 
-- **Page éditeur MJ** : route dans *cette* app (ex. `/forge`) ou outil séparé ? « Plusieurs
-  tentatives de hacking » = configs qui **varient** d'une tentative à l'autre (anti méta-jeu) ou
-  simple édition de confort ? *À trancher quand/si.*
+- **Éditeur MJ** : la **structure** des disques est tranchée → **outil séparé** (`fs:editor`, §3,
+  livré). Reste ouvert pour la **rédaction de contenu** : route dans *cette* app (ex. `/forge`) ou
+  extension de l'outil ? « Plusieurs tentatives de hacking » = configs qui **varient** d'une
+  tentative à l'autre (anti méta-jeu) ou simple édition de confort ? *À trancher quand/si.*
 - **Configs séparées par disque** : un `file-system.json` par disque plutôt qu'un fichier unique.
   *Non prioritaire tant que le volume de contenu ne l'impose pas.*
 
