@@ -2,7 +2,7 @@
 // de l'état de session. Réutilise le mapping schéma canonique de supabase-source.js.
 // Client injecté (mocké en test) ; le SDK réel est chargé par connectMjOpsFromConfig (glue).
 
-import { SESSION_TABLE, mapRow, toRow } from './supabase-source.js'
+import { SESSION_TABLE, SESSION_COLUMNS, mapRow, toRow } from './supabase-source.js'
 import { loadSupabaseClient } from './supabase-client.js'
 
 /**
@@ -15,7 +15,7 @@ export function createMjOps(client) {
       if (error) throw new Error(error.message)
     },
     async fetchState() {
-      const { data } = await client.from(SESSION_TABLE).select('connection_quality, alert_level').single()
+      const { data } = await client.from(SESSION_TABLE).select(SESSION_COLUMNS).single()
       return mapRow(data)
     },
     async updateState(patch) {

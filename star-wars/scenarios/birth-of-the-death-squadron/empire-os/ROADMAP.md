@@ -202,10 +202,19 @@ accès accordé → bascule sur `FileExplorer`.
 **Contenu (donnée, éditable via `fs:editor`)** : par étape `{ lignes: [...], banniere, refus: [...] }`
 + **nom de station en donnée** (« Kessel-Tho »). Skin cohérent (froid, **pas de vert MS-DOS**).
 
-**Implémentation (/tdd)** : colonne `intrusion` dans `session_state` (+ mapping `supabase-source` /
-`session-store`), écran `IntrusionShell.vue` piloté par le store réactif, **monté avant
-`FileExplorer`** (bascule par état, pas d'URL), contrôles + reset dans `MjPanel`, contenu dans
-`file-system.json`. *Prérequis hors-code : ajouter la colonne `intrusion` (text) à la table Supabase.*
+**Implémentation (slices TDD)** :
+1. ✅ **Store + mapping** : `intrusion` dans `sessionState` (défaut `'boot'`), `setSessionConfig`
+   piloté par les clés de `DEFAULT_SESSION` ; colonne `intrusion` dans `mapRow`/`toRow` +
+   `SESSION_COLUMNS` (source unique du `select`, dédupliquée entre `supabase-source` et `supabase-mj`).
+2. **Modèle de contenu** : bloc `intrusion` dans `file-system.json` (par étape `{lignes, banniere,
+   refus}` + nom de station) + helper pur `intrusionScreen(config, state)` → quoi afficher.
+3. **`IntrusionShell.vue`** : rend l'écran de repos de l'état courant ; anime le défilement **au
+   changement d'état seulement**, saute à l'image de repos au chargement.
+4. **Routage `App`** : monte `IntrusionShell` tant que `intrusion !== 'os'`, sinon `FileExplorer`.
+5. **Contrôles `/mj`** : boutons posant chaque écran (contrôle libre) + **Reset → boot** (`updateState`).
+
+*Prérequis hors-code (pour le live) : ajouter la colonne `intrusion` (text, défaut `'boot'`) à la
+table Supabase `session_state`. Tout est codable/testable avec le client mocké en attendant.*
 
 ### 5.5 — Plus tard / parqué
 - **Déconnexion forcée par le MJ** : action `/mj` pour **éjecter le joueur de l'OS** (écran

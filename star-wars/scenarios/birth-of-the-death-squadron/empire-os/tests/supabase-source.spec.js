@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest"
-import { createSupabaseSource, connectSupabaseSession } from "../src/supabase-source.js"
+import { createSupabaseSource, connectSupabaseSession, mapRow, toRow } from "../src/supabase-source.js"
 
 // Faux client Supabase : reproduit l'API chaînable dont l'adaptateur a besoin.
 function fakeClient({ row = null } = {}) {
@@ -27,6 +27,20 @@ describe("createSupabaseSource", () => {
   it("fetchState renvoie null s'il n'y a pas de ligne", async () => {
     const src = createSupabaseSource(fakeClient({ row: null }))
     await expect(src.fetchState()).resolves.toBe(null)
+  })
+
+  it("fetchState mappe la colonne intrusion (écran de la phase d'entrée)", async () => {
+    const row = { connection_quality: "moyenne", alert_level: 0, intrusion: "interne_ok" }
+    const src = createSupabaseSource(fakeClient({ row }))
+    await expect(src.fetchState()).resolves.toEqual({ connectionQuality: "moyenne", alertLevel: 0, intrusion: "interne_ok" })
+  })
+})
+
+describe("mapRow / toRow", () => {
+  it("mapRow expose intrusion ; toRow le réécrit en colonne DB", () => {
+    expect(mapRow({ connection_quality: "faible", alert_level: 2, intrusion: "os_refus" }))
+      .toEqual({ connectionQuality: "faible", alertLevel: 2, intrusion: "os_refus" })
+    expect(toRow({ intrusion: "os" })).toMatchObject({ intrusion: "os" })
   })
 
   it("onChange mappe payload.new et fournit un désabonnement", () => {

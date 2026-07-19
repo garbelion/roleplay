@@ -5,15 +5,19 @@
 
 import { reactive } from 'vue'
 
-export const DEFAULT_SESSION = { connectionQuality: 'moyenne', alertLevel: 0 }
+export const DEFAULT_SESSION = { connectionQuality: 'moyenne', alertLevel: 0, intrusion: 'boot' }
 
 export const sessionState = reactive({ ...DEFAULT_SESSION })
 
-/** Applique une config partielle ({connectionQuality?, alertLevel?}) ; ignore les clés absentes. */
+/**
+ * Applique une config partielle ; n'écrit que les clés connues (celles de DEFAULT_SESSION)
+ * présentes et définies. Les clés absentes ou inconnues sont ignorées.
+ */
 export function setSessionConfig(partial) {
   if (!partial) return
-  if (partial.connectionQuality !== undefined) sessionState.connectionQuality = partial.connectionQuality
-  if (partial.alertLevel !== undefined) sessionState.alertLevel = partial.alertLevel
+  for (const key of Object.keys(DEFAULT_SESSION)) {
+    if (partial[key] !== undefined) sessionState[key] = partial[key]
+  }
 }
 
 /** Restaure les défauts (nouvelle session / tests). */
