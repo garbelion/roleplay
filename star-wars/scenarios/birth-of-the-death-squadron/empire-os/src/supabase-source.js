@@ -3,12 +3,19 @@
 // La table `session_state` porte une seule ligne : { connection_quality, alert_level }.
 
 import { connectSessionRemote } from './session-remote.js'
+import { loadSupabaseClient } from './supabase-client.js'
 
-const TABLE = 'session_state'
+// Schéma de la table d'état (source unique du mapping snake_case <-> app).
+export const SESSION_TABLE = 'session_state'
+const TABLE = SESSION_TABLE
 
 // Ligne DB -> config app ; null si pas de ligne.
-const mapRow = (row) =>
+export const mapRow = (row) =>
   row ? { connectionQuality: row.connection_quality, alertLevel: row.alert_level } : null
+
+// Config app -> ligne DB (écriture).
+export const toRow = ({ connectionQuality, alertLevel }) =>
+  ({ connection_quality: connectionQuality, alert_level: alertLevel })
 
 /**
  * Construit une source { fetchState, onChange } à partir d'un client Supabase.
@@ -46,9 +53,8 @@ export function connectSupabaseSession(config) {
   let stopped = false
   ;(async () => {
     try {
-      const { createClient } = await import('@supabase/supabase-js')
+      const client = await loadSupabaseClient(config)
       if (stopped) return
-      const client = createClient(config.url, config.anonKey)
       inner = await connectSessionRemote(createSupabaseSource(client))
       if (stopped) inner.disconnect()
     } catch {

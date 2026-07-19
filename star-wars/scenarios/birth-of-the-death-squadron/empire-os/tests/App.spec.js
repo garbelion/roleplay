@@ -11,6 +11,23 @@ beforeEach(() => {
   global.fetch = vi.fn(() => Promise.resolve({ json: () => Promise.resolve(mockFS) }))
 })
 
+describe("App.vue - Routage back-office MJ", () => {
+  afterEach(() => { window.location.hash = "" })
+
+  it("affiche la page MJ sur #/mj (pas l'OS)", () => {
+    window.location.hash = "#/mj"
+    const wrapper = mount(App, { global: { stubs: { MjPanel: true } } })
+    expect(wrapper.find(".dos-title-bar").exists()).toBe(false)
+    expect(wrapper.findComponent({ name: "MjPanel" }).exists()).toBe(true)
+  })
+
+  it("affiche l'OS par défaut (sans hash)", () => {
+    const wrapper = mount(App, { global: { stubs: { MjPanel: true } } })
+    expect(wrapper.find(".dos-title-bar").exists()).toBe(true)
+    expect(wrapper.findComponent({ name: "MjPanel" }).exists()).toBe(false)
+  })
+})
+
 describe("App.vue - Skin / chrome impérial", () => {
   it("affiche le nom et la version de l'OS dans la barre de titre", () => {
     const wrapper = mount(App)

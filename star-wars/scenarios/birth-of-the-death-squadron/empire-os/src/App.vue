@@ -1,5 +1,8 @@
 <template>
-  <div class="dos-window">
+  <!-- Route MJ (#/mj) : back-office, séparé de l'OS joueur. -->
+  <MjPanel v-if="isMj" :ops="mjOps" />
+
+  <div v-else class="dos-window">
     <!-- Filigrane décoratif : logo impérial (Star Jedi) estompé en fond de l'OS. -->
     <div class="os-watermark" aria-hidden="true">#</div>
     <div class="dos-title-bar">
@@ -37,13 +40,26 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import FileExplorer from "./components/FileExplorer.vue";
+import MjPanel from "./components/MjPanel.vue";
+import { createMjOpsFromConfig } from "./supabase-mj.js";
 import { OS } from "./os-identity.js";
 import { formatSessionTime } from "./session-log.js";
 import { notifications, dismiss } from "./notifications.js";
 import { sessionState } from "./session-store.js";
 import { ALERT_LABELS } from "./transfer-duration.js";
+
+// Routage minimal par hash : #/mj => back-office MJ, sinon l'OS joueur.
+const route = ref(window.location.hash);
+const onHashChange = () => { route.value = window.location.hash; };
+const isMj = computed(() => route.value === "#/mj");
+
+// Opérations MJ (Supabase) construites à la demande quand on entre sur la page MJ.
+const mjOps = ref(null);
+watch(isMj, async (on) => {
+  if (on && !mjOps.value) mjOps.value = await createMjOpsFromConfig();
+}, { immediate: true });
 
 // Niveau d'alerte MJ (live via le store réactif) + son libellé canonique.
 const alertLevel = computed(() => sessionState.alertLevel);
@@ -57,8 +73,12 @@ const clock = ref(formatSessionTime(0));
 let timer;
 onMounted(() => {
   timer = setInterval(() => { clock.value = formatSessionTime(Date.now() - sessionStart); }, 1000);
+  window.addEventListener("hashchange", onHashChange);
 });
-onUnmounted(() => clearInterval(timer));
+onUnmounted(() => {
+  clearInterval(timer);
+  window.removeEventListener("hashchange", onHashChange);
+});
 
 const closeTerminal = () => {
   console.log("Terminal ferme");
