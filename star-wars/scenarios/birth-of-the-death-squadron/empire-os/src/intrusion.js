@@ -4,6 +4,9 @@
 
 const interpolate = (text, station) => String(text).replaceAll('{station}', station)
 
+/** Un écran d'échec suit la convention `*_refus` (teinte danger côté UI). */
+export const isRefus = (state) => typeof state === 'string' && state.endsWith('_refus')
+
 /**
  * @param {{station?: string, screens?: Object}|undefined} intrusion  bloc `intrusion` de file-system.json
  * @param {string} state  écran courant (boot, public_ok, public_refus, interne_ok, …)

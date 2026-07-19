@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { intrusionScreen } from "../src/intrusion.js"
+import { intrusionScreen, isRefus } from "../src/intrusion.js"
 
 describe("intrusionScreen", () => {
   const intrusion = {
@@ -22,5 +22,15 @@ describe("intrusionScreen", () => {
   it("renvoie null pour un état inconnu ou une config d'intrusion absente", () => {
     expect(intrusionScreen(intrusion, "interne_ok")).toBe(null)
     expect(intrusionScreen(undefined, "public_ok")).toBe(null)
+  })
+})
+
+describe("isRefus", () => {
+  it("reconnaît les écrans d'échec (convention *_refus)", () => {
+    expect(isRefus("public_refus")).toBe(true)
+    expect(isRefus("os_refus")).toBe(true)
+    expect(isRefus("interne_ok")).toBe(false)
+    expect(isRefus("boot")).toBe(false)
+    expect(isRefus(undefined)).toBe(false)
   })
 })

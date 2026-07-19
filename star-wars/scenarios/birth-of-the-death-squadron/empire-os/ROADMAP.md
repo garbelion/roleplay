@@ -209,9 +209,12 @@ accès accordé → bascule sur `FileExplorer`.
 2. ✅ **Modèle de contenu** : bloc `intrusion` dans `file-system.json` (`{ station, screens }`,
    un écran `{lignes, banniere}` par état) + helper pur `intrusion.js` `intrusionScreen(intrusion,
    state)` → écran interpolé (`{station}` = source unique) ou `null`.
-3. **`IntrusionShell.vue`** : rend l'écran de repos de l'état courant ; anime le défilement **au
-   changement d'état seulement**, saute à l'image de repos au chargement.
+3. ✅ **`IntrusionShell.vue`** : rend l'écran de repos de l'état courant (prop `intrusion` +
+   `sessionState.intrusion`) ; anime le défilement **au changement d'état seulement**, saute à
+   l'image de repos au chargement ; teinte `refus` sur les écrans d'échec (`isRefus`).
 4. **Routage `App`** : monte `IntrusionShell` tant que `intrusion !== 'os'`, sinon `FileExplorer`.
+   *Monter l'écran seulement après le **premier settle** de l'état de session (gate de chargement)
+   pour éviter un replay du boot au refresh — cf. note slice 3.*
 5. **Contrôles `/mj`** : boutons posant chaque écran (contrôle libre) + **Reset → boot** (`updateState`).
 
 *Prérequis hors-code (pour le live) : ajouter la colonne `intrusion` (text, défaut `'boot'`) à la
