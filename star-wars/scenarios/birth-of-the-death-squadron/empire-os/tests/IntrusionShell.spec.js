@@ -7,9 +7,9 @@ import { OS } from "../src/os-identity.js"
 const FIXTURE = {
   station: "Kessel-Tho",
   screens: {
-    boot: { lignes: ["> lien…", "> attente…"], banniere: "LIAISON — {station}" },
-    public_ok: { lignes: ["> a", "> b", "> c"], banniere: "PUBLIC — {station}" },
-    interne_refus: { lignes: ["> rejet"], banniere: "ACCÈS REFUSÉ" },
+    boot: { lignes: ["lien…", "attente…"], banniere: "LIAISON — {station}" },
+    public_ok: { lignes: ["a", "b", "c"], banniere: "PUBLIC — {station}" },
+    interne_refus: { lignes: ["rejet"], banniere: "ACCÈS REFUSÉ" },
   },
 }
 

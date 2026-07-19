@@ -182,6 +182,8 @@ export default {
   white-space: pre-wrap;
   animation: intrusion-in 0.18s ease-out;
 }
+/* Préfixe de prompt, factorisé ici (hors donnée) : chaque ligne de log s'ouvre par « > ». */
+.intrusion-line::before { content: "> "; opacity: 0.55; }
 /* Écran d'échec : le bloc bascule en rouge impérial. */
 .intrusion-block.refus .intrusion-line,
 .intrusion-block.refus .intrusion-banner { color: var(--danger); }
