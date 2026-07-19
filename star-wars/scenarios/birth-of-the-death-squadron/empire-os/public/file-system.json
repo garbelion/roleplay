@@ -26,6 +26,57 @@
       "L'EMPIRE EST LA LUMIÈRE DANS LES TÉNÈBRES. LA RÉBELLION EST L'OMBRE DE LA MORT."
     ]
   },
+  "intrusion": {
+    "station": "Kessel-Tho",
+    "screens": {
+      "boot": {
+        "lignes": [
+          "> initialisation du lien subspatial…",
+          "> recherche d'un relais Impérial ouvert…",
+          "> station détectée : {station}",
+          "> en attente d'autorisation…"
+        ],
+        "banniere": "LIAISON EN COURS — {station}"
+      },
+      "public_ok": {
+        "lignes": [
+          "> pare-feu périmétrique : contournement en cours…",
+          "> exploitation du port de maintenance 4471… OK",
+          "> élévation de session… OK"
+        ],
+        "banniere": "BIENVENUE SUR LE RÉSEAU IMPÉRIAL PUBLIC DE {station}"
+      },
+      "public_refus": {
+        "lignes": [
+          "> pare-feu périmétrique : signature d'intrusion détectée",
+          "> connexion réinitialisée par l'hôte distant"
+        ],
+        "banniere": "ACCÈS REFUSÉ — PARE-FEU PÉRIMÉTRIQUE"
+      },
+      "interne_ok": {
+        "lignes": [
+          "> authentification au segment sécurisé…",
+          "> jeton de service falsifié accepté… OK",
+          "> énumération des sous-réseaux internes…"
+        ],
+        "banniere": "BIENVENUE SUR LE RÉSEAU IMPÉRIAL INTERNE DE {station}"
+      },
+      "interne_refus": {
+        "lignes": [
+          "> segment sécurisé : jeton rejeté",
+          "> tentative journalisée — alerte transmise au bureau des transmissions"
+        ],
+        "banniere": "ACCÈS REFUSÉ — RÉSEAU INTERNE"
+      },
+      "os_refus": {
+        "lignes": [
+          "> localisation du poste user-51394345…",
+          "> verrou de session actif — accès EmpireOS refusé"
+        ],
+        "banniere": "ACCÈS REFUSÉ — POSTE VERROUILLÉ"
+      }
+    }
+  },
   "children": [
     {
       "name": "user-51394345",

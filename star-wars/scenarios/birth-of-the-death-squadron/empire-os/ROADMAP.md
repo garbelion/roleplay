@@ -206,8 +206,9 @@ accès accordé → bascule sur `FileExplorer`.
 1. ✅ **Store + mapping** : `intrusion` dans `sessionState` (défaut `'boot'`), `setSessionConfig`
    piloté par les clés de `DEFAULT_SESSION` ; colonne `intrusion` dans `mapRow`/`toRow` +
    `SESSION_COLUMNS` (source unique du `select`, dédupliquée entre `supabase-source` et `supabase-mj`).
-2. **Modèle de contenu** : bloc `intrusion` dans `file-system.json` (par étape `{lignes, banniere,
-   refus}` + nom de station) + helper pur `intrusionScreen(config, state)` → quoi afficher.
+2. ✅ **Modèle de contenu** : bloc `intrusion` dans `file-system.json` (`{ station, screens }`,
+   un écran `{lignes, banniere}` par état) + helper pur `intrusion.js` `intrusionScreen(intrusion,
+   state)` → écran interpolé (`{station}` = source unique) ou `null`.
 3. **`IntrusionShell.vue`** : rend l'écran de repos de l'état courant ; anime le défilement **au
    changement d'état seulement**, saute à l'image de repos au chargement.
 4. **Routage `App`** : monte `IntrusionShell` tant que `intrusion !== 'os'`, sinon `FileExplorer`.
