@@ -8,6 +8,12 @@ const TEXT_EXTS = ['json', 'ini', 'config', 'log', 'txt']
 const IMAGE_EXTS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg']
 const RICH_DOC_EXTS = ['docx', 'doc', 'xlsx', 'pptx', 'pdf']
 
+// URL physique d'un fichier : l'arbre est un décor, tous les fichiers vivent à plat dans
+// /public/fichiers/ et sont adressés par leur nom de base. Pur (dérive du chemin du nœud).
+export function fileUrl(file) {
+  return `/fichiers/${file.path.split('/').pop()}`
+}
+
 export function previewKindFor(file) {
   if (file.previewMode === 'summary') return 'summary'
   const ext = (file.name.split('.').pop() || '').toLowerCase()

@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest"
-import { previewKindFor } from "../src/file-preview.js"
+import { previewKindFor, fileUrl } from "../src/file-preview.js"
+
+describe("fileUrl", () => {
+  it("adresse le fichier à plat dans /fichiers/ par son nom de base (dérivé du chemin)", () => {
+    expect(fileUrl({ name: "a.md", path: "/user-51394345/home/a.md" })).toBe("/fichiers/a.md")
+    expect(fileUrl({ name: "photo.png", path: "/d/photo.png" })).toBe("/fichiers/photo.png")
+  })
+})
 
 describe("previewKindFor", () => {
   it("previewMode 'summary' prime sur l'extension", () => {

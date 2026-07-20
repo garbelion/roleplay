@@ -256,27 +256,20 @@ describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", 
   it("devrait afficher une modale lors de l'ouverture d'un fichier", async () => {
     await wrapper.vm.loadFileSystem()
     const file = wrapper.vm.currentDirectoryItems[1]
-    await wrapper.vm.openFile(file)
-    expect(wrapper.vm.showFileModal).toBe(true)
-  })
-
-  it("devrait charger le contenu du fichier dans fileContent", async () => {
-    await wrapper.vm.loadFileSystem()
-    const file = wrapper.vm.currentDirectoryItems[1]
-    await wrapper.vm.openFile(file)
-    // Attendre que le contenu soit chargé
-    await new Promise(resolve => setTimeout(resolve, 50))
-    expect(wrapper.vm.fileContent).toContain("RAPPORT DE MISSION IMPÉRIALE")
+    wrapper.vm.openFile(file)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.file-modal').exists()).toBe(true)
   })
 
   it("devrait fermer la modale avec closeFileModal", async () => {
     await wrapper.vm.loadFileSystem()
     const file = wrapper.vm.currentDirectoryItems[1]
-    await wrapper.vm.openFile(file)
-    expect(wrapper.vm.showFileModal).toBe(true)
+    wrapper.vm.openFile(file)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.file-modal').exists()).toBe(true)
     wrapper.vm.closeFileModal()
-    expect(wrapper.vm.showFileModal).toBe(false)
-    expect(wrapper.vm.fileContent).toBe('')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.file-modal').exists()).toBe(false)
   })
 
   it("devrait ouvrir un fichier en double-cliquant dessus", async () => {
@@ -284,7 +277,8 @@ describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", 
     const fileItems = wrapper.findAll(".file-item")
     const firstFile = fileItems[1] // Skip ".."
     await firstFile.trigger("dblclick")
-    expect(wrapper.vm.showFileModal).toBe(true)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.file-modal').exists()).toBe(true)
     expect(wrapper.vm.openedFile.name).toBe("rapport_mission.md")
   })
 
@@ -301,7 +295,7 @@ describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", 
     await wrapper.vm.loadFileSystem()
     const dirItem = wrapper.findAll(".file-item")[0] // ".."
     await dirItem.trigger("dblclick")
-    expect(wrapper.vm.showFileModal).toBe(false)
+    expect(wrapper.find('.file-modal').exists()).toBe(false)
   })
 
   it("devrait afficher une icône d'ouverture pour les fichiers", async () => {
@@ -318,7 +312,8 @@ describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", 
     const firstFile = fileItems[1] // Premier fichier
     const openIcon = firstFile.find(".open-icon")
     await openIcon.trigger("click")
-    expect(wrapper.vm.showFileModal).toBe(true)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.file-modal').exists()).toBe(true)
     expect(wrapper.vm.openedFile.name).toBe("rapport_mission.md")
   })
 
@@ -329,48 +324,8 @@ describe("FileExplorer.vue - Feature 3: Ouvrir les fichiers pour consultation", 
     expect(openIcon.exists()).toBe(false)
   })
 
-  it("devrait parser le Markdown en HTML dans la modale", async () => {
-    // Mock pour retourner du Markdown
-    global.fetch = vi.fn((url) => {
-      if (url === '/file-system.json') {
-        return Promise.resolve({ json: () => Promise.resolve(mockFileSystem) })
-      }
-      // Retourne du Markdown pour les fichiers
-      return Promise.resolve({
-        ok: true,
-        text: () => Promise.resolve('# Rapport Mission\n\n## Objectifs\n\n- Cible 1\n- Cible 2\n\n| Agent | Statut |\n|-------|--------|\n| DK-7  | ✅     |')
-      })
-    })
-
-    await wrapper.vm.loadFileSystem()
-    const file = wrapper.vm.currentDirectoryItems[1]
-    await wrapper.vm.openFile(file)
-    
-    // Attendre le parsing
-    await new Promise(resolve => setTimeout(resolve, 50))
-    
-    // Vérifier que le contenu est converti en HTML
-    expect(wrapper.vm.fileContent).toContain('<h1>Rapport Mission</h1>')
-    expect(wrapper.vm.fileContent).toContain('<h2>Objectifs</h2>')
-    expect(wrapper.vm.fileContent).toContain('<table>')
-  })
-
-  it("devrait gérer les fichiers introuvables", async () => {
-    // Mock pour simuler un fichier introuvable
-    global.fetch = vi.fn((url) => {
-      if (url === '/file-system.json') {
-        return Promise.resolve({ json: () => Promise.resolve(mockFileSystem) })
-      }
-      return Promise.resolve({ ok: false, status: 404 })
-    })
-
-    await wrapper.vm.loadFileSystem()
-    const file = wrapper.vm.currentDirectoryItems[1]
-    await wrapper.vm.openFile(file)
-    
-    // Vérifier qu'un message d'erreur est affiché
-    expect(wrapper.vm.fileContent).toContain('Fichier introuvable')
-  })
+  // Le rendu du contenu (Markdown -> HTML, texte brut, erreur « fichier introuvable », etc.)
+  // est couvert au niveau de la modale dans FilePreviewModal.spec.js (seam du composant).
 
   it("devrait afficher les fichiers .md avec une icône spécifique", async () => {
     // Mettre à jour le mock pour inclure des .md
@@ -700,8 +655,8 @@ describe("FileExplorer.vue - Point 3: Aiguilleur d'affichage par type", () => {
 
   it("fichier texte système (.config) : contenu brut, ni Markdown ni HTML interprété", async () => {
     await wrapper.vm.loadFileSystem()
-    await wrapper.vm.openFile(fileNamed('reseau.config'))
-    await wrapper.vm.$nextTick()
+    wrapper.vm.openFile(fileNamed('reseau.config'))
+    await flushPromises()
     const modal = wrapper.find('.file-modal')
     // '# titre' reste littéral (pas de <h1>) et '<b>' n'est pas injecté
     expect(modal.text()).toContain('# titre')
@@ -718,8 +673,8 @@ describe("FileExplorer.vue - Point 3: Aiguilleur d'affichage par type", () => {
 
   it("fichier .md : rend le Markdown (titre sans le #)", async () => {
     await wrapper.vm.loadFileSystem()
-    await wrapper.vm.openFile(fileNamed('notes.md'))
-    await wrapper.vm.$nextTick()
+    wrapper.vm.openFile(fileNamed('notes.md'))
+    await flushPromises()
     const modal = wrapper.find('.file-modal')
     expect(modal.text()).toContain('titre')
     expect(modal.text()).not.toContain('# titre')
@@ -853,13 +808,12 @@ describe("FileExplorer.vue - Loader d'affichage", () => {
       : new Promise((res) => { resolveContent = () => res({ ok: true, text: () => Promise.resolve('# hi') }) }))
     await wrapper.vm.loadFileSystem()
 
-    const opening = wrapper.vm.openFile(fileNamed('notes.md')) // ne pas await : fetch en attente
-    await wrapper.vm.$nextTick()
+    wrapper.vm.openFile(fileNamed('notes.md')) // fetch en attente
+    await flushPromises() // l'enfant monte et pose loading=true
     expect(wrapper.find('.file-modal .loader').exists()).toBe(true) // loader pendant le fetch
 
     resolveContent()
-    await opening
-    await wrapper.vm.$nextTick()
+    await flushPromises()
     expect(wrapper.find('.file-modal .loader').exists()).toBe(false) // contenu prêt, loader parti
   })
 })
@@ -1033,8 +987,12 @@ describe("FileExplorer.vue - Point 8: Rendu .docx inline (mammoth)", () => {
     await wrapper.vm.loadFileSystem()
 
     const file = wrapper.vm.currentDirectory.children.find(f => f.name === 'note.docx')
-    await wrapper.vm.openFile(file)
-    await wrapper.vm.$nextTick()
+    wrapper.vm.openFile(file)
+    // La modale charge le .docx (import dynamique de mammoth + conversion) : on laisse
+    // la chaîne asynchrone se dérouler avant d'inspecter le rendu.
+    await flushPromises()
+    await new Promise(resolve => setTimeout(resolve, 100))
+    await flushPromises()
 
     const modal = wrapper.find('.file-modal')
     expect(modal.text()).toContain('RAPPORT IMPERIAL CONFIDENTIEL')

@@ -48,32 +48,8 @@
       </button>
     </div>
 
-    <!-- Modale pour afficher le contenu des fichiers -->
-    <div v-if="showFileModal" class="file-modal-overlay" @click="closeFileModal">
-      <div class="file-modal" @click.stop>
-        <div class="modal-header">
-          <span>Fichier: {{ openedFile?.name }}</span>
-          <button class="close-button" @click="closeFileModal">X</button>
-        </div>
-        <div class="modal-content">
-          <!-- Loader pendant le premier rendu (fetch d'un document ou chargement d'une image) -->
-          <div v-if="previewLoading" class="loader">Chargement…</div>
-          <!-- Aiguilleur d'affichage selon le type / previewMode du fichier.
-               v-show garde l'<img> dans le DOM pendant le chargement pour capter @load. -->
-          <div v-show="!previewLoading">
-            <div v-if="previewKind === 'summary'" class="summary-preview">
-              <p class="summary-text">{{ openedFile?.summary || 'Aperçu non disponible pour ce document.' }}</p>
-              <p class="download-hint">Téléchargez le fichier pour consulter son contenu complet.</p>
-            </div>
-            <img v-else-if="previewKind === 'image'" :src="fileUrl(openedFile)" :alt="openedFile?.name" class="image-preview" @load="previewLoading = false" @error="previewLoading = false">
-            <div v-else-if="previewKind === 'binary'" class="error">Impossible de prévisualiser ce contenu.</div>
-            <pre v-else-if="previewKind === 'text'" class="raw-text">{{ fileContent }}</pre>
-            <div v-else-if="fileContent" v-html="fileContent"></div>
-            <div v-else class="error">Contenu non disponible</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Modale d'aperçu (composant dédié) : pilotée par le fichier ouvert. -->
+    <FilePreviewModal :file="openedFile" @close="closeFileModal" />
 
     <!-- Popin d'attente du « transfert » (ambiance) : barre décorrélée du vrai téléchargement -->
     <div v-if="transfer" class="transfer-modal-overlay">
@@ -105,7 +81,6 @@
 </template>
 
 <script>
-import { marked } from 'marked';
 import { OS } from '../os-identity.js';
 import { startTransfer } from '../transfer.js';
 import { searchTree, formatCount, highlightSegments, matches } from '../search.js';
@@ -113,12 +88,13 @@ import { sessionLog, pushLog, surveillanceText, SESSION_OPEN_TEXT } from '../ses
 import { sessionState } from '../session-store.js';
 import { startPropaganda } from '../propaganda.js';
 import { assignPaths } from '../file-tree.js';
-import { previewKindFor } from '../file-preview.js';
+import { previewKindFor, fileUrl } from '../file-preview.js';
 import BottomDock from './BottomDock.vue';
+import FilePreviewModal from './FilePreviewModal.vue';
 
 export default {
   name: 'FileExplorer',
-  components: { BottomDock },
+  components: { BottomDock, FilePreviewModal },
   data() {
     return {
       osPrompt: OS.shortName,
@@ -138,13 +114,9 @@ export default {
       rng: Math.random,
       // Source unique de la sélection : index des fichiers cochés dans currentDirectoryItems.
       selectedFiles: [],
-      showFileModal: false,
-      openedFile: null,
-      fileContent: '',
-      // Mode d'aperçu résolu à l'ouverture : 'markdown' | 'text' | 'docx' | 'image' | 'summary' | 'binary'.
-      previewKind: '',
-      // Vrai tant que l'aperçu n'est pas prêt à s'afficher (fetch ou chargement image).
-      previewLoading: false
+      // Fichier ouvert dans la modale d'aperçu (null = fermée) ; le composant FilePreviewModal
+      // possède le chargement/rendu du contenu.
+      openedFile: null
     }
   },
   computed: {
@@ -328,62 +300,18 @@ export default {
         this.currentPath = target.path
       }
     },
-    // URL physique d'un fichier : tous vivent à plat dans /public/fichiers/,
-    // adressés par leur nom de base.
-    fileUrl(file) {
-      return `/fichiers/${file.path.split('/').pop()}`
-    },
     // Pousse une ligne de surveillance dans le journal de session (onglet Console).
     logSurveillance(action, target) {
       pushLog({ kind: 'surveillance', text: surveillanceText(action, target, this.surveillanceLabels) })
     },
-    async openFile(file) {
+    // Ouvre la modale d'aperçu sur ce fichier (le rendu/chargement est délégué à
+    // FilePreviewModal). Toute ouverture est un événement de surveillance.
+    openFile(file) {
       this.logSurveillance('open', file.name)
       this.openedFile = file
-      this.previewKind = previewKindFor(file)
-      this.fileContent = ''
-      const needsFetch = ['markdown', 'text', 'docx'].includes(this.previewKind)
-      // Loader tant que l'aperçu n'est pas prêt : pendant le fetch (md/texte/docx),
-      // ou jusqu'à l'événement load/error pour une image. summary/binaire : instantané.
-      this.previewLoading = needsFetch || this.previewKind === 'image'
-      this.showFileModal = true
-      if (needsFetch) {
-        await this.loadFileContent(file)
-        this.previewLoading = false
-      }
-    },
-    async loadFileContent(file) {
-      // L'arborescence (file-system.json) est un décor : physiquement, tous les fichiers
-      // vivent à plat dans /public/fichiers/ et sont adressés par leur nom de base (fileUrl).
-      try {
-        const response = await fetch(this.fileUrl(file))
-        if (!response.ok) throw new Error('Fichier introuvable')
-        if (this.previewKind === 'docx') {
-          // Rendu fidèle inline du .docx via mammoth (docx -> HTML), affiché en v-html.
-          // Import dynamique : mammoth est volumineux, on le charge à la demande.
-          const mammoth = (await import('mammoth/mammoth.browser')).default
-          const result = await mammoth.convertToHtml({ arrayBuffer: await response.arrayBuffer() })
-          this.fileContent = result.value
-        } else {
-          const raw = await response.text()
-          // Markdown : rendu HTML via v-html (contenu local maîtrisé par l'auteur ;
-          // assainir — ex. DOMPurify — s'il devient éditable/externe).
-          // Texte système : affiché brut (échappé) dans un <pre>, jamais interprété.
-          this.fileContent = this.previewKind === 'markdown' ? marked.parse(raw) : raw
-        }
-      } catch (error) {
-        console.error('Erreur lors du chargement du fichier:', error)
-        this.fileContent = this.previewKind === 'markdown'
-          ? '<div class="error">Fichier introuvable</div>'
-          : 'Fichier introuvable'
-      }
     },
     closeFileModal() {
-      this.showFileModal = false
       this.openedFile = null
-      this.fileContent = ''
-      this.previewKind = ''
-      this.previewLoading = false
     },
     handleItemClick(item, index) {
       if (this.isContainer(item)) {
@@ -427,7 +355,7 @@ export default {
       this._transfer = startTransfer({
         files,
         config: sessionState,
-        fileUrl: this.fileUrl,
+        fileUrl,
         rng: this.rng,
         onProgress: (progress) => { if (this.transfer) this.transfer.progress = progress },
         onDone: () => { this.transfer = null; this.logSurveillance('extractDone') }
@@ -551,149 +479,6 @@ export default {
 
 .open-icon:hover {
   opacity: 1;
-}
-
-/* Styles pour la modale */
-.file-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(3, 5, 8, 0.82);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.file-modal {
-  background-color: var(--panel);
-  border: 1px solid var(--line-strong);
-  border-radius: 0;
-  width: 80%;
-  max-width: 640px;
-  max-height: 80%;
-  overflow: auto;
-  color: var(--ink);
-  font-family: inherit;
-  font-size: 14px;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 15px;
-  border-bottom: 1px solid var(--line-strong);
-  background-color: var(--panel-raised);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-size: 13px;
-}
-
-.modal-content {
-  padding: 15px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-/* Styles pour le contenu Markdown */
-.modal-content h1, .modal-content h2, .modal-content h3 {
-  color: var(--accent);
-  margin-top: 10px;
-  margin-bottom: 8px;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 4px;
-}
-
-.modal-content table {
-  border-collapse: collapse;
-  width: 100%;
-  margin: 10px 0;
-  color: var(--ink);
-}
-
-.modal-content table th, .modal-content table td {
-  border: 1px solid var(--line);
-  padding: 6px;
-  text-align: left;
-}
-
-.modal-content table th {
-  background-color: var(--panel-raised);
-  color: var(--accent);
-}
-
-.modal-content ul, .modal-content ol {
-  margin-left: 20px;
-  margin-bottom: 10px;
-}
-
-.modal-content li {
-  margin-bottom: 4px;
-}
-
-.error {
-  color: var(--danger);
-  font-weight: bold;
-}
-
-/* Aperçu texte brut (fichiers système : .config/.ini/.json/.log/.txt) */
-.raw-text {
-  margin: 0;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  font-family: inherit;
-  color: var(--ink);
-}
-
-/* Aperçu « résumé » (docs riches / previewMode summary : lecture = téléchargement) */
-.summary-text { margin: 0 0 12px; }
-.download-hint { color: var(--accent); font-style: italic; opacity: 0.9; }
-
-/* Aperçu image (types connus) */
-.image-preview { max-width: 100%; height: auto; display: block; }
-
-/* Loader d'affichage (premier rendu d'un document / image) */
-.loader {
-  color: var(--accent);
-  font-family: inherit;
-  padding: 20px 0;
-  text-align: center;
-  opacity: 0.9;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-.loader::after {
-  content: '';
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  margin-left: 8px;
-  border: 2px solid var(--accent);
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: loader-spin 0.8s linear infinite;
-  vertical-align: middle;
-}
-@keyframes loader-spin { to { transform: rotate(360deg); } }
-
-.close-button {
-  background: none;
-  border: 1px solid var(--line-strong);
-  color: var(--ink-dim);
-  cursor: pointer;
-  padding: 4px 8px;
-  font-family: inherit;
-  font-size: 12px;
-  border-radius: 0;
-}
-
-.close-button:hover {
-  background-color: var(--danger);
-  border-color: var(--danger);
-  color: var(--bg);
 }
 
 /* Bouton de téléchargement */
