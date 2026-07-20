@@ -254,6 +254,16 @@ table Supabase `session_state`. Tout est codable/testable avec le client mocké 
 - **Éditeur de *contenu* MJ in-app** : rédiger les documents depuis l'app (voir §6). *La
   **structure** des disques est déjà couverte hors app par `fs:editor` (§3) ; ne reste ici que la
   rédaction du contenu.*
+- **Dette technique — décomposer `FileExplorer.vue`** *(revue thermo)* : god-component (~770 lignes)
+  qui mêle navigation d'arbre, **modale d'aperçu** (`openedFile`/`fileContent`/`previewKind`/
+  `previewLoading` + `loadFileContent` + template + CSS modale), orchestration du transfert/ZIP,
+  câblage recherche et log de surveillance. **Code-judo** : extraire un **`FilePreviewModal.vue`**
+  (retire ~250 lignes + une responsabilité entière), FileExplorer ne gardant que « quel fichier
+  ouvrir ». **Bloqué par le couplage des tests** : `FileExplorer.spec.js` (1309 lignes) accède ~28×
+  à `vm.openFile`/`vm.fileContent`/`vm.openedFile` — l'extraction casse ces tests, à migrer vers des
+  assertions **niveau DOM** (`.file-modal`, `.modal-content`). À faire **MJ dans la boucle** (rendu
+  vérifiable dans l'app), pas en autonomie. *(Déjà fait en revue : `previewKindFor` → `file-preview.js`
+  pur, `formatSessionTime`/`formatHeure` → `session-clock.js`, helper `withBusy` dans `MjPanel`.)*
 
 ### 5.6 — Onglet Session, horloge in-game & aide Bafouille *(livré)*
 Lot de features autour du **temps de session** et de l'**aide au déchiffrement** (Bafouille).
