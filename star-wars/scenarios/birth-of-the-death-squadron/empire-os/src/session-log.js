@@ -11,17 +11,6 @@ import { heureMs } from './session-clock.js'
 
 export const MAX_ENTRIES = 200
 
-const pad2 = (n) => String(n).padStart(2, '0')
-
-/** Durée écoulée (ms) → « HH:MM:SS ». */
-export function formatSessionTime(ms) {
-  const total = Math.floor(Math.max(0, ms) / 1000)
-  const h = Math.floor(total / 3600)
-  const m = Math.floor((total % 3600) / 60)
-  const s = total % 60
-  return `${pad2(h)}:${pad2(m)}:${pad2(s)}`
-}
-
 // Libellés de surveillance par défaut. Le MJ peut les surcharger via la donnée
 // (clé `console.surveillance` de file-system.json).
 export const DEFAULT_SURVEILLANCE = {

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { mount } from "@vue/test-utils"
 import BottomDock from "../src/components/BottomDock.vue"
-import { formatSessionTime } from "../src/session-log.js"
+import { formatSessionTime } from "../src/session-clock.js"
 
 const openConsole = async (wrapper) => {
   const tab = wrapper.findAll('.dock-tab').find(t => t.text().toLowerCase().includes('console'))

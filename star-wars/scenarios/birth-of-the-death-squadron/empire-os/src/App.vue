@@ -67,10 +67,9 @@ import { collectCriticalFiles } from "./file-tree.js";
 import { createMjOpsFromConfig } from "./supabase-mj.js";
 import { connectSupabaseSession } from "./supabase-source.js";
 import { OS } from "./os-identity.js";
-import { formatSessionTime } from "./session-log.js";
 import { notifications, dismiss } from "./notifications.js";
 import { sessionState, setSessionConfig } from "./session-store.js";
-import { startSessionClock, resetSessionClock, heureMs, isSessionExpired } from "./session-clock.js";
+import { startSessionClock, resetSessionClock, heureMs, isSessionExpired, formatSessionTime } from "./session-clock.js";
 import { ALERT_LABELS } from "./transfer-duration.js";
 
 // Routage minimal par hash : #/mj => back-office MJ, sinon l'OS joueur.

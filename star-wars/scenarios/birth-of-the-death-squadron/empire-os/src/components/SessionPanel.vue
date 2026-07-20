@@ -25,8 +25,8 @@ import {
   openingHeureMs,
   sessionElapsedMs,
   sessionRemainingMs,
+  formatSessionTime,
 } from "../session-clock.js"
-import { formatSessionTime } from "../session-log.js"
 import { ALERT_LABELS } from "../transfer-duration.js"
 
 export default {

@@ -1039,12 +1039,8 @@ describe("FileExplorer.vue - Point 8: Rendu .docx inline (mammoth)", () => {
     expect(modal.text()).toContain('RAPPORT IMPERIAL CONFIDENTIEL')
     expect(modal.text().toLowerCase()).not.toContain('téléchargez') // pas le mode summary
   })
-
-  it("un .docx sans previewMode 'full' reste en summary (journal verrouillé protégé)", () => {
-    const wrapper = mount(FileExplorer)
-    expect(wrapper.vm.previewKindFor({ name: 'j.docx', type: 'file' })).toBe('summary')
-    expect(wrapper.vm.previewKindFor({ name: 'j.docx', type: 'file', previewMode: 'full' })).toBe('docx')
-  })
+  // Le routage .docx (full -> inline, sinon résumé « journal verrouillé ») est désormais
+  // couvert de façon unitaire dans file-preview.spec.js (fonction pure previewKindFor).
 })
 
 describe("FileExplorer.vue - Tri des entrées (dossiers avant fichiers)", () => {

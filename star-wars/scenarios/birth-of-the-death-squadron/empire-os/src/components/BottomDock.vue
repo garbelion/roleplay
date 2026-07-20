@@ -77,7 +77,7 @@
 
 <script>
 import { highlightSegments } from '../search.js';
-import { formatSessionTime } from '../session-log.js';
+import { formatHeure } from '../session-clock.js';
 import SessionPanel from './SessionPanel.vue';
 
 export default {
@@ -129,8 +129,7 @@ export default {
     },
     // Horodatage d'une ligne : heure in-game (heure murale narrative) ramenée sur 24 h.
     time(at) {
-      const DAY = 24 * 3600 * 1000;
-      return formatSessionTime((((at || 0) % DAY) + DAY) % DAY);
+      return formatHeure(at);
     },
     // Appelé par le parent (Ctrl+F) : active l'onglet Recherche et focus le champ.
     focusSearch() {

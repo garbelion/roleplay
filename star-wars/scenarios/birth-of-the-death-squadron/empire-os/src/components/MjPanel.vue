@@ -74,7 +74,9 @@
 import { OS } from '../os-identity.js';
 import { ALERT_LABELS, CONNECTION_FACTORS } from '../transfer-duration.js';
 import { INTRUSION_SCREENS, isRefus } from '../intrusion.js';
-import { formatSessionTime } from '../session-log.js';
+import { formatSessionTime } from '../session-clock.js';
+
+const UPDATE_ERR = 'Échec de la mise à jour.';
 
 export default {
   name: 'MjPanel',
@@ -103,48 +105,54 @@ export default {
     };
   },
   methods: {
-    async onLogin() {
-      this.error = '';
+    // Exécute `fn` en portant l'état `busy` (remis à zéro même en cas d'échec) : point unique
+    // du cycle occupé/relâché pour toutes les opérations back-office.
+    async withBusy(fn) {
       this.busy = true;
       try {
-        await this.ops.signIn(this.email, this.password);
-        this.authed = true;
-        this.password = '';
-        const state = await this.ops.fetchState();
-        if (state) {
-          if (state.connectionQuality !== undefined) this.connectionQuality = state.connectionQuality;
-          if (state.alertLevel !== undefined) this.alertLevel = state.alertLevel;
-          if (state.intrusion !== undefined) this.currentIntrusion = state.intrusion;
-          if (state.clockStart !== undefined) this.clockHms = this.secondsToHms(state.clockStart);
-          if (state.bafouille !== undefined) this.bafouille = state.bafouille;
-        }
-      } catch (e) {
-        this.error = e?.message || 'Connexion impossible.';
+        return await fn();
       } finally {
         this.busy = false;
+      }
+    },
+    async onLogin() {
+      this.error = '';
+      try {
+        await this.withBusy(async () => {
+          await this.ops.signIn(this.email, this.password);
+          this.authed = true;
+          this.password = '';
+          const state = await this.ops.fetchState();
+          if (state) {
+            if (state.connectionQuality !== undefined) this.connectionQuality = state.connectionQuality;
+            if (state.alertLevel !== undefined) this.alertLevel = state.alertLevel;
+            if (state.intrusion !== undefined) this.currentIntrusion = state.intrusion;
+            if (state.clockStart !== undefined) this.clockHms = this.secondsToHms(state.clockStart);
+            if (state.bafouille !== undefined) this.bafouille = state.bafouille;
+          }
+        });
+      } catch (e) {
+        this.error = e?.message || 'Connexion impossible.';
       }
     },
     async onApply() {
       this.error = '';
       this.applied = false;
-      this.busy = true;
       try {
-        await this.ops.updateState({
+        await this.withBusy(() => this.ops.updateState({
           connectionQuality: this.connectionQuality,
           alertLevel: this.alertLevel,
           clockStart: this.hmsToSeconds(this.clockHms)
-        });
+        }));
         this.applied = true;
       } catch (e) {
-        this.error = e?.message || 'Échec de la mise à jour.';
-      } finally {
-        this.busy = false;
+        this.error = e?.message || UPDATE_ERR;
       }
     },
     screenIsRefus(state) {
       return isRefus(state);
     },
-    // Heure de départ <-> secondes. Formatage via le formateur canonique (session-log).
+    // Heure de départ <-> secondes. Formatage via le formateur canonique (session-clock).
     secondsToHms(seconds) {
       return formatSessionTime((seconds || 0) * 1000);
     },
@@ -155,27 +163,21 @@ export default {
     // Bascule l'intervention de Bafouille (popin persistante côté joueurs), poussée en live.
     async toggleBafouille() {
       const next = !this.bafouille;
-      this.busy = true;
       try {
-        await this.ops.updateState({ bafouille: next });
+        await this.withBusy(() => this.ops.updateState({ bafouille: next }));
         this.bafouille = next;
       } catch (e) {
-        this.error = e?.message || 'Échec de la mise à jour.';
-      } finally {
-        this.busy = false;
+        this.error = e?.message || UPDATE_ERR;
       }
     },
     // Contrôle libre : chaque clic pousse l'écran choisi (le refus est un écran de repos).
     async setIntrusion(state) {
       this.intrusionError = '';
-      this.busy = true;
       try {
-        await this.ops.updateState({ intrusion: state });
+        await this.withBusy(() => this.ops.updateState({ intrusion: state }));
         this.currentIntrusion = state;
       } catch (e) {
-        this.intrusionError = e?.message || 'Échec de la mise à jour.';
-      } finally {
-        this.busy = false;
+        this.intrusionError = e?.message || UPDATE_ERR;
       }
     }
   }

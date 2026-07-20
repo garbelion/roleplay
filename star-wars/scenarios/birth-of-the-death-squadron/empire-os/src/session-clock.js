@@ -12,6 +12,20 @@ import { reactive } from "vue"
 // Durée maximale d'une session avant déconnexion automatique (2 h).
 export const SESSION_LIMIT_MS = 2 * 60 * 60 * 1000
 
+const DAY_MS = 24 * 60 * 60 * 1000
+const pad2 = (n) => String(n).padStart(2, "0")
+
+/** Durée (ms) → « HH:MM:SS » (heures non bornées : 25:00:00 possible). */
+export function formatSessionTime(ms) {
+  const total = Math.floor(Math.max(0, ms) / 1000)
+  return `${pad2(Math.floor(total / 3600))}:${pad2(Math.floor((total % 3600) / 60))}:${pad2(total % 60)}`
+}
+
+/** Heure « murale » (ms) → « HH:MM:SS » ramenée sur 24 h (roule après minuit). */
+export function formatHeure(ms) {
+  return formatSessionTime((((ms || 0) % DAY_MS) + DAY_MS) % DAY_MS)
+}
+
 const clock = reactive({ anchor: null, clockStartSec: 0 })
 
 /** Démarre (ou ré-ancre) la session à l'entrée dans l'OS. */

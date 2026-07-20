@@ -8,7 +8,23 @@ import {
   sessionRemainingMs,
   isSessionExpired,
   SESSION_LIMIT_MS,
+  formatSessionTime,
+  formatHeure,
 } from "../src/session-clock.js"
+
+describe("formatSessionTime / formatHeure", () => {
+  it("formatSessionTime : durée (ms) → HH:MM:SS, heures non bornées", () => {
+    expect(formatSessionTime(0)).toBe("00:00:00")
+    expect(formatSessionTime(65_000)).toBe("00:01:05")
+    expect(formatSessionTime(3_661_000)).toBe("01:01:01")
+    expect(formatSessionTime(25 * 3600 * 1000)).toBe("25:00:00") // pas de bornage
+  })
+
+  it("formatHeure : heure murale ramenée sur 24 h (roule après minuit)", () => {
+    expect(formatHeure(52_200 * 1000)).toBe("14:30:00")
+    expect(formatHeure(24 * 3600 * 1000 + 65_000)).toBe("00:01:05") // > 24 h → roule
+  })
+})
 
 describe("session-clock", () => {
   beforeEach(() => resetSessionClock())

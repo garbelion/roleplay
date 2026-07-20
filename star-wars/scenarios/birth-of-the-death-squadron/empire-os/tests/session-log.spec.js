@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest"
 import {
-  formatSessionTime,
   surveillanceText,
   DEFAULT_SURVEILLANCE,
   sessionLog,
@@ -9,15 +8,6 @@ import {
   MAX_ENTRIES
 } from "../src/session-log.js"
 import { startSessionClock } from "../src/session-clock.js"
-
-describe("formatSessionTime", () => {
-  it("formate une durée écoulée en HH:MM:SS", () => {
-    expect(formatSessionTime(0)).toBe("00:00:00")
-    expect(formatSessionTime(1000)).toBe("00:00:01")
-    expect(formatSessionTime(65000)).toBe("00:01:05")
-    expect(formatSessionTime(3661000)).toBe("01:01:01")
-  })
-})
 
 describe("surveillanceText", () => {
   it("compose « LIBELLÉ : cible » à partir de l'action et de la cible", () => {

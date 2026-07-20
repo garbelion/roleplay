@@ -113,6 +113,7 @@ import { sessionLog, pushLog, surveillanceText, SESSION_OPEN_TEXT } from '../ses
 import { sessionState } from '../session-store.js';
 import { startPropaganda } from '../propaganda.js';
 import { assignPaths } from '../file-tree.js';
+import { previewKindFor } from '../file-preview.js';
 import BottomDock from './BottomDock.vue';
 
 export default {
@@ -253,7 +254,7 @@ export default {
       if (item.name === '..') return '↰'
       if (item.type === 'disk') return '▤'
       if (item.type === 'directory') return '▸'
-      switch (this.previewKindFor(item)) {
+      switch (previewKindFor(item)) {
         case 'markdown': return '≡'
         case 'text': return '⚙'
         case 'image': return '▦'
@@ -322,22 +323,6 @@ export default {
         this.currentPath = target.path
       }
     },
-    // Aiguilleur d'affichage : décide COMMENT prévisualiser un fichier.
-    // `previewMode: 'summary'` (métadonnée MJ) prime sur l'extension.
-    previewKindFor(file) {
-      if (file.previewMode === 'summary') return 'summary'
-      const ext = (file.name.split('.').pop() || '').toLowerCase()
-      if (ext === 'md') return 'markdown'
-      if (['json', 'ini', 'config', 'log', 'txt'].includes(ext)) return 'text'
-      // Images d'un type connu : rendues inline via <img>.
-      if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg'].includes(ext)) return 'image'
-      // Documents riches (Office/PDF) : `previewMode: 'full'` -> rendu inline (mammoth pour .docx) ;
-      // sinon téléchargement forcé via résumé (défaut, ex. le journal (d) verrouillé).
-      if (['docx', 'doc', 'xlsx', 'pptx', 'pdf'].includes(ext)) {
-        return file.previewMode === 'full' && ext === 'docx' ? 'docx' : 'summary'
-      }
-      return 'binary'
-    },
     // URL physique d'un fichier : tous vivent à plat dans /public/fichiers/,
     // adressés par leur nom de base.
     fileUrl(file) {
@@ -350,7 +335,7 @@ export default {
     async openFile(file) {
       this.logSurveillance('open', file.name)
       this.openedFile = file
-      this.previewKind = this.previewKindFor(file)
+      this.previewKind = previewKindFor(file)
       this.fileContent = ''
       const needsFetch = ['markdown', 'text', 'docx'].includes(this.previewKind)
       // Loader tant que l'aperçu n'est pas prêt : pendant le fetch (md/texte/docx),
