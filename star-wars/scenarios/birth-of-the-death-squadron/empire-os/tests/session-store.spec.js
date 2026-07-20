@@ -14,7 +14,14 @@ describe("session-store", () => {
     expect(sessionState.alertLevel).toBe(0)
     expect(sessionState.intrusion).toBe("boot")
     expect(sessionState.clockStart).toBe(0)
-    expect(DEFAULT_SESSION).toEqual({ connectionQuality: "moyenne", alertLevel: 0, intrusion: "boot", clockStart: 0 })
+    expect(sessionState.bafouille).toBe(false)
+    expect(DEFAULT_SESSION).toEqual({ connectionQuality: "moyenne", alertLevel: 0, intrusion: "boot", clockStart: 0, bafouille: false })
+  })
+
+  it("setSessionConfig applique l'intervention de Bafouille sans écraser les autres clés", () => {
+    setSessionConfig({ bafouille: true })
+    expect(sessionState.bafouille).toBe(true)
+    expect(sessionState.intrusion).toBe("boot") // inchangé
   })
 
   it("setSessionConfig applique l'heure de départ (clockStart, en secondes) sans écraser les autres clés", () => {

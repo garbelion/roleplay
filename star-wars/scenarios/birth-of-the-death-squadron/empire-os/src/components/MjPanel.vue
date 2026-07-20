@@ -54,6 +54,18 @@
         <button type="button" class="mj-btn mj-reset" :disabled="busy" @click="setIntrusion('boot')">⟲ Reset → boot</button>
         <p v-if="intrusionError" class="mj-error">{{ intrusionError }}</p>
       </section>
+
+      <!-- Aide de Bafouille : bascule l'affichage de la popin persistante côté joueurs. -->
+      <section class="mj-bafouille">
+        <h2 class="mj-subtitle">Aide de Bafouille</h2>
+        <button
+          type="button"
+          class="mj-btn mj-bafouille-btn"
+          :class="{ active: bafouille }"
+          :disabled="busy"
+          @click="toggleBafouille"
+        >◍ Intervention Bafouille : {{ bafouille ? 'ACTIVE' : 'inactive' }}</button>
+      </section>
     </div>
   </div>
 </template>
@@ -86,7 +98,8 @@ export default {
       alertLevel: 0,
       clockHms: '00:00:00',
       currentIntrusion: 'boot',
-      intrusionError: ''
+      intrusionError: '',
+      bafouille: false
     };
   },
   methods: {
@@ -103,6 +116,7 @@ export default {
           if (state.alertLevel !== undefined) this.alertLevel = state.alertLevel;
           if (state.intrusion !== undefined) this.currentIntrusion = state.intrusion;
           if (state.clockStart !== undefined) this.clockHms = this.secondsToHms(state.clockStart);
+          if (state.bafouille !== undefined) this.bafouille = state.bafouille;
         }
       } catch (e) {
         this.error = e?.message || 'Connexion impossible.';
@@ -137,6 +151,19 @@ export default {
     hmsToSeconds(hms) {
       const [h = 0, m = 0, s = 0] = String(hms || '').split(':').map(Number);
       return (h * 3600) + (m * 60) + s;
+    },
+    // Bascule l'intervention de Bafouille (popin persistante côté joueurs), poussée en live.
+    async toggleBafouille() {
+      const next = !this.bafouille;
+      this.busy = true;
+      try {
+        await this.ops.updateState({ bafouille: next });
+        this.bafouille = next;
+      } catch (e) {
+        this.error = e?.message || 'Échec de la mise à jour.';
+      } finally {
+        this.busy = false;
+      }
     },
     // Contrôle libre : chaque clic pousse l'écran choisi (le refus est un écran de repos).
     async setIntrusion(state) {
@@ -220,4 +247,9 @@ export default {
 .mj-screen-btn.active.refus { color: var(--danger); border-color: var(--danger); }
 .mj-screen-btn:disabled { opacity: 0.5; cursor: default; }
 .mj-reset { align-self: flex-start; }
+
+/* Aide de Bafouille : bascule; l'état actif est marqué en accent plein. */
+.mj-bafouille { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line); padding-top: 16px; }
+.mj-bafouille-btn { align-self: flex-start; }
+.mj-bafouille-btn.active { background: var(--accent); color: var(--bg); }
 </style>

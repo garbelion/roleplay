@@ -8,19 +8,19 @@ import { loadSupabaseClient } from './supabase-client.js'
 // Schéma de la table d'état (source unique du mapping snake_case <-> app).
 export const SESSION_TABLE = 'session_state'
 const TABLE = SESSION_TABLE
-// Colonnes lues (une seule ligne : réglages MJ + écran d'intrusion + heure de départ).
-export const SESSION_COLUMNS = 'connection_quality, alert_level, intrusion, clock_start'
+// Colonnes lues (une seule ligne : réglages MJ + écran d'intrusion + heure de départ + Bafouille).
+export const SESSION_COLUMNS = 'connection_quality, alert_level, intrusion, clock_start, bafouille'
 
 // Ligne DB -> config app ; null si pas de ligne.
 export const mapRow = (row) =>
   row
-    ? { connectionQuality: row.connection_quality, alertLevel: row.alert_level, intrusion: row.intrusion, clockStart: row.clock_start }
+    ? { connectionQuality: row.connection_quality, alertLevel: row.alert_level, intrusion: row.intrusion, clockStart: row.clock_start, bafouille: row.bafouille }
     : null
 
 // Config app -> ligne DB (écriture). Les clés absentes ressortent `undefined` et sont
 // écartées à la sérialisation JSON (updates partiels côté MJ).
-export const toRow = ({ connectionQuality, alertLevel, intrusion, clockStart }) =>
-  ({ connection_quality: connectionQuality, alert_level: alertLevel, intrusion, clock_start: clockStart })
+export const toRow = ({ connectionQuality, alertLevel, intrusion, clockStart, bafouille }) =>
+  ({ connection_quality: connectionQuality, alert_level: alertLevel, intrusion, clock_start: clockStart, bafouille })
 
 /**
  * Construit une source { fetchState, onChange } à partir d'un client Supabase.

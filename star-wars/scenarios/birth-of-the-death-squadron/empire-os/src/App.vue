@@ -41,6 +41,9 @@
       <span class="status-licence">LICENCE : {{ OS.licensee }}</span>
     </div>
 
+    <!-- Aide de Bafouille (MJ) : popin persistante des fichiers critiques à télécharger. -->
+    <BafouillePopin v-if="showBafouille" :files="criticalFiles" :message="bafouilleMessage" />
+
     <!-- Notifications éphémères : tout message console non-surveillance surgit ici 5 s. -->
     <div class="os-notifications" aria-live="polite">
       <button
@@ -59,6 +62,8 @@ import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import FileExplorer from "./components/FileExplorer.vue";
 import IntrusionShell from "./components/IntrusionShell.vue";
 import MjPanel from "./components/MjPanel.vue";
+import BafouillePopin from "./components/BafouillePopin.vue";
+import { collectCriticalFiles } from "./file-tree.js";
 import { createMjOpsFromConfig } from "./supabase-mj.js";
 import { connectSupabaseSession } from "./supabase-source.js";
 import { OS } from "./os-identity.js";
@@ -97,6 +102,12 @@ watch(isMj, async (on) => {
 // Niveau d'alerte MJ (live via le store réactif) + son libellé canonique.
 const alertLevel = computed(() => sessionState.alertLevel);
 const alertLabel = computed(() => (ALERT_LABELS[sessionState.alertLevel] || "").toUpperCase());
+
+// Intervention de Bafouille (déclenchée par le MJ, live) : popin persistante listant les
+// fichiers critiques (chemins dérivés de l'arbre) + sa voix, éditable en donnée.
+const showBafouille = computed(() => sessionState.bafouille);
+const criticalFiles = computed(() => (fileSystem.value ? collectCriticalFiles(fileSystem.value) : []));
+const bafouilleMessage = computed(() => fileSystem.value?.bafouille?.message || "");
 
 // Horloge de session (heure in-game) : source unique dans session-clock.js, **ancrée à
 // l'entrée dans EmpireOS** (pas au chargement). L'entrée pose l'ancre (heure réglée par le

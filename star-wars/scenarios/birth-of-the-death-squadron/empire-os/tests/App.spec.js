@@ -195,6 +195,33 @@ describe("App.vue - Skin / chrome impérial (dans l'OS)", () => {
     expect(badge.text().toLowerCase()).toContain("major") // ALERT_LABELS[2]
   })
 
+  it("affiche la popin de Bafouille dans l'OS quand le MJ la déclenche (fichiers critiques + voix)", async () => {
+    global.fetch = vi.fn(() => Promise.resolve({
+      json: () => Promise.resolve({
+        ...mockFS,
+        bafouille: { message: "C'est Bafouille, prends ça !" },
+        children: [{
+          name: "user-51394345", type: "disk",
+          children: [{ name: "liste_cibles.md", type: "file", isCritical: true }]
+        }]
+      })
+    }))
+    setSessionConfig({ intrusion: "os", bafouille: true })
+    const wrapper = mount(App)
+    await flushPromises()
+
+    const popin = wrapper.find(".bafouille-popin")
+    expect(popin.exists()).toBe(true)
+    expect(popin.text()).toContain("C'est Bafouille, prends ça !")
+    expect(popin.text()).toContain("liste_cibles.md")
+    expect(popin.text()).toContain("/user-51394345/liste_cibles.md")
+
+    // Le MJ coupe l'intervention → la popin disparaît (piloté par le store réactif).
+    setSessionConfig({ bafouille: false })
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find(".bafouille-popin").exists()).toBe(false)
+  })
+
   it("affiche une notification à l'écran pour un message non-surveillance", async () => {
     const wrapper = await mountOs()
     notify({ kind: "propaganda", text: "ALERTE PROPAGANDE" })

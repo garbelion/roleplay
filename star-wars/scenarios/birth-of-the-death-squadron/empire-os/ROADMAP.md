@@ -240,20 +240,22 @@ passe**. Piloté par le store réactif (même tuyau Realtime), affiché dans le 
 table Supabase `session_state`. Tout est codable/testable avec le client mocké en attendant.*
 
 ### 5.5 — Plus tard / parqué
-- **Déconnexion forcée par le MJ** : action `/mj` pour **éjecter le joueur de l'OS** (écran
-  « CONNEXION PERDUE / SESSION TERMINÉE »). Recoupe l'**échec narratif** de la popin et le
-  **verrouillage de l'OS** (§5.2) ; note que le **contrôle libre** de §5.4 permet déjà de reculer
-  l'état d'intrusion (= éjection vers le shell) — reste à décider si on veut un écran de coupure dédié.
+- **Déconnexion forcée par le MJ** : action `/mj` pour **éjecter le joueur de l'OS** à volonté.
+  *Partiellement couvert* : §5.6 livre l'**écran de coupure** « SESSION EXPIRÉE » et la **déconnexion
+  auto à 2 h** ; le **contrôle libre** de §5.4 permet déjà de reculer l'état d'intrusion (= éjection vers
+  le shell). Reste à décider si on veut un **bouton MJ explicite** de coupure immédiate (réutilisant
+  l'écran existant) en plus de l'échéance auto.
 - **Recherche dans le contenu** des fichiers texte / descriptions (v2 de la recherche).
 - **Options popin** : rendu **non-linéaire** (débit qui fluctue, paliers, « reconnexion au
   nœud relais… »), **échec narratif** (« CONNEXION PERDUE — 73 % », MJ-only, retryable).
-- **Droïde Bafouille** : programme diégétique d'aide au déchiffrement, actif **seulement si les PJ
-  sont corrects avec lui**. À écrire ultérieurement.
+- **Droïde Bafouille** : *intervention livrée* (§5.6, popin MJ des fichiers critiques + voix en donnée).
+  Reste à écrire : l'**aide au déchiffrement** proprement dite, active **seulement si les PJ sont
+  corrects avec lui** (logique conditionnelle / dialogue).
 - **Éditeur de *contenu* MJ in-app** : rédiger les documents depuis l'app (voir §6). *La
   **structure** des disques est déjà couverte hors app par `fs:editor` (§3) ; ne reste ici que la
   rédaction du contenu.*
 
-### 5.6 — Onglet Session, horloge in-game & aide Bafouille *(en cours)*
+### 5.6 — Onglet Session, horloge in-game & aide Bafouille *(livré)*
 Lot de features autour du **temps de session** et de l'**aide au déchiffrement** (Bafouille).
 
 **Décisions actées (cadrage)** :
@@ -283,9 +285,12 @@ Lot de features autour du **temps de session** et de l'**aide au déchiffrement*
    `fs-ops.js` ; l'éditeur demande « critique ? » à l'ajout d'un fichier et expose un **badge + bascule
    ☆/✪** sur chaque fichier (marquage des fichiers déjà présents). Drapeau `isCritical` écrit dans
    `file-system.json`, **seulement si vrai** (JSON minimal).
-5. **Popin Bafouille** : nouveau champ de session `bafouille` (bool, même tuyau Realtime), toggle depuis
-   `/mj` ; popin persistante listant les fichiers **critiques** par **chemin calculé** + voix de Bafouille
-   (donnée). *Prérequis hors-code : colonne `bafouille` (bool, défaut `false`) dans `session_state`.*
+5. ✅ **Popin Bafouille** : champ de session `bafouille` (bool, colonnes/mapping `supabase-source`,
+   défaut `false`), **toggle depuis `/mj`** (poussé en Realtime) ; popin persistante `BafouillePopin.vue`
+   (**non fermable par les joueurs**) listant les fichiers **critiques** par **chemin calculé**
+   (`collectCriticalFiles`, `file-tree.js`) + **voix de Bafouille** éditable en donnée (`bafouille.message`).
+   Rendue **dans l'OS** seulement, pilotée par le store réactif. *Prérequis hors-code : colonne
+   `bafouille` (bool, défaut `false`) dans `session_state`.*
 
 ## 6. Décisions encore ouvertes
 

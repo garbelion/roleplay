@@ -125,4 +125,23 @@ describe("MjPanel.vue", () => {
     await flushPromises()
     expect(ops.updateState).toHaveBeenCalledWith({ intrusion: "boot" })
   })
+
+  it("propose une bascule d'intervention Bafouille et pousse l'état via updateState", async () => {
+    const ops = fakeOps()
+    const wrapper = await login(ops)
+    const btn = wrapper.find(".mj-bafouille-btn")
+    expect(btn.exists()).toBe(true)
+    await btn.trigger("click")
+    await flushPromises()
+    expect(ops.updateState).toHaveBeenCalledWith({ bafouille: true })
+    await btn.trigger("click")
+    await flushPromises()
+    expect(ops.updateState).toHaveBeenCalledWith({ bafouille: false })
+  })
+
+  it("préremplit l'état de l'intervention Bafouille depuis l'état courant", async () => {
+    const ops = fakeOps({ state: { connectionQuality: "moyenne", alertLevel: 0, bafouille: true } })
+    const wrapper = await login(ops)
+    expect(wrapper.find(".mj-bafouille-btn.active").exists()).toBe(true)
+  })
 })

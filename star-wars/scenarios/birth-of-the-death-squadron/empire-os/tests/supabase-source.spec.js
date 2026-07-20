@@ -49,6 +49,12 @@ describe("mapRow / toRow", () => {
     expect(toRow({ clockStart: 3600 })).toMatchObject({ clock_start: 3600 })
   })
 
+  it("mapRow/toRow portent l'intervention de Bafouille (bafouille bool)", () => {
+    expect(mapRow({ connection_quality: "moyenne", alert_level: 0, intrusion: "os", bafouille: true }))
+      .toMatchObject({ bafouille: true })
+    expect(toRow({ bafouille: true })).toMatchObject({ bafouille: true })
+  })
+
   it("onChange mappe payload.new et fournit un désabonnement", () => {
     const client = fakeClient()
     const src = createSupabaseSource(client)
