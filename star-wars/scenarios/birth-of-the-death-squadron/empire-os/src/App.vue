@@ -57,6 +57,7 @@ import { OS } from "./os-identity.js";
 import { formatSessionTime } from "./session-log.js";
 import { notifications, dismiss } from "./notifications.js";
 import { sessionState, setSessionConfig } from "./session-store.js";
+import { startSessionClock, resetSessionClock, heureMs } from "./session-clock.js";
 import { ALERT_LABELS } from "./transfer-duration.js";
 
 // Routage minimal par hash : #/mj => back-office MJ, sinon l'OS joueur.
@@ -86,18 +87,16 @@ watch(isMj, async (on) => {
 const alertLevel = computed(() => sessionState.alertLevel);
 const alertLabel = computed(() => (ALERT_LABELS[sessionState.alertLevel] || "").toUpperCase());
 
-// Horloge de session : part de l'heure réglée par le MJ (`clockStart`, en secondes) et
-// **démarre à l'entrée dans EmpireOS** (pas au chargement) — le temps narratif in-game
-// n'étant pas synchronisable. Format HH:MM:SS canonique (session-log.js).
+// Horloge de session (heure in-game) : source unique dans session-clock.js, **ancrée à
+// l'entrée dans EmpireOS** (pas au chargement). L'entrée pose l'ancre (heure réglée par le
+// MJ, `clockStart`) ; la sortie / le Reset la libère. Format HH:MM:SS canonique.
 const clock = ref(formatSessionTime(0));
-let osEnteredAt = null;
-function tickClock() {
-  const base = sessionState.clockStart * 1000;
-  const elapsed = osEnteredAt != null ? Date.now() - osEnteredAt : 0;
-  clock.value = formatSessionTime(base + elapsed);
-}
-// L'entrée dans l'OS ancre le départ de l'horloge (ré-ancrée à chaque nouvelle entrée).
-watch(showOs, (on) => { if (on) { osEnteredAt = Date.now(); tickClock(); } }, { immediate: true });
+function tickClock() { clock.value = formatSessionTime(heureMs()); }
+watch(showOs, (on) => {
+  if (on) startSessionClock(sessionState.clockStart, Date.now());
+  else resetSessionClock();
+  tickClock();
+}, { immediate: true });
 
 let timer;
 onMounted(async () => {

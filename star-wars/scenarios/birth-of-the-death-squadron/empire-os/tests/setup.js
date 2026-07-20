@@ -5,9 +5,11 @@ import { afterEach } from 'vitest'
 import { resetLog } from '../src/session-log.js'
 import { resetNotifications } from '../src/notifications.js'
 import { resetSessionState } from '../src/session-store.js'
+import { resetSessionClock } from '../src/session-clock.js'
 
 afterEach(() => {
   resetLog()
   resetNotifications()
   resetSessionState()
+  resetSessionClock()
 })

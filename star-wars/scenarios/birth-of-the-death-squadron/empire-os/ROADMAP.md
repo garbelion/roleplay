@@ -250,6 +250,33 @@ table Supabase `session_state`. Tout est codable/testable avec le client mocké 
   **structure** des disques est déjà couverte hors app par `fs:editor` (§3) ; ne reste ici que la
   rédaction du contenu.*
 
+### 5.6 — Onglet Session, horloge in-game & aide Bafouille *(en cours)*
+Lot de features autour du **temps de session** et de l'**aide au déchiffrement** (Bafouille).
+
+**Décisions actées (cadrage)** :
+- **Déconnexion auto à 2 h** : à l'échéance, l'app **éjecte les joueurs de l'OS** (pas seulement un
+  avertissement). Rejoint la « déconnexion forcée » parquée en §5.5.
+- **Date d'ouverture = heure in-fiction seule** : instantané figé de l'heure réglée par le MJ
+  (`clockStart`) au moment de l'entrée dans l'OS ; pas de date calendaire.
+- **Popin Bafouille = MJ seul** : persistante, **non fermable par les joueurs** (toggle depuis `/mj`),
+  avec une **voix** de Bafouille éditable en donnée + la liste des fichiers **critiques**.
+
+**Implémentation (slices TDD)** :
+1. ✅ **Horloge de session ancrée à l'entrée (`session-clock.js`)** : source unique du temps in-game,
+   **ancrée sur la bascule `intrusion → os`** (plus au chargement du module). Expose temps écoulé,
+   **heure in-game** (`clockStart` + écoulé), **heure d'ouverture** (instantané figé), **temps restant**
+   (limite 2 h) et **expiration**. `App` pose l'ancre à l'entrée, la libère à la sortie / au Reset ;
+   l'horloge du chrome s'y branche. *(Remplace l'ancrage local `osEnteredAt` de §5.4.)*
+2. **Heure dans les lignes de console** : l'horodatage des lignes du journal (`session-log.js` →
+   `BottomDock`) affiche l'**heure in-game** (heure murale narrative) au lieu du temps de session écoulé.
+3. **Onglet Session** : remplit la coquille du dock — **heure d'ouverture**, **temps écoulé**, **temps
+   restant avant déconnexion (2 h)**, **niveau d'alerte** ; **déconnexion auto** à l'échéance.
+4. **Fichier critique (`fs:editor`)** : drapeau `isCritical` posé à l'ajout d'un fichier, écrit dans
+   `file-system.json`.
+5. **Popin Bafouille** : nouveau champ de session `bafouille` (bool, même tuyau Realtime), toggle depuis
+   `/mj` ; popin persistante listant les fichiers **critiques** par **chemin calculé** + voix de Bafouille
+   (donnée). *Prérequis hors-code : colonne `bafouille` (bool, défaut `false`) dans `session_state`.*
+
 ## 6. Décisions encore ouvertes
 
 - **Éditeur MJ** : la **structure** des disques est tranchée → **outil séparé** (`fs:editor`, §3,
