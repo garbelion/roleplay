@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { addDisk, addPropaganda, editPropaganda, removePropaganda } from "../tools/fs-editor/fs-ops.js"
+import { addDisk, addFile, addDirectory, setCritical, addPropaganda, editPropaganda, removePropaganda } from "../tools/fs-editor/fs-ops.js"
 
 describe("addDisk", () => {
   it("ajoute un disque à la racine (type 'disk', children vides) et le renvoie", () => {
@@ -34,6 +34,59 @@ describe("addDisk", () => {
     expect(() => addDisk(root, "user-51394345")).toThrow()
     expect(() => addDisk(root, "  user-51394345 ")).toThrow() // même nom, espaces autour
     expect(root.children).toHaveLength(1)
+  })
+})
+
+describe("addFile", () => {
+  it("ajoute un fichier au dossier (type 'file') et le renvoie ; nom trimé", () => {
+    const dir = { name: "home", type: "directory", children: [] }
+    const file = addFile(dir, "  rapport.md  ")
+    expect(file).toEqual({ name: "rapport.md", type: "file" })
+    expect(dir.children).toHaveLength(1)
+    expect(dir.children[0]).toBe(file)
+  })
+
+  it("pose le drapeau isCritical quand demandé (fichier à télécharger)", () => {
+    const dir = { name: "home", type: "directory", children: [] }
+    const file = addFile(dir, "liste_cibles.md", { isCritical: true })
+    expect(file).toEqual({ name: "liste_cibles.md", type: "file", isCritical: true })
+  })
+
+  it("n'écrit pas isCritical quand il est faux/absent (JSON minimal)", () => {
+    const dir = { name: "home", type: "directory", children: [] }
+    expect(addFile(dir, "note.md", { isCritical: false })).not.toHaveProperty("isCritical")
+    expect(addFile(dir, "autre.md")).not.toHaveProperty("isCritical")
+  })
+
+  it("refuse un nom vide, sans rien ajouter", () => {
+    const dir = { name: "home", type: "directory", children: [] }
+    expect(() => addFile(dir, "   ")).toThrow()
+    expect(dir.children).toHaveLength(0)
+  })
+})
+
+describe("addDirectory", () => {
+  it("ajoute un dossier (type 'directory', children vides) et le renvoie ; nom trimé", () => {
+    const dir = { name: "home", type: "directory", children: [] }
+    const sub = addDirectory(dir, "  surveillance ")
+    expect(sub).toEqual({ name: "surveillance", type: "directory", children: [] })
+    expect(dir.children[0]).toBe(sub)
+  })
+
+  it("refuse un nom vide, sans rien ajouter", () => {
+    const dir = { name: "home", type: "directory", children: [] }
+    expect(() => addDirectory(dir, "")).toThrow()
+    expect(dir.children).toHaveLength(0)
+  })
+})
+
+describe("setCritical", () => {
+  it("bascule le drapeau isCritical d'un fichier existant (et le retire quand faux)", () => {
+    const file = { name: "note.md", type: "file" }
+    setCritical(file, true)
+    expect(file.isCritical).toBe(true)
+    setCritical(file, false)
+    expect(file).not.toHaveProperty("isCritical") // retiré, pas mis à false (JSON minimal)
   })
 })
 

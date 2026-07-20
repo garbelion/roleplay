@@ -51,7 +51,10 @@ arbre ↔ disque.
 (`tools/fs-editor/`) + éditeur web : arbre éditable (ajout de **disque** à la racine, ajout /
 retrait / renommage / déplacement drag-and-drop de nœuds), enregistrement direct dans
 `file-system.json`, et **panneau de synchro live** — manquants / orphelins / doublons — via
-`fs-sync.js` (`diffFileSystem`, cœur pur testé) ; opérations pures dans `fs-ops.js`. Gère aussi les
+`fs-sync.js` (`diffFileSystem`, cœur pur testé) ; opérations pures dans `fs-ops.js`
+(`addDisk`/`addFile`/`addDirectory`/`setCritical`…). Un fichier peut être marqué **critique**
+(`isCritical`, badge + bascule ☆/✪) = pièce que les PJ doivent télécharger (mise en avant par l'aide
+Bafouille). Gère aussi les
 **messages de propagande** (`console.propaganda`) : ajout / édition / retrait. **C'est l'outil
 d'auteur pour la *structure* des disques et la propagande** (tranche §6 : structure = outil séparé,
 livré).
@@ -276,8 +279,10 @@ Lot de features autour du **temps de session** et de l'**aide au déchiffrement*
    coupure (« SESSION EXPIRÉE ») jusqu'au Reset MJ. *Nettoyage thermo : le seuil 2 h vit désormais dans
    `session-clock` seul ; l'ancien `startSessionWarning` (ancre parallèle) et le wrapper
    `console-ambience` (réduit à un seul émetteur) sont retirés — la propagande est câblée directement.*
-4. **Fichier critique (`fs:editor`)** : drapeau `isCritical` posé à l'ajout d'un fichier, écrit dans
-   `file-system.json`.
+4. ✅ **Fichier critique (`fs:editor`)** : ops pures `addFile`/`addDirectory`/`setCritical` dans
+   `fs-ops.js` ; l'éditeur demande « critique ? » à l'ajout d'un fichier et expose un **badge + bascule
+   ☆/✪** sur chaque fichier (marquage des fichiers déjà présents). Drapeau `isCritical` écrit dans
+   `file-system.json`, **seulement si vrai** (JSON minimal).
 5. **Popin Bafouille** : nouveau champ de session `bafouille` (bool, même tuyau Realtime), toggle depuis
    `/mj` ; popin persistante listant les fichiers **critiques** par **chemin calculé** + voix de Bafouille
    (donnée). *Prérequis hors-code : colonne `bafouille` (bool, défaut `false`) dans `session_state`.*

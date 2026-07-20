@@ -77,7 +77,7 @@
 
   <script type="module">
     import { diffFileSystem } from "./fs-sync.js"
-    import { addDisk, addPropaganda, editPropaganda, removePropaganda } from "./fs-ops.js"
+    import { addDisk, addFile, addDirectory, setCritical, addPropaganda, editPropaganda, removePropaganda } from "./fs-ops.js"
 
     let root = null            // racine JSON complète (session/console/children…)
     let files = []             // fichiers réellement présents sur le disque
@@ -180,6 +180,7 @@
       row.appendChild(nm)
 
       if (node.type === "disk") row.appendChild(badge("disque"))
+      if (node.isCritical) row.appendChild(badge("critique"))
       if (isMiss || isDup) row.appendChild(badge(isMiss ? "manquant" : "doublon"))
 
       const acts = document.createElement("span")
@@ -187,6 +188,9 @@
       if (isFolder) {
         acts.appendChild(mkBtn("＋📄", "Nouveau fichier", () => addChild(node, "file")))
         acts.appendChild(mkBtn("＋📁", "Nouveau dossier", () => addChild(node, "directory")))
+      }
+      if (node.type === "file") {
+        acts.appendChild(mkBtn(node.isCritical ? "✪" : "☆", "Basculer « critique »", () => toggleCritical(node)))
       }
       acts.appendChild(mkBtn("✎", "Renommer", () => rename(node)))
       acts.appendChild(mkBtn("⬆", "Monter", () => reorder(parent, node, -1)))
@@ -233,10 +237,19 @@
     // --- mutations -----------------------------------------------------------
     function addChild(folder, type) {
       const name = prompt(type === "file" ? "Nom du fichier (ex: note.md)" : "Nom du dossier")
-      if (!name) return
-      folder.children = folder.children || []
-      folder.children.push(type === "file" ? { name, type } : { name, type, children: [] })
-      collapsed.delete(folder); refresh()
+      if (name === null) return
+      try {
+        if (type === "file") {
+          const isCritical = confirm("Fichier critique (à télécharger par les PJ) ?")
+          addFile(folder, name, { isCritical })
+        } else {
+          addDirectory(folder, name)
+        }
+        collapsed.delete(folder); refresh()
+      } catch (e) { flash(e.message, true) }
+    }
+    function toggleCritical(node) {
+      setCritical(node, !node.isCritical); refresh()
     }
     function rename(node) {
       const v = prompt("Nouveau nom", node.name)

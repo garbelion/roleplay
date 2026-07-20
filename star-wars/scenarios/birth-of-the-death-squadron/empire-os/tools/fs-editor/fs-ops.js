@@ -20,6 +20,33 @@ export function addDisk(root, name) {
   return disk
 }
 
+// Ajoute un fichier à un dossier/disque. `isCritical` marque une pièce que les PJ doivent
+// télécharger (mise en avant par l'aide Bafouille) ; on ne l'écrit que si vrai (JSON minimal).
+export function addFile(parent, name, { isCritical = false } = {}) {
+  const clean = requireText(name, "Nom de fichier")
+  parent.children = parent.children || []
+  const file = { name: clean, type: "file" }
+  if (isCritical) file.isCritical = true
+  parent.children.push(file)
+  return file
+}
+
+// Ajoute un sous-dossier (nœud navigable) à un dossier/disque.
+export function addDirectory(parent, name) {
+  const clean = requireText(name, "Nom de dossier")
+  parent.children = parent.children || []
+  const dir = { name: clean, type: "directory", children: [] }
+  parent.children.push(dir)
+  return dir
+}
+
+// Marque / démarque un fichier existant comme critique (retiré plutôt que mis à false).
+export function setCritical(file, isCritical) {
+  if (isCritical) file.isCritical = true
+  else delete file.isCritical
+  return file
+}
+
 // Ajoute un message de propagande (pool `console.propaganda`, tiré à l'ambiance de la console).
 export function addPropaganda(root, message) {
   const clean = requireText(message, "Message")
