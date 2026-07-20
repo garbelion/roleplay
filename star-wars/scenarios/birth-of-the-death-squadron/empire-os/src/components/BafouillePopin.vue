@@ -12,8 +12,17 @@
     <p class="bafouille-message">{{ voice }}</p>
     <ul v-if="files.length" class="bafouille-files">
       <li v-for="f in files" :key="f.path" class="bafouille-file">
-        <span class="bafouille-file-name">{{ f.name }}</span>
-        <span class="bafouille-file-path">{{ f.path }}</span>
+        <div class="bafouille-file-info">
+          <span class="bafouille-file-name">{{ f.name }}</span>
+          <span class="bafouille-file-path">{{ f.path }}</span>
+        </div>
+        <button
+          type="button"
+          class="bafouille-copy"
+          :title="`Copier « ${f.name} »`"
+          :aria-label="`Copier le nom ${f.name}`"
+          @click="copyName(f.name)"
+        >⧉</button>
       </li>
     </ul>
     <p v-else class="bafouille-empty">Aucun fichier signalé pour l'instant.</p>
@@ -36,6 +45,12 @@ export default {
   computed: {
     voice() {
       return this.message || DEFAULT_MESSAGE
+    },
+  },
+  methods: {
+    // Copie le nom du fichier dans le presse-papier (aide au repérage à la table).
+    copyName(name) {
+      navigator.clipboard?.writeText?.(name)
     },
   },
 }
@@ -76,14 +91,31 @@ export default {
 .bafouille-files { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
 .bafouille-file {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   padding: 5px 8px;
   background: var(--rebel-soft);
   border: 1px solid transparent;
   border-left: 2px solid var(--rebel);
 }
+.bafouille-file-info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
 .bafouille-file-name { color: var(--rebel-bright); }
 .bafouille-file-path { color: #b7a892; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Bouton « copier le nom » : discret, s'anime au survol, teinte rebelle. */
+.bafouille-copy {
+  flex: none;
+  background: transparent;
+  border: 1px solid var(--rebel);
+  color: var(--rebel-bright);
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  padding: 3px 6px;
+  opacity: 0.75;
+  transition: opacity 0.12s, background 0.12s;
+}
+.bafouille-copy:hover { opacity: 1; background: var(--rebel-soft); }
 .bafouille-empty { margin: 0; color: #b7a892; font-style: italic; }
 @keyframes bafouille-in {
   from { opacity: 0; transform: translateY(8px); }

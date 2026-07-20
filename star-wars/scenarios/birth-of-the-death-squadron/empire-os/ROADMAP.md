@@ -170,7 +170,8 @@ en attendant.
   **surveillance** des actions (ouverture/navigation/extraction/annulation), **propagande**
   d'ambiance sur timer (`propaganda.js`, pool en donnée MJ `console.propaganda`, cadence qui se
   resserre avec l'alerte), **lignes système** (ligne d'amorçage). Couleur par
-  nature (surveillance cyan, propagande/alerte rouge) et **teinte de la console montant avec
+  nature (surveillance cyan, propagande/alerte rouge — **encadrée de deux logos impériaux `#`
+  Star Jedi**) et **teinte de la console montant avec
   `alertLevel`**. Console **récent-d'abord**, onglet **par défaut**, ligne d'amorçage
   « SESSION OUVERTE », et **notifications OS 5 s** pour tout message non-surveillance
   (`notifications.js`). ~40 tests dédiés.
@@ -304,7 +305,8 @@ Lot de features autour du **temps de session** et de l'**aide au déchiffrement*
    Alliance, insigne *starbird* = glyphe `$` de la police **Star Jedi**, comme le `#` impérial) —
    Bafouille n'est pas un ami de l'Empire. En plus de
    la liste, l'intervention active **surligne les fichiers critiques dans l'OS** (pourtour orange,
-   `.bafouille-critical` dans `FileExplorer`). Palette rebelle canonique dans `index.html :root`
+   `.bafouille-critical` dans `FileExplorer`). Chaque suggestion a un **bouton copier le nom** (⧉,
+   `navigator.clipboard`). Palette rebelle canonique dans `index.html :root`
    (`--rebel*`). *Prérequis hors-code : colonne `bafouille` (bool, défaut `false`) dans `session_state`.*
 
 ## 6. Décisions encore ouvertes

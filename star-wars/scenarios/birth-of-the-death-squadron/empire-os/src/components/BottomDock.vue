@@ -63,7 +63,10 @@
             :class="[`kind-${e.kind}`, e.level ? `level-${e.level}` : '']"
           >
             <span class="console-time">{{ time(e.at) }}</span>
+            <!-- Propagande impériale : le message est encadré de deux logos de l'Empire (# Star Jedi). -->
+            <span v-if="e.kind === 'propaganda'" class="console-logo" aria-hidden="true">#</span>
             <span class="console-text">{{ e.text }}</span>
+            <span v-if="e.kind === 'propaganda'" class="console-logo" aria-hidden="true">#</span>
           </li>
         </ul>
       </div>
@@ -225,6 +228,9 @@ export default {
 .console-line { display: flex; gap: 10px; padding: 2px 4px; line-height: 1.5; }
 .console-time { color: var(--ink-dim); flex-shrink: 0; font-variant-numeric: tabular-nums; }
 .console-text { color: var(--ink); word-break: break-word; }
+/* Logo impérial encadrant la propagande : glyphe # en police Star Jedi (déclarée globalement
+   par App.vue), teinte rouge impérial. */
+.console-logo { font-family: 'Star Jedi', monospace; color: var(--danger); flex-shrink: 0; line-height: 1; }
 /* Surveillance : le regard de l'Empire (accent froid). Propagande : rouge impérial. */
 .console-line.kind-surveillance .console-text { color: var(--accent); }
 .console-line.kind-propaganda .console-text { color: var(--danger); letter-spacing: 0.5px; }
