@@ -170,11 +170,11 @@ en attendant.
   **surveillance** des actions (ouverture/navigation/extraction/annulation), **propagande**
   d'ambiance sur timer (`propaganda.js`, pool en donnée MJ `console.propaganda`, cadence qui se
   resserre avec l'alerte), **lignes système** (ligne d'amorçage). Couleur par
-  nature (surveillance cyan, propagande/alerte rouge — **encadrée de deux logos impériaux `#`
-  Star Jedi**) et **teinte de la console montant avec
+  nature (surveillance cyan, propagande/alerte rouge) et **teinte de la console montant avec
   `alertLevel`**. Console **récent-d'abord**, onglet **par défaut**, ligne d'amorçage
   « SESSION OUVERTE », et **notifications OS 5 s** pour tout message non-surveillance
-  (`notifications.js`). ~40 tests dédiés.
+  (`notifications.js`) — celles de **propagande sont encadrées de deux logos impériaux `#`
+  Star Jedi**. ~40 tests dédiés.
 - ✅ **Badge d'alerte dans le chrome** livré via la **slice 3 du back-office** (§5.2) : barre de
   titre, libellé `ALERT_LABELS`, teinte montante, piloté par le store réactif (source unique).
 

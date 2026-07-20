@@ -227,6 +227,19 @@ describe("App.vue - Skin / chrome impérial (dans l'OS)", () => {
     notify({ kind: "propaganda", text: "ALERTE PROPAGANDE" })
     await wrapper.vm.$nextTick()
     const texts = wrapper.findAll(".os-notification").map(n => n.text())
-    expect(texts).toContain("ALERTE PROPAGANDE")
+    expect(texts.some(t => t.includes("ALERTE PROPAGANDE"))).toBe(true)
+  })
+
+  it("encadre les notifications de propagande de deux logos impériaux (#), pas les autres", async () => {
+    const wrapper = await mountOs()
+    notify({ kind: "propaganda", text: "GLOIRE À L'EMPIRE" })
+    notify({ kind: "system", text: "SYSTÈME" })
+    await wrapper.vm.$nextTick()
+
+    const propaganda = wrapper.find(".os-notification.kind-propaganda")
+    const logos = propaganda.findAll(".os-notif-logo")
+    expect(logos.map(l => l.text())).toEqual(["#", "#"]) // un avant, un après
+    // Une notification non-propagande n'est pas encadrée.
+    expect(wrapper.find(".os-notification.kind-system .os-notif-logo").exists()).toBe(false)
   })
 })

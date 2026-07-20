@@ -52,7 +52,12 @@
         class="os-notification"
         :class="`kind-${n.kind}`"
         @click="dismiss(n.id)"
-      >{{ n.text }}</button>
+      >
+        <!-- Propagande impériale : le message est encadré de deux logos de l'Empire (# Star Jedi). -->
+        <span v-if="n.kind === 'propaganda'" class="os-notif-logo" aria-hidden="true">#</span>
+        <span class="os-notif-text">{{ n.text }}</span>
+        <span v-if="n.kind === 'propaganda'" class="os-notif-logo" aria-hidden="true">#</span>
+      </button>
     </div>
   </div>
 </template>
@@ -305,6 +310,10 @@ const closeTerminal = () => {
 }
 .os-notification {
   pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   text-align: center;
   font-family: inherit;
   font-size: 12px;
@@ -323,6 +332,9 @@ const closeTerminal = () => {
 .os-notification:hover { background: var(--panel); }
 /* Propagande / alerte : accent rouge impérial pour se distinguer du système. */
 .os-notification.kind-propaganda { border-left-color: var(--danger); }
+/* Logo impérial encadrant la propagande : glyphe # en police Star Jedi (déclarée globalement
+   plus haut), teinte rouge impérial. */
+.os-notif-logo { font-family: 'Star Jedi', monospace; color: var(--danger); flex: none; font-size: 14px; line-height: 1; }
 @keyframes os-notif-in {
   from { opacity: 0; transform: translateY(-8px); }
   to { opacity: 1; transform: translateY(0); }

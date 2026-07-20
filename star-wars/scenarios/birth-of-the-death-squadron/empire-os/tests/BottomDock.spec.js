@@ -39,23 +39,6 @@ describe("BottomDock - onglet Console", () => {
     expect(lines[1].text()).toContain('14:30:00')
   })
 
-  it("encadre les messages de propagande de deux logos impériaux (# Star Jedi), pas les autres lignes", async () => {
-    const log = [
-      { kind: 'surveillance', text: 'ACCÈS FICHIER : x', at: 1000 },
-      { kind: 'propaganda', text: "L'EMPIRE VEILLE.", at: 2000 }
-    ]
-    const wrapper = mount(BottomDock, { props: { log } })
-    await openConsole(wrapper)
-
-    const propaganda = wrapper.find('.console-line.kind-propaganda')
-    const logos = propaganda.findAll('.console-logo')
-    expect(logos).toHaveLength(2) // un de chaque côté du message
-    expect(logos.map(l => l.text())).toEqual(['#', '#'])
-
-    // Une ligne non-propagande n'est pas encadrée.
-    expect(wrapper.find('.console-line.kind-surveillance .console-logo').exists()).toBe(false)
-  })
-
   it("affiche un état vide quand le journal est vide", async () => {
     const wrapper = mount(BottomDock, { props: { log: [] } })
     await openConsole(wrapper)
