@@ -4,11 +4,9 @@
        Habillage REBELLE (blanc / orange) — Bafouille n'est pas un ami de l'Empire. -->
   <div class="bafouille-popin" role="dialog" aria-label="Message de Bafouille">
     <div class="bafouille-head">
-      <!-- Insigne « starbird » stylisé (oiseau ascendant) : allégeance rebelle. -->
-      <svg class="bafouille-starbird" viewBox="0 0 64 64" aria-hidden="true">
-        <path d="M32 5 L38 27 L32 21 L26 27 Z" />
-        <path d="M32 23 C20 25 10 35 6 51 C18 41 26 41 32 47 C38 41 46 41 58 51 C54 35 44 25 32 23 Z" />
-      </svg>
+      <!-- Insigne « starbird » rebelle : glyphe `$` de la police Star Jedi (comme le `#`
+           impérial du chrome OS), teinté orange Alliance. -->
+      <span class="bafouille-starbird" aria-hidden="true">$</span>
       <span class="bafouille-name">BAFOUILLE</span>
     </div>
     <p class="bafouille-message">{{ voice }}</p>
@@ -63,7 +61,16 @@ export default {
   animation: bafouille-in 0.25s ease-out;
 }
 .bafouille-head { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
-.bafouille-starbird { width: 26px; height: 26px; flex: none; fill: var(--rebel); filter: drop-shadow(0 0 4px rgba(242, 130, 42, 0.4)); }
+/* Le `$` de Star Jedi rend un insigne « starbird » (la police @font-face est déclarée
+   globalement par App.vue). Teinté orange rebelle + léger halo. */
+.bafouille-starbird {
+  font-family: 'Star Jedi', monospace;
+  color: var(--rebel);
+  font-size: 24px;
+  line-height: 1;
+  flex: none;
+  text-shadow: 0 0 6px rgba(242, 130, 42, 0.4);
+}
 .bafouille-name { font-weight: bold; letter-spacing: 2px; color: var(--rebel-bright); text-transform: uppercase; }
 .bafouille-message { margin: 0 0 10px; line-height: 1.45; font-style: italic; color: var(--rebel-ink); }
 .bafouille-files { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }

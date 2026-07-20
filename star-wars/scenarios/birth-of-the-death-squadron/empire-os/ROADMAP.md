@@ -301,7 +301,8 @@ Lot de features autour du **temps de session** et de l'**aide au déchiffrement*
    (**non fermable par les joueurs**) listant les fichiers **critiques** par **chemin calculé**
    (`collectCriticalFiles`, `file-tree.js`) + **voix de Bafouille** éditable en donnée (`bafouille.message`).
    Rendue **dans l'OS** seulement, pilotée par le store réactif. **Habillage rebelle** (blanc/orange
-   Alliance, insigne *starbird* stylisé original) — Bafouille n'est pas un ami de l'Empire. En plus de
+   Alliance, insigne *starbird* = glyphe `$` de la police **Star Jedi**, comme le `#` impérial) —
+   Bafouille n'est pas un ami de l'Empire. En plus de
    la liste, l'intervention active **surligne les fichiers critiques dans l'OS** (pourtour orange,
    `.bafouille-critical` dans `FileExplorer`). Palette rebelle canonique dans `index.html :root`
    (`--rebel*`). *Prérequis hors-code : colonne `bafouille` (bool, défaut `false`) dans `session_state`.*

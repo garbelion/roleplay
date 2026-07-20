@@ -22,10 +22,12 @@ describe("BafouillePopin.vue", () => {
     expect(items[0].text()).toContain("/user-51394345/home/liste_cibles.md")
   })
 
-  it("arbore un logo starbird (allégeance rebelle, pas l'Empire)", () => {
+  it("arbore un logo starbird (glyphe $ en police Star Jedi — allégeance rebelle)", () => {
     const wrapper = mount(BafouillePopin, { props: { files: FILES } })
-    expect(wrapper.find("svg.bafouille-starbird").exists()).toBe(true)
-    // Reste sans bouton (persistante) même avec le logo SVG.
+    const star = wrapper.find(".bafouille-starbird")
+    expect(star.exists()).toBe(true)
+    expect(star.text()).toBe("$") // rendu en insigne rebelle via la police Star Jedi
+    // Reste sans bouton (persistante).
     expect(wrapper.find("button").exists()).toBe(false)
   })
 
