@@ -26,6 +26,19 @@ describe("BottomDock - onglet Console", () => {
     expect(lines[1].classes()).toContain('kind-surveillance')
   })
 
+  it("affiche l'heure in-game (heure murale) de chaque ligne, ramenée sur 24 h", async () => {
+    const DAY = 24 * 3600 * 1000
+    const log = [
+      { kind: 'system', text: 'MATIN', at: 52_200 * 1000 }, // 14:30:00
+      { kind: 'system', text: 'APRÈS MINUIT', at: DAY + 65_000 } // roule au-delà de minuit → 00:01:05
+    ]
+    const wrapper = mount(BottomDock, { props: { log } })
+    await openConsole(wrapper)
+    const lines = wrapper.findAll('.console-line')
+    expect(lines[0].text()).toContain('00:01:05') // récent d'abord, heure ramenée sur 24 h
+    expect(lines[1].text()).toContain('14:30:00')
+  })
+
   it("affiche un état vide quand le journal est vide", async () => {
     const wrapper = mount(BottomDock, { props: { log: [] } })
     await openConsole(wrapper)

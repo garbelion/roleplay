@@ -11,6 +11,7 @@ import {
   sessionStart,
   SESSION_WARNING_MS
 } from "../src/session-log.js"
+import { startSessionClock } from "../src/session-clock.js"
 
 describe("formatSessionTime", () => {
   it("formate une durée écoulée en HH:MM:SS", () => {
@@ -61,6 +62,21 @@ describe("journal de session (store capé)", () => {
     pushLog({ kind: "surveillance", text: "A" })
     resetLog()
     expect(sessionLog.length).toBe(0)
+  })
+
+  it("horodate chaque entrée à l'heure in-game (heure MJ + temps de session écoulé)", () => {
+    vi.useFakeTimers()
+    try {
+      vi.setSystemTime(1_000_000)
+      startSessionClock(52_200, Date.now()) // MJ règle 14:30:00, entrée dans l'OS
+      pushLog({ kind: "system", text: "A" })
+      vi.advanceTimersByTime(5_000)
+      pushLog({ kind: "system", text: "B" })
+      expect(sessionLog[0].at).toBe(52_200 * 1000) // 14:30:00 pile
+      expect(sessionLog[1].at).toBe(52_200 * 1000 + 5_000) // +5 s d'écoulé
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })
 

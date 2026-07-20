@@ -267,8 +267,9 @@ Lot de features autour du **temps de session** et de l'**aide au déchiffrement*
    **heure in-game** (`clockStart` + écoulé), **heure d'ouverture** (instantané figé), **temps restant**
    (limite 2 h) et **expiration**. `App` pose l'ancre à l'entrée, la libère à la sortie / au Reset ;
    l'horloge du chrome s'y branche. *(Remplace l'ancrage local `osEnteredAt` de §5.4.)*
-2. **Heure dans les lignes de console** : l'horodatage des lignes du journal (`session-log.js` →
-   `BottomDock`) affiche l'**heure in-game** (heure murale narrative) au lieu du temps de session écoulé.
+2. ✅ **Heure dans les lignes de console** : l'horodatage des lignes du journal (`session-log.js` →
+   `BottomDock`) affiche l'**heure in-game** (heure murale narrative, ramenée sur 24 h) au lieu du temps
+   de session écoulé — `pushLog` estampille désormais à `heureMs()`.
 3. **Onglet Session** : remplit la coquille du dock — **heure d'ouverture**, **temps écoulé**, **temps
    restant avant déconnexion (2 h)**, **niveau d'alerte** ; **déconnexion auto** à l'échéance.
 4. **Fichier critique (`fs:editor`)** : drapeau `isCritical` posé à l'ajout d'un fichier, écrit dans

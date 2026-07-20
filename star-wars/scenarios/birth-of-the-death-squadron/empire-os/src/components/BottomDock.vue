@@ -123,8 +123,10 @@ export default {
     segments(name) {
       return highlightSegments(name, this.query);
     },
+    // Horodatage d'une ligne : heure in-game (heure murale narrative) ramenée sur 24 h.
     time(at) {
-      return formatSessionTime(at || 0);
+      const DAY = 24 * 3600 * 1000;
+      return formatSessionTime((((at || 0) % DAY) + DAY) % DAY);
     },
     // Appelé par le parent (Ctrl+F) : active l'onglet Recherche et focus le champ.
     focusSearch() {

@@ -7,6 +7,7 @@
 
 import { reactive } from 'vue'
 import { notify } from './notifications.js'
+import { heureMs } from './session-clock.js'
 
 export const MAX_ENTRIES = 200
 
@@ -46,10 +47,11 @@ export const sessionLog = reactive([])
 
 /**
  * Empile une entrée, en gardant au plus MAX_ENTRIES lignes (les plus récentes).
- * Horodate automatiquement (`at` = ms écoulés) si l'appelant ne l'a pas fait.
+ * Horodate automatiquement à l'**heure in-game** (`at` = heure murale narrative au moment
+ * du log = heure réglée par le MJ + temps de session écoulé) si l'appelant ne l'a pas fait.
  */
 export function pushLog(entry) {
-  const stamped = entry.at === undefined ? { ...entry, at: Date.now() - sessionStart } : entry
+  const stamped = entry.at === undefined ? { ...entry, at: heureMs() } : entry
   sessionLog.push(stamped)
   if (sessionLog.length > MAX_ENTRIES) sessionLog.splice(0, sessionLog.length - MAX_ENTRIES)
   // Tout message non-surveillance surgit aussi en notification éphémère (notify filtre lui-même).
