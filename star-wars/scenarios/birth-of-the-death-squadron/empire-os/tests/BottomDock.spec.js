@@ -66,6 +66,14 @@ describe("BottomDock - onglet Console", () => {
     expect(lines[1].text()).toContain('ANCIEN')
   })
 
+  it("l'onglet Session rend le panneau de session (état temporel)", async () => {
+    const wrapper = mount(BottomDock, { props: { log: [], alertLevel: 1 } })
+    const tab = wrapper.findAll('.dock-tab').find(t => t.text().toLowerCase().includes('session'))
+    await tab.trigger('click')
+    expect(wrapper.find('.session-info').exists()).toBe(true)
+    expect(wrapper.find('.dock-placeholder').exists()).toBe(false)
+  })
+
   it("teinte la console selon le niveau d'alerte (classe alert-N)", async () => {
     const log = [{ kind: 'system', text: 'x', at: 0 }]
     const wrapper = mount(BottomDock, { props: { log, alertLevel: 3 } })

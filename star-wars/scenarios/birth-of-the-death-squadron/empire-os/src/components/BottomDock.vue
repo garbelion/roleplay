@@ -68,6 +68,8 @@
         </ul>
       </div>
 
+      <SessionPanel v-else-if="activeTab === 'session'" :alert-level="alertLevel" />
+
       <div v-else class="dock-placeholder">{{ activeLabel }} — à venir</div>
     </div>
   </div>
@@ -76,9 +78,11 @@
 <script>
 import { highlightSegments } from '../search.js';
 import { formatSessionTime } from '../session-log.js';
+import SessionPanel from './SessionPanel.vue';
 
 export default {
   name: 'BottomDock',
+  components: { SessionPanel },
   props: {
     query: { type: String, default: '' },
     results: { type: Array, default: () => [] },

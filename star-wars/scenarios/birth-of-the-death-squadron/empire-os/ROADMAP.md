@@ -94,9 +94,9 @@ rédigée par le MJ ; `transferWeight` = poids pour la durée de transfert ficti
   **Ctrl+F**/Échap, query préservée à la navigation. Cœur pur : `search.js`.
 - **Console « big brother »** : onglet Console (affiché **par défaut**) alimenté par un journal
   de session (`session-log.js`), **plus récents en premier** — surveillance des actions,
-  propagande d'ambiance sur timer (`propaganda.js`, pool MJ), avertissement > 2 h, ligne
-  d'amorçage « SESSION OUVERTE », teinte montant avec `alertLevel`. Émetteurs regroupés sous
-  un handle unique (`console-ambience.js`). Onglet **Session** = coquille prête.
+  propagande d'ambiance sur timer (`propaganda.js`, pool MJ), ligne
+  d'amorçage « SESSION OUVERTE », teinte montant avec `alertLevel`. Onglet **Session** = état
+  temporel de la connexion (`SessionPanel.vue`).
 - **Notifications OS** : tout message console **non-surveillance** surgit 5 s en overlay
   (`notifications.js` + overlay `App.vue`), cliquable pour fermer.
 - **Skin impérial** : palette CSS centralisée (`index.html :root`), chrome (barre de titre :
@@ -163,10 +163,10 @@ en attendant.
 
 ### 5.3 — Immersion « big brother » (onglets du dock)
 - ✅ **Console v1 livrée** : onglet Console du dock alimenté par un **journal de session**
-  (`session-log.js`, store réactif capé, horodaté à l'horloge de session). Trois sources :
+  (`session-log.js`, store réactif capé, **horodaté à l'heure in-game**). Sources :
   **surveillance** des actions (ouverture/navigation/extraction/annulation), **propagande**
   d'ambiance sur timer (`propaganda.js`, pool en donnée MJ `console.propaganda`, cadence qui se
-  resserre avec l'alerte), **avertissements système** (dont le warning **> 2 h**). Couleur par
+  resserre avec l'alerte), **lignes système** (ligne d'amorçage). Couleur par
   nature (surveillance cyan, propagande/alerte rouge) et **teinte de la console montant avec
   `alertLevel`**. Console **récent-d'abord**, onglet **par défaut**, ligne d'amorçage
   « SESSION OUVERTE », et **notifications OS 5 s** pour tout message non-surveillance
@@ -270,8 +270,12 @@ Lot de features autour du **temps de session** et de l'**aide au déchiffrement*
 2. ✅ **Heure dans les lignes de console** : l'horodatage des lignes du journal (`session-log.js` →
    `BottomDock`) affiche l'**heure in-game** (heure murale narrative, ramenée sur 24 h) au lieu du temps
    de session écoulé — `pushLog` estampille désormais à `heureMs()`.
-3. **Onglet Session** : remplit la coquille du dock — **heure d'ouverture**, **temps écoulé**, **temps
-   restant avant déconnexion (2 h)**, **niveau d'alerte** ; **déconnexion auto** à l'échéance.
+3. ✅ **Onglet Session + déconnexion auto** : `SessionPanel.vue` (ticker 1 s, lit `session-clock`) remplit
+   la coquille du dock — **heure d'ouverture** (figée), **temps écoulé**, **temps restant avant
+   déconnexion (2 h)**, **niveau d'alerte**. À l'échéance, `App` **éjecte les joueurs** vers un écran de
+   coupure (« SESSION EXPIRÉE ») jusqu'au Reset MJ. *Nettoyage thermo : le seuil 2 h vit désormais dans
+   `session-clock` seul ; l'ancien `startSessionWarning` (ancre parallèle) et le wrapper
+   `console-ambience` (réduit à un seul émetteur) sont retirés — la propagande est câblée directement.*
 4. **Fichier critique (`fs:editor`)** : drapeau `isCritical` posé à l'ajout d'un fichier, écrit dans
    `file-system.json`.
 5. **Popin Bafouille** : nouveau champ de session `bafouille` (bool, même tuyau Realtime), toggle depuis

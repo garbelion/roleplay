@@ -137,6 +137,45 @@ describe("App.vue - Skin / chrome impérial (dans l'OS)", () => {
     }
   })
 
+  it("déconnecte automatiquement les joueurs de l'OS au bout de 2 h", async () => {
+    vi.useFakeTimers()
+    try {
+      vi.setSystemTime(new Date(2026, 0, 1, 10, 0, 0))
+      setSessionConfig({ intrusion: "os" })
+      const wrapper = mount(App)
+      await flushPromises()
+      expect(wrapper.find(".dos-title-bar").exists()).toBe(true)
+      expect(wrapper.find(".os-disconnected").exists()).toBe(false)
+
+      vi.advanceTimersByTime(2 * 3600 * 1000) // durée max atteinte
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find(".os-disconnected").exists()).toBe(true)
+      expect(wrapper.find(".dos-title-bar").exists()).toBe(false) // OS masqué
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it("un Reset MJ (intrusion→boot) ramène au shell d'intrusion après la déconnexion auto", async () => {
+    vi.useFakeTimers()
+    try {
+      vi.setSystemTime(new Date(2026, 0, 1, 10, 0, 0))
+      setSessionConfig({ intrusion: "os" })
+      const wrapper = mount(App)
+      await flushPromises()
+      vi.advanceTimersByTime(2 * 3600 * 1000)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find(".os-disconnected").exists()).toBe(true)
+
+      setSessionConfig({ intrusion: "boot" }) // Reset MJ
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find(".os-disconnected").exists()).toBe(false)
+      expect(wrapper.findComponent(IntrusionShell).exists()).toBe(true)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it("affiche un filigrane du logo impérial en fond (décoratif)", async () => {
     const wrapper = await mountOs()
     const mark = wrapper.find(".os-watermark")

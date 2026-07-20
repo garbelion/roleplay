@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
+import { describe, it, expect, beforeEach, vi } from "vitest"
 import {
   formatSessionTime,
   surveillanceText,
@@ -6,10 +6,7 @@ import {
   sessionLog,
   pushLog,
   resetLog,
-  MAX_ENTRIES,
-  startSessionWarning,
-  sessionStart,
-  SESSION_WARNING_MS
+  MAX_ENTRIES
 } from "../src/session-log.js"
 import { startSessionClock } from "../src/session-clock.js"
 
@@ -77,34 +74,5 @@ describe("journal de session (store capé)", () => {
     } finally {
       vi.useRealTimers()
     }
-  })
-})
-
-describe("startSessionWarning (avertissement > 2 h)", () => {
-  beforeEach(() => { resetLog(); vi.useFakeTimers() })
-  afterEach(() => vi.useRealTimers())
-
-  it("pousse un avertissement système (warn) au seuil, une seule fois", () => {
-    const h = startSessionWarning({ thresholdMs: 5000, now: () => sessionStart })
-    vi.advanceTimersByTime(4999)
-    expect(sessionLog.length).toBe(0)
-    vi.advanceTimersByTime(1)
-    const e = sessionLog.at(-1)
-    expect(e.kind).toBe("system")
-    expect(e.level).toBe("warn")
-    vi.advanceTimersByTime(10000)
-    expect(sessionLog.filter(x => x.level === "warn").length).toBe(1)
-    h.stop()
-  })
-
-  it("stop annule l'avertissement", () => {
-    const h = startSessionWarning({ thresholdMs: 5000, now: () => sessionStart })
-    h.stop()
-    vi.advanceTimersByTime(10000)
-    expect(sessionLog.length).toBe(0)
-  })
-
-  it("seuil par défaut = 2 h", () => {
-    expect(SESSION_WARNING_MS).toBe(2 * 60 * 60 * 1000)
   })
 })

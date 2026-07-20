@@ -111,7 +111,7 @@ import { startTransfer } from '../transfer.js';
 import { searchTree, formatCount, highlightSegments, matches } from '../search.js';
 import { sessionLog, pushLog, surveillanceText, SESSION_OPEN_TEXT } from '../session-log.js';
 import { sessionState } from '../session-store.js';
-import { startConsoleAmbience } from '../console-ambience.js';
+import { startPropaganda } from '../propaganda.js';
 import { assignPaths } from '../file-tree.js';
 import BottomDock from './BottomDock.vue';
 
@@ -197,9 +197,9 @@ export default {
     // Amorçage : la console s'ouvre sur une ligne système (jamais vide, en tête chronologique).
     pushLog({ kind: 'system', text: SESSION_OPEN_TEXT })
     await this.loadFileSystem()
-    // Émetteurs d'ambiance (propagande + avertissement 2 h) : un seul handle, arrêté au démontage.
-    this._console = startConsoleAmbience({
-      propaganda: this.fileSystem?.console?.propaganda,
+    // Propagande d'ambiance : émetteur sur timer, arrêté au démontage.
+    this._propaganda = startPropaganda({
+      pool: this.fileSystem?.console?.propaganda,
       alertLevel: sessionState.alertLevel,
       rng: this.rng
     })
@@ -209,7 +209,7 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener('keydown', this.onKeydown)
-    if (this._console) this._console.stop()
+    if (this._propaganda) this._propaganda.stop()
   },
   methods: {
     normalizePath(path) {

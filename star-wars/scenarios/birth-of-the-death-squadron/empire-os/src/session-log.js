@@ -38,10 +38,6 @@ export function surveillanceText(action, target, labels = DEFAULT_SURVEILLANCE) 
   return target ? `${label} : ${target}` : label
 }
 
-// Début de session : instant de chargement du module (= ouverture de l'OS).
-// Sert d'origine à l'horodatage des entrées (temps écoulé, pas heure murale).
-export const sessionStart = Date.now()
-
 // Journal réactif partagé (singleton d'app) : producteurs → vue découplés.
 export const sessionLog = reactive([])
 
@@ -65,27 +61,3 @@ export function resetLog() {
 
 // Ligne d'amorçage : la console n'est jamais vide au premier coup d'œil.
 export const SESSION_OPEN_TEXT = 'SESSION OUVERTE — SURVEILLANCE ACTIVE.'
-
-// Avertissement de session : au-delà de 2 h d'ouverture, l'OS « signale » la connexion.
-export const SESSION_WARNING_MS = 2 * 60 * 60 * 1000
-export const SESSION_WARNING_TEXT =
-  'DURÉE DE SESSION ANORMALE — CONNEXION SIGNALÉE AU BUREAU DES TRANSMISSIONS.'
-
-/**
- * Programme l'avertissement « > 2 h » : pousse une entrée système (level 'warn')
- * une seule fois, au franchissement du seuil. Renvoie `{ stop }`.
- * @param {number}   opts.thresholdMs seuil (défaut 2 h)
- * @param {string}   opts.text        libellé
- * @param {Function} opts.now         horloge injectable (défaut Date.now)
- */
-export function startSessionWarning({
-  thresholdMs = SESSION_WARNING_MS,
-  text = SESSION_WARNING_TEXT,
-  now = Date.now
-} = {}) {
-  const remaining = Math.max(0, thresholdMs - (now() - sessionStart))
-  const id = setTimeout(() => {
-    pushLog({ kind: 'system', level: 'warn', text })
-  }, remaining)
-  return { stop() { clearTimeout(id) } }
-}
