@@ -76,6 +76,9 @@ npm run fs:editor  # -> http://localhost:5177
   l'invariant à tenir est l'unicité des noms.
 - **Contrôle de synchro en direct** : panneau listant **manquants** (déclarés, absents du disque),
   **orphelins** (présents, non déclarés) et **doublons** de noms ; les nœuds fautifs sont surlignés.
+- **Fichier critique** : marquer un fichier comme **critique** (`isCritical`) à l'ajout, ou via la
+  bascule ☆/✪ (badge « critique ») — les pièces que les PJ doivent télécharger, mises en avant par
+  l'aide de Bafouille.
 - **Messages de propagande** : ajouter / éditer / retirer les slogans (`console.propaganda`) depuis
   le panneau latéral.
 - **Enregistrer** (bouton ou `Ctrl+S`) réécrit `public/file-system.json` directement.
@@ -90,8 +93,15 @@ par le serveur et l'UI pour un diagnostic identique des deux côtés.
   écrans posables, refus possible, `Reset → boot`) ; la console **accumule l'historique** (récent en
   tête). Contenu en donnée (`file-system.json` › `intrusion`).
 - **Horloge de session réglable (MJ)** : le MJ règle une heure de départ (`#/mj`) ; l'horloge
-  **démarre à l'entrée dans EmpireOS** et compte le temps écoulé.
-- *Prérequis live (Supabase `session_state`) : colonnes `intrusion` (text) et `clock_start` (int).*
+  **démarre à l'entrée dans EmpireOS** et l'**heure in-game** horodate les lignes de console.
+- **Onglet Session + déconnexion auto** : le dock affiche heure d'ouverture, temps écoulé, **temps
+  restant avant déconnexion (2 h max)** et niveau d'alerte ; à l'échéance, les joueurs sont **éjectés
+  de l'OS** (écran « SESSION EXPIRÉE ») jusqu'au `Reset` MJ.
+- **Aide de Bafouille** : le MJ déclenche depuis `#/mj` une **popin persistante** (non fermable par
+  les joueurs) listant les fichiers **critiques** à télécharger, avec une voix éditable en donnée
+  (`bafouille.message`).
+- *Prérequis live (Supabase `session_state`) : colonnes `intrusion` (text), `clock_start` (int),
+  `bafouille` (bool).*
 - **Navigation** : chemins relatifs/absolus, `..`, normalisation, prompt unix cohérent
   (`sienar:/user-51394345/home$`).
 - **Multi-disques** : la racine liste les disques (machine locale + disque réseau) ; atterrissage
@@ -109,9 +119,11 @@ par le serveur et l'UI pour un diagnostic identique des deux côtés.
 ## Modèle de données (`file-system.json`)
 
 - Racine : `children` (disques `type: 'disk'` / dossiers `type: 'directory'` / fichiers `type: 'file'`),
-  `defaultPath` (point d'entrée), `session` (`connectionQuality`, `alertLevel`).
+  `defaultPath` (point d'entrée), `session` (`connectionQuality`, `alertLevel`), `bafouille.message`
+  (voix de l'aide Bafouille).
 - Par fichier : `previewMode` (`full` | `summary`), `summary` (accroche), `transferWeight`
-  (poids de durée du transfert, défaut 2 s).
+  (poids de durée du transfert, défaut 2 s), `isCritical` (fichier à télécharger, mis en avant par
+  Bafouille — présent seulement si vrai).
 
 ## Qualité / méthodo
 
