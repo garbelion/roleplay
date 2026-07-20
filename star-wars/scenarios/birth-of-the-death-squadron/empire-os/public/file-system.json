@@ -31,18 +31,57 @@
     "screens": {
       "boot": {
         "lignes": [
+          "Welcome to Sienar Systems Imperial Terminal !",
+          "---",
+          "Have you heard of the last Sienar products coming out ?",
+          "Discover Sienar Fleet Systems' TIE Bomber Xfs now launching proton torpedoes, with up to 12 in stock.",
+          "If it can be bombed what are you waiting for ?",
+          "     .    .     .            +         .         .                 .  . ",
+          "      .                 .                   .               .           ",
+          "              .    ,,o         .                  __.o+.                ",
+          "    .            od8^                  .      oo888888P^b           .   ",
+          "       .       ,'.o'      .     .             `b^'''`b -`b   .          ",
+          "             ,'.'o'             .   .          t. = -`b -`t.    .       ",
+          "            ; d o' .        ___          _.--.. 8  -  `b  =`b           ",
+          "        .  dooo8<       .o:':__;o.     ,;;o88%%8bb - = `b  =`b.    .    ",
+          "    .     |^88^88=. .,x88/::/ | ||`;;;;;;d%%%%%88%88888/%x88888         ",
+          "          :-88=88%%L8`%`|::|_>-<_||%;;%;8%%=;:::=%8;;|%%%%|8888         ",
+          "      .   |=88 88%%|HHHH|::| >-< |||;%;;8%%=;:::=%8;;;%%%%+|]88        .",
+          "          | 88-88%%LL.%.%b::Y_|_Y/%|;;;;`%8%%oo88%:o%.;;;;+|]88  .      ",
+          "          Yx88o88^^'''^^%8boooood..-|H_Hd%P%%88%P^%%^'|;;;/%%88         ",
+          "         . `'|^'          ~'''^''      d%P '''^' ;   = `+' - P          ",
+          "   .        `.`.b   .                :<%%>  .   :  -   d' - P      . .  ",
+          "              .`.b     .        .    `788      ,'-  = d' =.'            ",
+          "       .       ``.b.                           :..-  :'  P              ",
+          "            .   `q.>b         .               `^^^:::::,'       .       ",
+          "    LS            ''^^               .                     .            ",
+          "  .                                           .               .       . ",
+          "    .         .           .                 .        +        .         ",
+          "                    Sienar Fleet Systems' TIE Bomber                    ",
+          "                         Light Space Bomber (2)                         ",
+          "---",
+          "Now available at your local Sienar Fleet Systems Dealership :)", 
+          "---",
           "initialisation du lien subspatial…",
           "recherche d'un relais Impérial ouvert…",
           "station détectée : {station}",
+          "mise en place du protocole de liaison avec les accréditations de sécurité…",
+          "authentification en cours…",
+          "authentification réceptionnée par le réseau, élévation au niveau de sécurité requis…",
+          "enveloppe des messages impériaux standard",
+          "faille CORS toujours non patchée ... amateurs !",
           "en attente d'autorisation…"
         ],
         "banniere": "LIAISON EN COURS — {station}"
       },
       "public_ok": {
         "lignes": [
+          "autorisaton reçue pour le segment public seulement",
+          "analyse du pare-feu séparant le public du réseau interne de la station…",
           "pare-feu périmétrique : contournement en cours…",
           "exploitation du port de maintenance 4471… OK",
-          "élévation de session… OK"
+          "port par défaut ouvert sans filtre de sécurité… bande de branquigoles !",
+          "tentative d'élévation de session depuis l'intérieur du pare-feu…"
         ],
         "banniere": "BIENVENUE SUR LE RÉSEAU IMPÉRIAL PUBLIC DE {station}"
       },
@@ -55,7 +94,11 @@
       },
       "interne_ok": {
         "lignes": [
-          "authentification au segment sécurisé…",
+          "identification en tant que user-51394345 au segment sécurisé…",
+          "méta-données et hash de sécurité… OK",
+          "network-socket handshake demandé…",
+          "handshake rendu, connection ouverte… OK",
+          "transmission du jeton de service falsifié… OK",
           "jeton de service falsifié accepté… OK",
           "énumération des sous-réseaux internes…"
         ],
@@ -71,7 +114,7 @@
       "os_refus": {
         "lignes": [
           "localisation du poste user-51394345…",
-          "verrou de session actif — accès EmpireOS refusé"
+          "verrou de session actif — accès poste user-51394345 refusé"
         ],
         "banniere": "ACCÈS REFUSÉ — POSTE VERROUILLÉ"
       }
