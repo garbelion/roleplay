@@ -8,7 +8,7 @@
         v-for="(item, index) in currentDirectoryItems"
         :key="index"
         class="file-item"
-        :class="{ selected: selectedFiles.includes(index), directory: item.type === 'directory', disk: item.type === 'disk', 'search-match': isSearchMatch(item) }"
+        :class="{ selected: selectedFiles.includes(index), directory: item.type === 'directory', disk: item.type === 'disk', 'search-match': isSearchMatch(item), 'bafouille-critical': isCriticalHighlight(item) }"
         @click="handleItemClick(item, index)"
         @dblclick="handleItemDoubleClick(item)"
       >
@@ -239,6 +239,11 @@ export default {
     },
     isSearchMatch(item) {
       return item.name !== '..' && matches(item.name, this.searchQuery)
+    },
+    // Highlight « aide Bafouille » : les fichiers critiques ressortent tant que le MJ
+    // maintient l'intervention active (pourtour orange rebelle).
+    isCriticalHighlight(item) {
+      return this.sessionState.bafouille && !!item.isCritical
     },
     // Raccourcis : Ctrl/Cmd+F active la recherche (écrase le natif) ; Échap efface la requête.
     onKeydown(event) {
@@ -502,6 +507,12 @@ export default {
 .file-item.disk:hover { background-color: var(--accent-soft); }
 /* Correspondance de recherche : barre d'accent à gauche — DISTINCT de la sélection (fond cyan). */
 .file-item.search-match { box-shadow: inset 3px 0 0 var(--accent); }
+/* Highlight « aide Bafouille » : pourtour orange rebelle + halo, sur les fichiers critiques
+   tant que le MJ maintient l'intervention. Distinct du cyan impérial (allié, pas Empire). */
+.file-item.bafouille-critical {
+  border-color: var(--rebel);
+  box-shadow: 0 0 0 1px var(--rebel), 0 0 10px rgba(242, 130, 42, 0.35);
+}
 
 /* Icône de type (glyphe à gauche du nom) */
 .file-icon {

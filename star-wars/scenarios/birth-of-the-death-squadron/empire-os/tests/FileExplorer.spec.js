@@ -5,6 +5,7 @@ import { saveAs } from "file-saver"
 import FileExplorer from "../src/components/FileExplorer.vue"
 import { OS } from "../src/os-identity.js"
 import { sessionLog, resetLog, surveillanceText, SESSION_OPEN_TEXT } from "../src/session-log.js"
+import { setSessionConfig } from "../src/session-store.js"
 
 // saveAs déclenche un vrai téléchargement navigateur (indisponible en jsdom) ;
 // on le mocke pour capturer le blob ZIP produit et l'inspecter.
@@ -1041,6 +1042,43 @@ describe("FileExplorer.vue - Point 8: Rendu .docx inline (mammoth)", () => {
   })
   // Le routage .docx (full -> inline, sinon résumé « journal verrouillé ») est désormais
   // couvert de façon unitaire dans file-preview.spec.js (fonction pure previewKindFor).
+})
+
+describe("FileExplorer.vue - Highlight des fichiers critiques (aide Bafouille)", () => {
+  const treeWithCritical = {
+    name: 'root', path: '/', type: 'directory', defaultPath: '/Fichiers',
+    children: [{
+      name: 'Fichiers', path: '/Fichiers', type: 'directory',
+      children: [
+        { name: 'plan.md', path: '/Fichiers/plan.md', type: 'file', isCritical: true },
+        { name: 'banal.md', path: '/Fichiers/banal.md', type: 'file' }
+      ]
+    }]
+  }
+  const mountLoaded = async () => {
+    global.fetch = vi.fn((url) => url === '/file-system.json'
+      ? Promise.resolve({ json: () => Promise.resolve(treeWithCritical) })
+      : Promise.resolve({ ok: true, text: () => Promise.resolve('x') }))
+    const wrapper = mount(FileExplorer)
+    await wrapper.vm.loadFileSystem()
+    await wrapper.vm.$nextTick()
+    return wrapper
+  }
+  const itemNamed = (wrapper, name) =>
+    wrapper.findAll('.file-item').find(i => i.text().includes(name))
+
+  it("surligne les fichiers critiques quand l'intervention Bafouille est active", async () => {
+    setSessionConfig({ bafouille: true })
+    const wrapper = await mountLoaded()
+    expect(itemNamed(wrapper, 'plan.md').classes()).toContain('bafouille-critical')
+    expect(itemNamed(wrapper, 'banal.md').classes()).not.toContain('bafouille-critical')
+  })
+
+  it("ne surligne aucun fichier quand l'intervention est inactive", async () => {
+    setSessionConfig({ bafouille: false })
+    const wrapper = await mountLoaded()
+    expect(itemNamed(wrapper, 'plan.md').classes()).not.toContain('bafouille-critical')
+  })
 })
 
 describe("FileExplorer.vue - Tri des entrées (dossiers avant fichiers)", () => {

@@ -287,7 +287,8 @@ Lot de features autour du **temps de session** et de l'**aide au déchiffrement*
    de session écoulé — `pushLog` estampille désormais à `heureMs()`.
 3. ✅ **Onglet Session + déconnexion auto** : `SessionPanel.vue` (ticker 1 s, lit `session-clock`) remplit
    la coquille du dock — **heure d'ouverture** (figée), **temps écoulé**, **temps restant avant
-   déconnexion (2 h)**, **niveau d'alerte**. À l'échéance, `App` **éjecte les joueurs** vers un écran de
+   déconnexion (2 h)**, **niveau d'alerte**, en **cards** (grille `auto-fit` qui se stacke, confortable
+   en wide screen). À l'échéance, `App` **éjecte les joueurs** vers un écran de
    coupure (« SESSION EXPIRÉE ») jusqu'au Reset MJ. *Nettoyage thermo : le seuil 2 h vit désormais dans
    `session-clock` seul ; l'ancien `startSessionWarning` (ancre parallèle) et le wrapper
    `console-ambience` (réduit à un seul émetteur) sont retirés — la propagande est câblée directement.*
@@ -299,8 +300,11 @@ Lot de features autour du **temps de session** et de l'**aide au déchiffrement*
    défaut `false`), **toggle depuis `/mj`** (poussé en Realtime) ; popin persistante `BafouillePopin.vue`
    (**non fermable par les joueurs**) listant les fichiers **critiques** par **chemin calculé**
    (`collectCriticalFiles`, `file-tree.js`) + **voix de Bafouille** éditable en donnée (`bafouille.message`).
-   Rendue **dans l'OS** seulement, pilotée par le store réactif. *Prérequis hors-code : colonne
-   `bafouille` (bool, défaut `false`) dans `session_state`.*
+   Rendue **dans l'OS** seulement, pilotée par le store réactif. **Habillage rebelle** (blanc/orange
+   Alliance, insigne *starbird* stylisé original) — Bafouille n'est pas un ami de l'Empire. En plus de
+   la liste, l'intervention active **surligne les fichiers critiques dans l'OS** (pourtour orange,
+   `.bafouille-critical` dans `FileExplorer`). Palette rebelle canonique dans `index.html :root`
+   (`--rebel*`). *Prérequis hors-code : colonne `bafouille` (bool, défaut `false`) dans `session_state`.*
 
 ## 6. Décisions encore ouvertes
 

@@ -22,6 +22,17 @@ describe("SessionPanel.vue", () => {
     expect(alert.toLowerCase()).toContain("major") // ALERT_LABELS[2]
   })
 
+  it("regroupe les informations en cards (une par indicateur)", () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(1_000_000)
+    startSessionClock(52_200, Date.now())
+    const wrapper = mount(SessionPanel, { props: { alertLevel: 0 } })
+    // Un card par indicateur : ouverture, écoulé, restant, alerte.
+    expect(wrapper.findAll(".session-card")).toHaveLength(4)
+    // Chaque indicateur nommé est bien porté par un card.
+    expect(wrapper.find(".session-opening").classes()).toContain("session-card")
+  })
+
   it("fait vivre le temps écoulé et le temps restant à la seconde", async () => {
     vi.useFakeTimers()
     vi.setSystemTime(1_000_000)

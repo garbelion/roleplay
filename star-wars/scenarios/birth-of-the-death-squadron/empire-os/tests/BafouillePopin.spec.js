@@ -22,6 +22,13 @@ describe("BafouillePopin.vue", () => {
     expect(items[0].text()).toContain("/user-51394345/home/liste_cibles.md")
   })
 
+  it("arbore un logo starbird (allégeance rebelle, pas l'Empire)", () => {
+    const wrapper = mount(BafouillePopin, { props: { files: FILES } })
+    expect(wrapper.find("svg.bafouille-starbird").exists()).toBe(true)
+    // Reste sans bouton (persistante) même avec le logo SVG.
+    expect(wrapper.find("button").exists()).toBe(false)
+  })
+
   it("est persistante : aucun bouton de fermeture côté joueur", () => {
     const wrapper = mount(BafouillePopin, { props: { files: FILES } })
     expect(wrapper.find(".bafouille-close").exists()).toBe(false)

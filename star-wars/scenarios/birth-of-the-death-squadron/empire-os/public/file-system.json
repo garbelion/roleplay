@@ -63,7 +63,7 @@
           "                    Sienar Fleet Systems' TIE Bomber                    ",
           "                         Light Space Bomber (2)                         ",
           "---",
-          "Now available at your local Sienar Fleet Systems Dealership :)", 
+          "Now available at your local Sienar Fleet Systems Dealership :)",
           "---",
           "initialisation du lien subspatial…",
           "recherche d'un relais Impérial ouvert…",
@@ -150,15 +150,18 @@
               "children": [
                 {
                   "name": "executor_chantier.jpg",
-                  "type": "file"
+                  "type": "file",
+                  "isCritical": true
                 },
                 {
                   "name": "flotte_escorte.webp",
-                  "type": "file"
+                  "type": "file",
+                  "isCritical": true
                 },
                 {
                   "name": "destroyer_orbite.webp",
-                  "type": "file"
+                  "type": "file",
+                  "isCritical": true
                 }
               ]
             }
@@ -209,7 +212,8 @@
               "name": "journal_transmissions.md",
               "type": "file",
               "previewMode": "summary",
-              "summary": "Journal des transmissions du poste — 214 entrées clients. Deux colonnes (message, destinataire) apparaissent illisibles : données chiffrées."
+              "summary": "Journal des transmissions du poste — 214 entrées clients. Deux colonnes (message, destinataire) apparaissent illisibles : données chiffrées.",
+              "isCritical": true
             }
           ]
         },
