@@ -8,6 +8,8 @@
         <span class="intrusion-meta">{{ OS.version }} · {{ OS.build }}</span>
         <span class="intrusion-tt">console d'accès<template v-if="station"> — {{ station }}</template></span>
       </div>
+      <!-- Fin de session (expiration / connexion perdue) : bannière d'erreur en tête, cause affichée. -->
+      <div v-if="errorReason" class="intrusion-error" role="alert">{{ errorText }}</div>
       <!-- Une seule console qui accumule l'historique, le plus récent en tête (anti-chronologique). -->
       <div class="intrusion-console">
         <div
@@ -37,6 +39,9 @@ export default {
   name: "IntrusionShell",
   props: {
     intrusion: { type: Object, default: null },
+    // Cause d'une fin de session ('expired' | 'lost') : affiche une bannière d'erreur et
+    // ramène l'écran au boot, quelle que soit l'intrusion partagée.
+    errorReason: { type: String, default: "" },
   },
   data() {
     // `entries` : un bloc par transition d'état (historique conservé). `revealed` ne
@@ -44,7 +49,13 @@ export default {
     return { OS, sessionState, entries: [], revealed: 0 }
   },
   computed: {
-    state() { return this.sessionState.intrusion },
+    // Une fin de session force l'écran de boot (retour à la case départ) ; sinon l'écran partagé.
+    state() { return this.errorReason ? "boot" : this.sessionState.intrusion },
+    errorText() {
+      if (this.errorReason === "lost") return "CONNEXION PERDUE — LIAISON INTERROMPUE"
+      if (this.errorReason === "expired") return "SESSION EXPIRÉE — DURÉE MAXIMALE DÉPASSÉE"
+      return ""
+    },
     station() { return this.intrusion?.station || "" },
     blocks() {
       const last = this.entries.length - 1
@@ -145,6 +156,19 @@ export default {
 .intrusion-name { font-weight: bold; text-transform: uppercase; color: var(--ink); }
 .intrusion-meta { color: var(--ink-dim); }
 .intrusion-tt { margin-left: auto; text-transform: uppercase; color: var(--ink-dim); }
+/* Bannière de fin de session : rouge impérial, pleine largeur, en tête de la fenêtre. */
+.intrusion-error {
+  flex: none;
+  padding: 8px 14px;
+  background: rgba(207, 75, 69, 0.12);
+  border-bottom: 1px solid var(--danger);
+  color: var(--danger);
+  font-weight: bold;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+}
 /* Corps : la console qui accumule et défile (le plus récent en tête). */
 .intrusion-console {
   flex: 1;

@@ -730,6 +730,25 @@ describe("FileExplorer.vue - Point 4: Téléchargement binaire (blob)", () => {
     const bytes = await zip.file(name).async('uint8array')
     expect(Array.from(bytes)).toEqual(Array.from(originalBytes))
   })
+
+  it("avorte le téléchargement en cours au démontage (fin de session) : pas de saveAs", async () => {
+    saveAs.mockClear()
+    global.fetch = vi.fn((url) => url === '/file-system.json'
+      ? Promise.resolve({ json: () => Promise.resolve(mockFileSystem) })
+      : Promise.resolve({ ok: true, blob: () => Promise.resolve(new Blob(['x'])) }))
+
+    vi.useFakeTimers()
+    await wrapper.vm.loadFileSystem()
+    wrapper.vm.rng = () => 0.5
+    wrapper.vm.selectedFiles = [1]
+    wrapper.vm.downloadSelectedFiles() // transfert lancé (popin d'attente)
+
+    wrapper.unmount() // fin de session : l'OS est démonté avant complétion
+    await vi.advanceTimersByTimeAsync(60000)
+    vi.useRealTimers()
+
+    expect(saveAs).not.toHaveBeenCalled() // le téléchargement entamé est perdu
+  })
 })
 
 describe("FileExplorer.vue - Nom de fichier long", () => {

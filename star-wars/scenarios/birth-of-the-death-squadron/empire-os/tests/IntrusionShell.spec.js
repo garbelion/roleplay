@@ -78,4 +78,25 @@ describe("IntrusionShell.vue", () => {
     setSessionConfig({ intrusion: "public_ok" })
     expect(mountShell().find(".intrusion-block").classes()).not.toContain("refus")
   })
+
+  it("errorReason 'lost' : bannière d'erreur « connexion perdue » et écran forcé à boot", () => {
+    setSessionConfig({ intrusion: "os" }) // état partagé quelconque au moment de la fin
+    const wrapper = mount(IntrusionShell, { props: { intrusion: FIXTURE, errorReason: "lost" } })
+    const err = wrapper.find(".intrusion-error")
+    expect(err.exists()).toBe(true)
+    expect(err.text().toLowerCase()).toContain("connexion perdue")
+    // malgré intrusion=os, on retombe sur l'écran de boot
+    expect(wrapper.find(".intrusion-block").attributes("data-state")).toBe("boot")
+  })
+
+  it("errorReason 'expired' : bannière « session expirée »", () => {
+    setSessionConfig({ intrusion: "os" })
+    const err = mount(IntrusionShell, { props: { intrusion: FIXTURE, errorReason: "expired" } }).find(".intrusion-error")
+    expect(err.text().toLowerCase()).toContain("session expirée")
+  })
+
+  it("sans errorReason, aucune bannière d'erreur", () => {
+    setSessionConfig({ intrusion: "boot" })
+    expect(mountShell().find(".intrusion-error").exists()).toBe(false)
+  })
 })

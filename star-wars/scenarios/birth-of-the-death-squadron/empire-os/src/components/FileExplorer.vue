@@ -183,6 +183,9 @@ export default {
   beforeUnmount() {
     window.removeEventListener('keydown', this.onKeydown)
     if (this._propaganda) this._propaganda.stop()
+    // Fin de session (expiration / connexion perdue) => l'OS est démonté : le téléchargement
+    // en cours est perdu (transfert avorté). Tant que la connexion tient, rien ne l'interrompt.
+    if (this._transfer) this._transfer.cancel()
   },
   methods: {
     normalizePath(path) {

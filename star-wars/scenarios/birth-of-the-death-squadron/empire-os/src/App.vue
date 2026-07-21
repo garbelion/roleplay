@@ -6,16 +6,10 @@
        (évite un replay du défilement d'intrusion au refresh). -->
   <div v-else-if="!booted" class="os-boot" aria-live="polite">CONNEXION AU RÉSEAU IMPÉRIAL…</div>
 
-  <!-- Déconnexion auto : la session a dépassé sa durée max (2 h) — les joueurs sont éjectés
-       de l'OS. Écran de coupure jusqu'au Reset MJ (qui ramène au shell d'intrusion). -->
-  <div v-else-if="disconnected" class="os-disconnected" aria-live="polite">
-    <span class="os-disconnected-logo" aria-hidden="true">#</span>
-    <p class="os-disconnected-title">SESSION EXPIRÉE</p>
-    <p class="os-disconnected-msg">CONNEXION INTERROMPUE — DURÉE MAXIMALE DÉPASSÉE.</p>
-  </div>
-
-  <!-- Phase d'intrusion (avant l'accès OS) : shell plein écran piloté par le MJ. -->
-  <IntrusionShell v-else-if="!showOs" :intrusion="fileSystem && fileSystem.intrusion" />
+  <!-- Phase d'intrusion (avant l'accès OS) — ET écran de repli en fin de session : quand la
+       session se termine (expiration ou connexion perdue), on retombe ici, l'écran forcé au boot
+       avec une bannière d'erreur (cause = endReason). -->
+  <IntrusionShell v-else-if="!showOs" :intrusion="fileSystem && fileSystem.intrusion" :error-reason="endReason" />
 
   <div v-else class="dos-window">
     <!-- Filigrane décoratif : logo impérial (Star Jedi) estompé en fond de l'OS. -->
@@ -80,7 +74,7 @@ import { notifications, dismiss } from "./notifications.js";
 import { sessionState, setSessionConfig } from "./session-store.js";
 import { startSessionClock, resetSessionClock, heureMs, isSessionExpired, formatSessionTime } from "./session-clock.js";
 import { ALERT_LABELS } from "./transfer-duration.js";
-import { connectionChangeKind } from "./connection.js";
+import { connectionChangeKind, isConnectionLost } from "./connection.js";
 import { pushLog } from "./session-log.js";
 
 // Routage minimal par hash : #/mj => back-office MJ, sinon l'OS joueur.
@@ -93,10 +87,13 @@ const isMj = computed(() => route.value === "#/mj");
 // bascule intrusion <-> OS), puis route selon l'écran d'intrusion courant.
 const fileSystem = ref(null);
 const booted = ref(false);
-const showOs = computed(() => sessionState.intrusion === "os");
-// Déconnexion auto : vrai une fois la durée max de session atteinte pendant qu'on est dans l'OS.
+// Fin de session : latch d'expiration (durée max atteinte) OU connexion perdue (qualité 'perdue').
+// `endReason` alimente la bannière d'erreur du shell de repli ; il coupe l'accès OS.
 const expired = ref(false);
-const disconnected = computed(() => showOs.value && expired.value);
+const endReason = computed(() =>
+  isConnectionLost(sessionState.connectionQuality) ? "lost" : expired.value ? "expired" : ""
+);
+const showOs = computed(() => sessionState.intrusion === "os" && !endReason.value);
 let remote = null;
 
 // Gate d'amorçage : on borne l'attente du premier settle pour ne jamais bloquer le boot.
@@ -141,12 +138,17 @@ function tickClock() {
   if (isSessionExpired()) expired.value = true;
 }
 watch(showOs, (on) => {
-  // L'entrée pose l'ancre et repart d'une session « fraîche » ; la sortie / le Reset la libère.
-  if (on) startSessionClock(sessionState.clockStart, Date.now());
+  // L'entrée pose l'ancre et repart d'une session « fraîche » (expiration purgée) ; la sortie
+  // libère l'ancre. On ne purge PAS `expired` en sortie : sinon l'expiration se dé-latcherait
+  // aussitôt (showOs redeviendrait vrai). Le latch se lève au Reset (intrusion -> boot).
+  if (on) { startSessionClock(sessionState.clockStart, Date.now()); expired.value = false; }
   else resetSessionClock();
-  expired.value = false;
   tickClock();
 }, { immediate: true });
+
+// Le Reset MJ (intrusion repassée à 'boot') lève le latch d'expiration : le shell de repli
+// redevient un boot normal (la connexion perdue, elle, se lève quand la qualité remonte).
+watch(() => sessionState.intrusion, (state) => { if (state === "boot") expired.value = false; });
 
 let timer;
 onMounted(async () => {
@@ -178,23 +180,6 @@ const closeTerminal = () => {
 </script>
 
 <style scoped>
-/* Écran de déconnexion auto (durée de session dépassée) : coupure froide, centrée. */
-.os-disconnected {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  background: var(--bg);
-  color: var(--danger);
-  text-align: center;
-  padding: 4vmin;
-}
-.os-disconnected-logo { font-family: 'Star Jedi', monospace; font-size: 18vmin; line-height: 1; opacity: 0.5; }
-.os-disconnected-title { font-size: 20px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
-.os-disconnected-msg { font-size: 13px; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 1px; margin: 0; }
-
 .dos-window {
   position: relative; /* ancre l'overlay de notifications */
   height: 100%;

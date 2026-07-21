@@ -138,7 +138,7 @@ describe("App.vue - Skin / chrome impérial (dans l'OS)", () => {
     }
   })
 
-  it("déconnecte automatiquement les joueurs de l'OS au bout de 2 h", async () => {
+  it("à 2 h, éjecte les joueurs vers le shell de boot avec une bannière « session expirée »", async () => {
     vi.useFakeTimers()
     try {
       vi.setSystemTime(new Date(2026, 0, 1, 10, 0, 0))
@@ -146,18 +146,28 @@ describe("App.vue - Skin / chrome impérial (dans l'OS)", () => {
       const wrapper = mount(App)
       await flushPromises()
       expect(wrapper.find(".dos-title-bar").exists()).toBe(true)
-      expect(wrapper.find(".os-disconnected").exists()).toBe(false)
+      expect(wrapper.find(".intrusion-error").exists()).toBe(false)
 
       vi.advanceTimersByTime(2 * 3600 * 1000) // durée max atteinte
       await wrapper.vm.$nextTick()
-      expect(wrapper.find(".os-disconnected").exists()).toBe(true)
       expect(wrapper.find(".dos-title-bar").exists()).toBe(false) // OS masqué
+      expect(wrapper.findComponent(IntrusionShell).exists()).toBe(true)
+      expect(wrapper.find(".intrusion-error").text().toLowerCase()).toContain("session expirée")
     } finally {
       vi.useRealTimers()
     }
   })
 
-  it("un Reset MJ (intrusion→boot) ramène au shell d'intrusion après la déconnexion auto", async () => {
+  it("connexion perdue : éjecte vers le shell de boot avec une bannière « connexion perdue »", async () => {
+    const wrapper = await mountOs()
+    expect(wrapper.find(".dos-title-bar").exists()).toBe(true)
+    setSessionConfig({ connectionQuality: "perdue" })
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find(".dos-title-bar").exists()).toBe(false)
+    expect(wrapper.find(".intrusion-error").text().toLowerCase()).toContain("connexion perdue")
+  })
+
+  it("un Reset MJ (intrusion→boot) lève l'expiration et ramène à un boot normal", async () => {
     vi.useFakeTimers()
     try {
       vi.setSystemTime(new Date(2026, 0, 1, 10, 0, 0))
@@ -166,11 +176,11 @@ describe("App.vue - Skin / chrome impérial (dans l'OS)", () => {
       await flushPromises()
       vi.advanceTimersByTime(2 * 3600 * 1000)
       await wrapper.vm.$nextTick()
-      expect(wrapper.find(".os-disconnected").exists()).toBe(true)
+      expect(wrapper.find(".intrusion-error").exists()).toBe(true)
 
       setSessionConfig({ intrusion: "boot" }) // Reset MJ
       await wrapper.vm.$nextTick()
-      expect(wrapper.find(".os-disconnected").exists()).toBe(false)
+      expect(wrapper.find(".intrusion-error").exists()).toBe(false) // latch levé
       expect(wrapper.findComponent(IntrusionShell).exists()).toBe(true)
     } finally {
       vi.useRealTimers()

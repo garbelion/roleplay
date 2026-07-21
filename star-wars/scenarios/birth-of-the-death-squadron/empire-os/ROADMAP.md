@@ -332,9 +332,12 @@ partir de *sous* « bonne » ; « perdue » = fin de session.
 4. ✅ **Overlay glitch (`ConnectionGlitch.vue`)** : statique/scanlines/décalage d'intensité croissante
    (moyenne→1, faible→2, critique→3), rien à bonne+ ; à **critique**, couche d'interruption qui capte
    le clic par intermittence. Live via le store.
-5. **Fin de session unifiée** : `endReason` (expiration locale **ou** connexion perdue) → retour au shell
-   de boot + bannière d'erreur (cause) ; remplace l'écran `os-disconnected` ; le transfert en cours est
-   **avorté** (téléchargement perdu) au démontage de l'OS.
+5. ✅ **Fin de session unifiée** : `endReason` (latch d'expiration **ou** connexion `perdue`) coupe
+   l'accès OS → retour au **shell de boot** avec **bannière d'erreur** (cause) via
+   `IntrusionShell :error-reason` (force l'écran boot). Remplace l'écran `os-disconnected`. Le latch
+   d'expiration se lève au Reset (`intrusion → boot`), la connexion perdue quand la qualité remonte.
+   `FileExplorer` **avorte le transfert en cours** à son démontage (téléchargement perdu ; rien ne
+   l'interrompt tant que la connexion tient).
 6. **Reset complet MJ** : « Reset → boot » repose tous les paramètres de session à leurs défauts.
 7. **MJ « Phase de recherche »** : regrouper connexion + alerte + Bafouille dans une section dédiée.
 8. **Fix popin Bafouille** : couper l'intervention depuis `/mj` doit masquer la popin.
