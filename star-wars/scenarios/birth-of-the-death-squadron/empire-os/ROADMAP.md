@@ -308,7 +308,7 @@ Lot de features autour du **temps de session** et de l'**aide au déchiffrement*
    `navigator.clipboard`). Palette rebelle canonique dans `index.html :root`
    (`--rebel*`). *Prérequis hors-code : colonne `bafouille` (bool, défaut `false`) dans `session_state`.*
 
-### 5.7 — Qualité de liaison & fin de session *(en cours)*
+### 5.7 — Qualité de liaison & fin de session *(livré)*
 La **qualité de connexion** (jusqu'ici simple facteur de durée de transfert) devient un **paramètre
 narratif** visible : perturbations d'affichage, journal des changements, et un niveau terminal
 **« perdue »** qui met fin à la session.
@@ -348,8 +348,8 @@ partir de *sous* « bonne » ; « perdue » = fin de session.
    renvoyait `bafouille: undefined`, `setSessionConfig` le sautait, la popin restait. Fix : `onChange`
    **relit la ligne complète** (`fetchState`) à chaque notification (source autoritative), robuste aux
    charges partielles.
-9. **`.docx` de démo** : un vrai document (titres/gras/liste/tableau) dans le file-system pour juger le
-   rendu mammoth.
+9. ✅ **`.docx` de démo** : `public/fichiers/note_technique.docx` (titres H1/H2, gras, italique, tableau
+   bordé) sur le disque `srv-data`, `previewMode:'full'` → rendu inline mammoth vérifié.
 
 ## 6. Décisions encore ouvertes
 

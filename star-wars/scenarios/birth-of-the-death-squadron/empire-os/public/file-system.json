@@ -227,7 +227,13 @@
     {
       "name": "srv-data",
       "type": "disk",
-      "children": []
+      "children": [
+        {
+          "name": "note_technique.docx",
+          "type": "file",
+          "previewMode": "full"
+        }
+      ]
     },
     {
       "name": "srv-tools",
