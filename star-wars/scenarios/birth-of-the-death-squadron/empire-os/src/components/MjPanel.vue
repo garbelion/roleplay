@@ -17,25 +17,6 @@
 
     <!-- Authentifié : réglages en direct -->
     <div v-else class="mj-authed">
-      <form class="mj-controls" @submit.prevent="onApply">
-        <label class="mj-field">Qualité de connexion
-          <select v-model="connectionQuality" class="mj-input mj-connection">
-            <option v-for="q in connections" :key="q" :value="q">{{ q }}</option>
-          </select>
-        </label>
-        <label class="mj-field">Niveau d'alerte
-          <select v-model.number="alertLevel" class="mj-input mj-alert">
-            <option v-for="(label, i) in alertLabels" :key="i" :value="i">{{ i }} — {{ label }}</option>
-          </select>
-        </label>
-        <label class="mj-field">Heure de session (départ, démarre à l'entrée dans l'OS)
-          <input v-model="clockHms" type="time" step="1" class="mj-input mj-clock" />
-        </label>
-        <button type="submit" class="mj-btn" :disabled="busy">Appliquer</button>
-        <p v-if="applied" class="mj-ok">Réglages appliqués.</p>
-        <p v-if="error" class="mj-error">{{ error }}</p>
-      </form>
-
       <!-- Phase d'intrusion : chaque bouton pose l'écran vu par les joueurs (contrôle libre). -->
       <section class="mj-intrusion">
         <h2 class="mj-subtitle">Phase d'intrusion</h2>
@@ -51,13 +32,34 @@
             @click="setIntrusion(s.state)"
           >{{ s.label }}</button>
         </div>
-        <button type="button" class="mj-btn mj-reset" :disabled="busy" @click="setIntrusion('boot')">⟲ Reset → boot</button>
+        <button type="button" class="mj-btn mj-reset" :disabled="busy" @click="resetSession">⟲ Reset → boot (session)</button>
         <p v-if="intrusionError" class="mj-error">{{ intrusionError }}</p>
       </section>
 
-      <!-- Aide de Bafouille : bascule l'affichage de la popin persistante côté joueurs. -->
-      <section class="mj-bafouille">
-        <h2 class="mj-subtitle">Aide de Bafouille</h2>
+      <!-- Phase de recherche : les leviers narratifs une fois les joueurs DANS l'OS —
+           qualité de liaison, niveau d'alerte, heure de session et aide de Bafouille. -->
+      <section class="mj-recherche">
+        <h2 class="mj-subtitle">Phase de recherche</h2>
+        <form class="mj-controls" @submit.prevent="onApply">
+          <label class="mj-field">Qualité de connexion
+            <select v-model="connectionQuality" class="mj-input mj-connection">
+              <option v-for="q in connections" :key="q" :value="q">{{ q }}</option>
+            </select>
+          </label>
+          <label class="mj-field">Niveau d'alerte
+            <select v-model.number="alertLevel" class="mj-input mj-alert">
+              <option v-for="(label, i) in alertLabels" :key="i" :value="i">{{ i }} — {{ label }}</option>
+            </select>
+          </label>
+          <label class="mj-field">Heure de session (départ, démarre à l'entrée dans l'OS)
+            <input v-model="clockHms" type="time" step="1" class="mj-input mj-clock" />
+          </label>
+          <button type="submit" class="mj-btn" :disabled="busy">Appliquer</button>
+          <p v-if="applied" class="mj-ok">Réglages appliqués.</p>
+          <p v-if="error" class="mj-error">{{ error }}</p>
+        </form>
+
+        <!-- Aide de Bafouille : bascule l'affichage de la popin persistante côté joueurs. -->
         <button
           type="button"
           class="mj-btn mj-bafouille-btn"
@@ -72,11 +74,16 @@
 
 <script>
 import { OS } from '../os-identity.js';
-import { ALERT_LABELS, CONNECTION_FACTORS } from '../transfer-duration.js';
+import { ALERT_LABELS } from '../transfer-duration.js';
+import { CONNECTION_LEVELS } from '../connection.js';
 import { INTRUSION_SCREENS, isRefus } from '../intrusion.js';
 import { formatSessionTime } from '../session-clock.js';
 
 const UPDATE_ERR = 'Échec de la mise à jour.';
+
+// Reset complet de session : repart d'une base propre pour une nouvelle tentative. Sinon un
+// « connexion perdue » ou une expiration relancerait la fin de session à la ré-entrée.
+const SESSION_RESET = { intrusion: 'boot', connectionQuality: 'bonne', alertLevel: 0, bafouille: false, clockStart: 0 };
 
 export default {
   name: 'MjPanel',
@@ -88,7 +95,7 @@ export default {
     return {
       OS,
       alertLabels: ALERT_LABELS,
-      connections: Object.keys(CONNECTION_FACTORS),
+      connections: CONNECTION_LEVELS,
       intrusionScreens: INTRUSION_SCREENS,
       authed: false,
       busy: false,
@@ -168,6 +175,21 @@ export default {
         this.bafouille = next;
       } catch (e) {
         this.error = e?.message || UPDATE_ERR;
+      }
+    },
+    // Reset complet : repose intrusion=boot + tous les paramètres de session à leurs défauts,
+    // et réaligne le formulaire local.
+    async resetSession() {
+      this.intrusionError = '';
+      try {
+        await this.withBusy(() => this.ops.updateState({ ...SESSION_RESET }));
+        this.currentIntrusion = SESSION_RESET.intrusion;
+        this.connectionQuality = SESSION_RESET.connectionQuality;
+        this.alertLevel = SESSION_RESET.alertLevel;
+        this.bafouille = SESSION_RESET.bafouille;
+        this.clockHms = this.secondsToHms(SESSION_RESET.clockStart);
+      } catch (e) {
+        this.intrusionError = e?.message || UPDATE_ERR;
       }
     },
     // Contrôle libre : chaque clic pousse l'écran choisi (le refus est un écran de repos).
@@ -251,7 +273,7 @@ export default {
 .mj-reset { align-self: flex-start; }
 
 /* Aide de Bafouille : bascule; l'état actif est marqué en accent plein. */
-.mj-bafouille { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line); padding-top: 16px; }
+.mj-recherche { display: flex; flex-direction: column; gap: 16px; border-top: 1px solid var(--line); padding-top: 16px; }
 .mj-bafouille-btn { align-self: flex-start; }
 .mj-bafouille-btn.active { background: var(--accent); color: var(--bg); }
 </style>

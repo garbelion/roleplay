@@ -338,8 +338,11 @@ partir de *sous* « bonne » ; « perdue » = fin de session.
    d'expiration se lève au Reset (`intrusion → boot`), la connexion perdue quand la qualité remonte.
    `FileExplorer` **avorte le transfert en cours** à son démontage (téléchargement perdu ; rien ne
    l'interrompt tant que la connexion tient).
-6. **Reset complet MJ** : « Reset → boot » repose tous les paramètres de session à leurs défauts.
-7. **MJ « Phase de recherche »** : regrouper connexion + alerte + Bafouille dans une section dédiée.
+6. ✅ **Reset complet MJ** : « Reset → boot (session) » repose intrusion=boot + connexion=bonne +
+   alerte=0 + Bafouille=off + horloge=0 (via `SESSION_RESET`). Le sélecteur de connexion MJ liste
+   désormais les 6 niveaux (`CONNECTION_LEVELS`), **« perdue » incluse** (déclenche la fin de session).
+7. ✅ **MJ « Phase de recherche »** : `MjPanel` réorganisé en deux sections — **Phase d'intrusion**
+   (écrans + reset) et **Phase de recherche** (connexion + alerte + heure + aide Bafouille).
 8. **Fix popin Bafouille** : couper l'intervention depuis `/mj` doit masquer la popin.
 9. **`.docx` de démo** : un vrai document (titres/gras/liste/tableau) dans le file-system pour juger le
    rendu mammoth.

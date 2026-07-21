@@ -118,12 +118,34 @@ describe("MjPanel.vue", () => {
     expect(ops.updateState).toHaveBeenCalledWith({ intrusion: "interne_ok" })
   })
 
-  it("le bouton Reset repose l'état d'intrusion sur boot", async () => {
+  it("le bouton Reset repose TOUTE la session à ses défauts (base propre)", async () => {
     const ops = fakeOps()
     const wrapper = await login(ops)
     await wrapper.find(".mj-reset").trigger("click")
     await flushPromises()
-    expect(ops.updateState).toHaveBeenCalledWith({ intrusion: "boot" })
+    expect(ops.updateState).toHaveBeenCalledWith({
+      intrusion: "boot",
+      connectionQuality: "bonne",
+      alertLevel: 0,
+      bafouille: false,
+      clockStart: 0,
+    })
+  })
+
+  it("regroupe connexion, alerte et Bafouille dans une section « Phase de recherche »", async () => {
+    const wrapper = await login(fakeOps())
+    const zone = wrapper.find(".mj-recherche")
+    expect(zone.exists()).toBe(true)
+    expect(zone.text().toLowerCase()).toContain("phase de recherche")
+    expect(zone.find("select.mj-connection").exists()).toBe(true)
+    expect(zone.find("select.mj-alert").exists()).toBe(true)
+    expect(zone.find(".mj-bafouille-btn").exists()).toBe(true)
+  })
+
+  it("permet de régler la qualité de liaison sur « perdue » (fin de session)", async () => {
+    const wrapper = await login(fakeOps())
+    const options = wrapper.findAll("select.mj-connection option").map(o => o.element.value)
+    expect(options).toContain("perdue")
   })
 
   it("propose une bascule d'intervention Bafouille et pousse l'état via updateState", async () => {
