@@ -5,6 +5,7 @@ import IntrusionShell from "../src/components/IntrusionShell.vue"
 import { OS } from "../src/os-identity.js"
 import { notify } from "../src/notifications.js"
 import { setSessionConfig, sessionState } from "../src/session-store.js"
+import { sessionLog } from "../src/session-log.js"
 
 const mockFS = { name: "root", path: "/", type: "directory", children: [] }
 
@@ -220,6 +221,17 @@ describe("App.vue - Skin / chrome impérial (dans l'OS)", () => {
     setSessionConfig({ bafouille: false })
     await wrapper.vm.$nextTick()
     expect(wrapper.find(".bafouille-popin").exists()).toBe(false)
+  })
+
+  it("journalise en console les changements de qualité de liaison (dégradation / amélioration)", async () => {
+    const wrapper = await mountOs() // connectionQuality par défaut = 'moyenne'
+    setSessionConfig({ connectionQuality: "faible" }) // moyenne -> faible : dégradation
+    await wrapper.vm.$nextTick()
+    expect(sessionLog.some(e => e.text.includes("DÉGRADÉE") && e.text.includes("FAIBLE"))).toBe(true)
+
+    setSessionConfig({ connectionQuality: "bonne" }) // faible -> bonne : amélioration
+    await wrapper.vm.$nextTick()
+    expect(sessionLog.some(e => e.text.includes("RÉTABLIE") && e.text.includes("BONNE"))).toBe(true)
   })
 
   it("affiche une notification à l'écran pour un message non-surveillance", async () => {

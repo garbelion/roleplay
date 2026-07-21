@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach, vi } from "vitest"
 import { mount } from "@vue/test-utils"
 import SessionPanel from "../src/components/SessionPanel.vue"
 import { startSessionClock } from "../src/session-clock.js"
+import { setSessionConfig } from "../src/session-store.js"
 
 // (resetSessionClock est appelé globalement par tests/setup.js après chaque test.)
 
@@ -27,10 +28,16 @@ describe("SessionPanel.vue", () => {
     vi.setSystemTime(1_000_000)
     startSessionClock(52_200, Date.now())
     const wrapper = mount(SessionPanel, { props: { alertLevel: 0 } })
-    // Un card par indicateur : ouverture, écoulé, restant, alerte.
-    expect(wrapper.findAll(".session-card")).toHaveLength(4)
+    // Un card par indicateur : ouverture, écoulé, restant, alerte, qualité de liaison.
+    expect(wrapper.findAll(".session-card")).toHaveLength(5)
     // Chaque indicateur nommé est bien porté par un card.
     expect(wrapper.find(".session-opening").classes()).toContain("session-card")
+  })
+
+  it("affiche la qualité de liaison courante (donnée de session)", () => {
+    setSessionConfig({ connectionQuality: "faible" })
+    const wrapper = mount(SessionPanel, { props: { alertLevel: 0 } })
+    expect(wrapper.find(".session-connection").text().toLowerCase()).toContain("faible")
   })
 
   it("fait vivre le temps écoulé et le temps restant à la seconde", async () => {

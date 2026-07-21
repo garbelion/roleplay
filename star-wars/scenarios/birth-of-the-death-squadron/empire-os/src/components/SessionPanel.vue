@@ -18,6 +18,10 @@
       <dt>Niveau d'alerte</dt>
       <dd>{{ alertLevel }} — {{ alertLabel }}</dd>
     </div>
+    <div class="session-card session-connection" :class="`glitch-${glitch}`">
+      <dt>Qualité de liaison</dt>
+      <dd>{{ connectionQuality }}</dd>
+    </div>
   </dl>
 </template>
 
@@ -29,6 +33,8 @@ import {
   formatSessionTime,
 } from "../session-clock.js"
 import { ALERT_LABELS } from "../transfer-duration.js"
+import { sessionState } from "../session-store.js"
+import { glitchLevel } from "../connection.js"
 
 export default {
   name: "SessionPanel",
@@ -38,11 +44,18 @@ export default {
   },
   data() {
     // `now` : horloge locale rafraîchie à la seconde, moteur des durées vivantes.
-    return { now: Date.now(), openingHeureMs, sessionElapsedMs, sessionRemainingMs }
+    return { now: Date.now(), sessionState, openingHeureMs, sessionElapsedMs, sessionRemainingMs }
   },
   computed: {
     alertLabel() {
       return (ALERT_LABELS[this.alertLevel] || "").toUpperCase()
+    },
+    connectionQuality() {
+      return this.sessionState.connectionQuality
+    },
+    // Intensité de dégradation (0..3) : teinte la card comme les glitches de l'OS.
+    glitch() {
+      return glitchLevel(this.connectionQuality)
     },
   },
   created() {
@@ -90,4 +103,11 @@ export default {
 .session-alert.alert-4 dd,
 .session-alert.alert-5 dd { color: var(--danger); font-weight: bold; }
 .session-alert.alert-4, .session-alert.alert-5 { border-left-color: var(--danger); }
+/* Qualité de liaison : capitalisée, teintée selon l'intensité de dégradation (glitch). */
+.session-connection dd { text-transform: capitalize; }
+.session-connection.glitch-1 { border-left-color: #cf9b45; }
+.session-connection.glitch-2 { border-left-color: #cf7b45; }
+.session-connection.glitch-2 dd { color: #cf7b45; }
+.session-connection.glitch-3 { border-left-color: var(--danger); }
+.session-connection.glitch-3 dd { color: var(--danger); font-weight: bold; }
 </style>

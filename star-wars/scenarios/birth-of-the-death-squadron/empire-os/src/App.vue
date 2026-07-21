@@ -41,6 +41,9 @@
       <span class="status-licence">LICENCE : {{ OS.licensee }}</span>
     </div>
 
+    <!-- Perturbations d'affichage selon la qualité de liaison (statique / glitch). -->
+    <ConnectionGlitch />
+
     <!-- Aide de Bafouille (MJ) : popin persistante des fichiers critiques à télécharger. -->
     <BafouillePopin v-if="showBafouille" :files="criticalFiles" :message="bafouilleMessage" />
 
@@ -68,6 +71,7 @@ import FileExplorer from "./components/FileExplorer.vue";
 import IntrusionShell from "./components/IntrusionShell.vue";
 import MjPanel from "./components/MjPanel.vue";
 import BafouillePopin from "./components/BafouillePopin.vue";
+import ConnectionGlitch from "./components/ConnectionGlitch.vue";
 import { collectCriticalFiles } from "./file-tree.js";
 import { createMjOpsFromConfig } from "./supabase-mj.js";
 import { connectSupabaseSession } from "./supabase-source.js";
@@ -76,6 +80,8 @@ import { notifications, dismiss } from "./notifications.js";
 import { sessionState, setSessionConfig } from "./session-store.js";
 import { startSessionClock, resetSessionClock, heureMs, isSessionExpired, formatSessionTime } from "./session-clock.js";
 import { ALERT_LABELS } from "./transfer-duration.js";
+import { connectionChangeKind } from "./connection.js";
+import { pushLog } from "./session-log.js";
 
 // Routage minimal par hash : #/mj => back-office MJ, sinon l'OS joueur.
 const route = ref(window.location.hash);
@@ -112,6 +118,18 @@ const alertLabel = computed(() => (ALERT_LABELS[sessionState.alertLevel] || "").
 const showBafouille = computed(() => sessionState.bafouille);
 const criticalFiles = computed(() => (fileSystem.value ? collectCriticalFiles(fileSystem.value) : []));
 const bafouilleMessage = computed(() => fileSystem.value?.bafouille?.message || "");
+
+// Journalise en console tout changement de qualité de liaison (amélioration / dégradation).
+// Non-immédiat : ne fire qu'aux transitions réelles, et seulement une fois amorcé.
+watch(() => sessionState.connectionQuality, (next, prev) => {
+  if (!booted.value) return;
+  const change = connectionChangeKind(prev, next);
+  if (!change) return;
+  const level = String(next).toUpperCase();
+  pushLog(change === "degradation"
+    ? { kind: "system", level: "warn", text: `LIAISON DÉGRADÉE — QUALITÉ ${level}` }
+    : { kind: "system", text: `LIAISON RÉTABLIE — QUALITÉ ${level}` });
+});
 
 // Horloge de session (heure in-game) : source unique dans session-clock.js, **ancrée à
 // l'entrée dans EmpireOS** (pas au chargement). L'entrée pose l'ancre (heure réglée par le

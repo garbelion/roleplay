@@ -308,6 +308,39 @@ Lot de features autour du **temps de session** et de l'**aide au déchiffrement*
    `navigator.clipboard`). Palette rebelle canonique dans `index.html :root`
    (`--rebel*`). *Prérequis hors-code : colonne `bafouille` (bool, défaut `false`) dans `session_state`.*
 
+### 5.7 — Qualité de liaison & fin de session *(en cours)*
+La **qualité de connexion** (jusqu'ici simple facteur de durée de transfert) devient un **paramètre
+narratif** visible : perturbations d'affichage, journal des changements, et un niveau terminal
+**« perdue »** qui met fin à la session.
+
+**Décisions actées (grilling)** :
+- **Fin de session** (expiration 2 h **ou** connexion perdue) → **retour auto au shell de boot** avec une
+  **bannière d'erreur** indiquant la cause.
+- **Reset → boot** du MJ = **reset complet** de session (connexion → bonne, alerte → 0, Bafouille → off,
+  horloge, intrusion → boot) — sinon « perdue » relancerait la fin à la ré-entrée.
+- En **critique**, les glitches **peuvent gêner l'interaction** (pas seulement visuels).
+
+**Échelle** (meilleur → pire) : `excellente > bonne > moyenne > faible > critique > perdue`. Glitches à
+partir de *sous* « bonne » ; « perdue » = fin de session.
+
+**Implémentation (slices TDD)** :
+1. ✅ **Domaine `connection.js`** : échelle ordonnée, `connectionRank`, `isConnectionLost`,
+   `glitchLevel` (0..3), `connectionChangeKind` (amélioration/dégradation). Pur, testé.
+2. ✅ **Onglet Session** : card **Qualité de liaison** (lue du store), teintée selon l'intensité.
+3. ✅ **Console** : `App` journalise chaque **changement** de qualité (dégradation `warn` / amélioration)
+   via `pushLog` — transitions seulement, une fois amorcé.
+4. ✅ **Overlay glitch (`ConnectionGlitch.vue`)** : statique/scanlines/décalage d'intensité croissante
+   (moyenne→1, faible→2, critique→3), rien à bonne+ ; à **critique**, couche d'interruption qui capte
+   le clic par intermittence. Live via le store.
+5. **Fin de session unifiée** : `endReason` (expiration locale **ou** connexion perdue) → retour au shell
+   de boot + bannière d'erreur (cause) ; remplace l'écran `os-disconnected` ; le transfert en cours est
+   **avorté** (téléchargement perdu) au démontage de l'OS.
+6. **Reset complet MJ** : « Reset → boot » repose tous les paramètres de session à leurs défauts.
+7. **MJ « Phase de recherche »** : regrouper connexion + alerte + Bafouille dans une section dédiée.
+8. **Fix popin Bafouille** : couper l'intervention depuis `/mj` doit masquer la popin.
+9. **`.docx` de démo** : un vrai document (titres/gras/liste/tableau) dans le file-system pour juger le
+   rendu mammoth.
+
 ## 6. Décisions encore ouvertes
 
 - **Éditeur MJ** : la **structure** des disques est tranchée → **outil séparé** (`fs:editor`, §3,
