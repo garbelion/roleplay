@@ -29,3 +29,16 @@ export function connectionChangeKind(prev, next) {
   if (a === -1 || b === -1 || a === b) return null
   return b < a ? 'amelioration' : 'degradation' // rang plus bas = meilleure connexion
 }
+
+/**
+ * Ligne de console à pousser pour un changement de qualité (ou null si aucun/inconnu).
+ * @returns {{kind:'system', level?:'warn', text:string}|null}
+ */
+export function connectionChangeLog(prev, next) {
+  const kind = connectionChangeKind(prev, next)
+  if (!kind) return null
+  const quality = String(next).toUpperCase()
+  return kind === 'degradation'
+    ? { kind: 'system', level: 'warn', text: `LIAISON DÉGRADÉE — QUALITÉ ${quality}` }
+    : { kind: 'system', text: `LIAISON RÉTABLIE — QUALITÉ ${quality}` }
+}

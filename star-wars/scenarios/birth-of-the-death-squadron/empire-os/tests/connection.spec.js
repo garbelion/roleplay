@@ -5,6 +5,7 @@ import {
   isConnectionLost,
   glitchLevel,
   connectionChangeKind,
+  connectionChangeLog,
 } from "../src/connection.js"
 
 describe("connection — domaine de la qualité de liaison", () => {
@@ -35,5 +36,17 @@ describe("connection — domaine de la qualité de liaison", () => {
     expect(connectionChangeKind("critique", "moyenne")).toBe("amelioration")
     expect(connectionChangeKind("bonne", "bonne")).toBe(null) // pas de changement
     expect(connectionChangeKind("bonne", "n'importe quoi")).toBe(null) // niveau inconnu
+  })
+
+  it("connectionChangeLog : ligne console typée pour la dégradation / l'amélioration (null sinon)", () => {
+    expect(connectionChangeLog("bonne", "bonne")).toBe(null)
+    const deg = connectionChangeLog("bonne", "faible")
+    expect(deg).toMatchObject({ kind: "system", level: "warn" })
+    expect(deg.text).toContain("DÉGRADÉE")
+    expect(deg.text).toContain("FAIBLE")
+    const amel = connectionChangeLog("faible", "bonne")
+    expect(amel.kind).toBe("system")
+    expect(amel.level).toBeUndefined()
+    expect(amel.text).toContain("RÉTABLIE")
   })
 })

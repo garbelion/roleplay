@@ -74,7 +74,7 @@ import { notifications, dismiss } from "./notifications.js";
 import { sessionState, setSessionConfig } from "./session-store.js";
 import { startSessionClock, resetSessionClock, heureMs, isSessionExpired, formatSessionTime } from "./session-clock.js";
 import { ALERT_LABELS } from "./transfer-duration.js";
-import { connectionChangeKind, isConnectionLost } from "./connection.js";
+import { connectionChangeLog, isConnectionLost } from "./connection.js";
 import { pushLog } from "./session-log.js";
 
 // Routage minimal par hash : #/mj => back-office MJ, sinon l'OS joueur.
@@ -120,12 +120,8 @@ const bafouilleMessage = computed(() => fileSystem.value?.bafouille?.message || 
 // Non-immédiat : ne fire qu'aux transitions réelles, et seulement une fois amorcé.
 watch(() => sessionState.connectionQuality, (next, prev) => {
   if (!booted.value) return;
-  const change = connectionChangeKind(prev, next);
-  if (!change) return;
-  const level = String(next).toUpperCase();
-  pushLog(change === "degradation"
-    ? { kind: "system", level: "warn", text: `LIAISON DÉGRADÉE — QUALITÉ ${level}` }
-    : { kind: "system", text: `LIAISON RÉTABLIE — QUALITÉ ${level}` });
+  const line = connectionChangeLog(prev, next);
+  if (line) pushLog(line);
 });
 
 // Horloge de session (heure in-game) : source unique dans session-clock.js, **ancrée à
