@@ -1,8 +1,13 @@
 import { describe, it, expect, vi } from "vitest"
 import { createSupabaseSource, connectSupabaseSession, mapRow, toRow } from "../src/supabase-source.js"
+import { connectSessionRemote } from "../src/session-remote.js"
+import { sessionState, setSessionConfig, resetSessionState } from "../src/session-store.js"
 
 // Faux client Supabase : reproduit l'API chaînable dont l'adaptateur a besoin.
+// `state.row` est la ligne courante lue par `.single()` ; `_emit(newRow)` modélise un
+// changement en base (met à jour la ligne) puis déclenche la notification Realtime.
 function fakeClient({ row = null } = {}) {
+  const state = { row }
   const calls = { handler: null, filter: null, channelName: null, removed: null }
   const channel = {
     on: vi.fn((event, filter, handler) => { calls.handler = handler; calls.filter = filter; return channel }),
@@ -10,10 +15,11 @@ function fakeClient({ row = null } = {}) {
   }
   const client = {
     _calls: calls,
-    from: vi.fn(() => ({ select: vi.fn(() => ({ single: vi.fn(async () => ({ data: row, error: null })) })) })),
+    from: vi.fn(() => ({ select: vi.fn(() => ({ single: vi.fn(async () => ({ data: state.row, error: null })) })) })),
     channel: vi.fn((name) => { calls.channelName = name; return channel }),
     removeChannel: vi.fn((ch) => { calls.removed = ch }),
-    _emit: (newRow) => calls.handler && calls.handler({ new: newRow })
+    // Change la ligne en base puis notifie ; renvoie la promesse du handler (relecture incluse).
+    _emit: (newRow) => { if (newRow !== undefined) state.row = newRow; return calls.handler && calls.handler({ new: newRow }) }
   }
   return client
 }
@@ -55,19 +61,33 @@ describe("mapRow / toRow", () => {
     expect(toRow({ bafouille: true })).toMatchObject({ bafouille: true })
   })
 
-  it("onChange mappe payload.new et fournit un désabonnement", () => {
-    const client = fakeClient()
+  it("onChange relit la ligne complète à chaque notification et fournit un désabonnement", async () => {
+    const client = fakeClient({ row: { connection_quality: "moyenne", alert_level: 0, intrusion: "os", clock_start: 0, bafouille: true } })
     const src = createSupabaseSource(client)
     const received = []
     const unsub = src.onChange((s) => received.push(s))
 
-    client._emit({ connection_quality: "faible", alert_level: 1 })
-    expect(received).toEqual([{ connectionQuality: "faible", alertLevel: 1 }])
+    // La charge utile importe peu : l'adaptateur relit la ligne autoritative (ici bafouille passé à false).
+    await client._emit({ connection_quality: "moyenne", alert_level: 0, intrusion: "os", clock_start: 0, bafouille: false })
+    expect(received).toEqual([{ connectionQuality: "moyenne", alertLevel: 0, intrusion: "os", clockStart: 0, bafouille: false }])
     // s'abonne bien sur la table de session
     expect(client._calls.filter).toMatchObject({ table: "session_state" })
 
     unsub()
     expect(client.removeChannel).toHaveBeenCalled()
+  })
+})
+
+describe("chaîne Realtime → store (intervention Bafouille)", () => {
+  it("un push de ligne complète bafouille:false éteint l'intervention dans le store", async () => {
+    resetSessionState()
+    setSessionConfig({ bafouille: true }) // intervention active côté joueurs
+    const client = fakeClient({ row: { connection_quality: "bonne", alert_level: 0, intrusion: "os", clock_start: 0, bafouille: true } })
+    await connectSessionRemote(createSupabaseSource(client))
+
+    // Le MJ coupe : la ligne passe à bafouille:false ; l'adaptateur la relit et l'applique.
+    await client._emit({ connection_quality: "bonne", alert_level: 0, intrusion: "os", clock_start: 0, bafouille: false })
+    expect(sessionState.bafouille).toBe(false)
   })
 })
 

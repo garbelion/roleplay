@@ -343,7 +343,11 @@ partir de *sous* « bonne » ; « perdue » = fin de session.
    désormais les 6 niveaux (`CONNECTION_LEVELS`), **« perdue » incluse** (déclenche la fin de session).
 7. ✅ **MJ « Phase de recherche »** : `MjPanel` réorganisé en deux sections — **Phase d'intrusion**
    (écrans + reset) et **Phase de recherche** (connexion + alerte + heure + aide Bafouille).
-8. **Fix popin Bafouille** : couper l'intervention depuis `/mj` doit masquer la popin.
+8. ✅ **Fix popin Bafouille** : cause = l'adaptateur Realtime appliquait `payload.new`, qui peut être
+   **partiel** (colonne `bafouille` ajoutée après la config Realtime ⇒ absente du payload) — `mapRow`
+   renvoyait `bafouille: undefined`, `setSessionConfig` le sautait, la popin restait. Fix : `onChange`
+   **relit la ligne complète** (`fetchState`) à chaque notification (source autoritative), robuste aux
+   charges partielles.
 9. **`.docx` de démo** : un vrai document (titres/gras/liste/tableau) dans le file-system pour juger le
    rendu mammoth.
 

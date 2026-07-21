@@ -28,15 +28,23 @@ export const toRow = ({ connectionQuality, alertLevel, intrusion, clockStart, ba
  * @param {string} table   table d'état (défaut 'session_state')
  */
 export function createSupabaseSource(client, table = TABLE) {
+  const fetchState = async () => {
+    const { data } = await client.from(table).select(SESSION_COLUMNS).single()
+    return mapRow(data)
+  }
   return {
-    async fetchState() {
-      const { data } = await client.from(table).select(SESSION_COLUMNS).single()
-      return mapRow(data)
-    },
+    fetchState,
     onChange(cb) {
       const channel = client
         .channel('session_state')
-        .on('postgres_changes', { event: '*', schema: 'public', table }, (payload) => cb(mapRow(payload.new)))
+        // On ne fait PAS confiance à `payload.new` : selon la publication Realtime, une colonne
+        // ajoutée après coup peut en être absente (charge partielle) — appliquer un tel payload
+        // laisserait des champs périmés (ex. l'intervention Bafouille qui ne se coupe pas).
+        // Toute notification déclenche donc une relecture autoritative de la ligne complète.
+        .on('postgres_changes', { event: '*', schema: 'public', table }, async () => {
+          const state = await fetchState()
+          if (state) cb(state)
+        })
         .subscribe()
       return () => client.removeChannel(channel)
     }
