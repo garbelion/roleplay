@@ -10,7 +10,8 @@
     "test:unit": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "fs:editor": "node tools/fs-editor/server.mjs"
+    "fs:editor": "node tools/fs-editor/server.mjs",
+    "journal:encode": "node tools/journal-crypto/encode-journal.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.7",

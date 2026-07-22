@@ -1,0 +1,4 @@
+# consignes_canal — poste de transmissions Kessel-Tho
+# Rotation des créneaux : voir grille administrateur.
+# Ne JAMAIS ouvrir un canal secondaire sans référence client validée.
+# Incident ligne -> journaliser dans transmissions.log, escalade bureau des transmissions.

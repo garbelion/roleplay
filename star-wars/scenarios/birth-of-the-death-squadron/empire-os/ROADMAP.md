@@ -114,11 +114,28 @@ transfert extrait dans `transfer.js`, recherche isolée dans `search.js` + dock 
 
 ## 5. Prochains jalons
 
-### 5.1 — Contenu réel *(chemin critique — actuellement bloqué)*
-Rédiger les **vrais fichiers** en quantité et remplacer les données de démo par une **arbo Unix
-dépaysante** avec dossiers/fichiers **leurres**, le **disque réseau** de Tana et le vrai **journal
-(d)**. **Bloqué** : le contenu narratif n'est pas encore disponible. L'app tourne sur des données
-de démo (2 disques) en attendant. *Rien à coder côté app tant que le contenu n'est pas prêt.*
+### 5.1 — Contenu réel *(chemin critique — livré)*
+Arbo **Unix-dépaysante** assemblée sur les disques réseau `srv-*` (le poste piraté
+`user-51394345` conservé tel quel), avec **dossiers/fichiers leurres** et les pièces du scénario
+disséminées, marquées `isCritical` (surlignées par l'aide Bafouille) :
+- **Journal (d)** = `registre_creneaux.docx`, **enterré au plus profond** du disque réseau
+  (`srv-transmissions/partages/operateurs/wrey.t/archive/creneaux/`), servi en `previewMode:
+  summary` (téléchargement forcé, jamais rendu inline).
+- **Documents (e)→(j)** disséminés sur `srv-transmissions` / `srv-data` / `srv-reporting` en
+  `previewMode: full` (lisibles inline via mammoth), au milieu de leurres (`.log`, `.txt`,
+  `.tmp`, `.dat`, dossiers `spool`/`corbeille`/`maint`/`bin`…).
+
+**Chiffrement du journal (outil dev-only `tools/journal-crypto/`, `npm run journal:encode`)** :
+transforme chirurgicalement le gabarit riche `docs/d_journal_decrypte.docx` (mise en forme
+préservée) en produisant, depuis une **source unique** (`docs/journal_complet.json`), (1) le docx
+**chiffré** pour le bundle et (2) la **feuille MJ déchiffrée-filtrée** (`docs/d_journal_MJ_dechiffre.md`,
+entrées de Tana en clair, à imprimer). Colonnes **Message + Coordonnées** : **AES-128-CBC** réel
+et réversible pour les 18 entrées de Tana (`type: "faux"`), **blobs** indiscernables pour les 60
+entrées leurres (`type: "réel"`). Modèle de clés ROADMAP §7 : **un secret maîtresse dérivé deux
+fois** (une passphrase par colonne, `pbkdf2`). **Intégrité du puzzle vérifiée** : aucun secret,
+passphrase ni plaintext de Tana dans le bundle (`dist/`) — seulement du ciphertext. Passphrases
+posées dans `tools/journal-crypto/config.js` (hors bundle ; placeholders par défaut à remplacer
+par celles de l'énigme avant la partie).
 
 ### 5.2 — Back-office MJ *(premier jalon actionnable)*
 2ᵉ page (URL connue du seul MJ) pour régler **en live** `connectionQuality` / `alertLevel`.

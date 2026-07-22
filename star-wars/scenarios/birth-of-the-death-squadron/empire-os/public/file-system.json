@@ -209,18 +209,101 @@
           "type": "directory",
           "children": [
             {
-              "name": "journal_transmissions.md",
-              "type": "file",
-              "previewMode": "summary",
-              "summary": "Journal des transmissions du poste — 214 entrées clients. Deux colonnes (message, destinataire) apparaissent illisibles : données chiffrées.",
-              "isCritical": true
+              "name": "operateurs",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "wrey.t",
+                  "type": "directory",
+                  "children": [
+                    {
+                      "name": "archive",
+                      "type": "directory",
+                      "children": [
+                        {
+                          "name": "creneaux",
+                          "type": "directory",
+                          "children": [
+                            {
+                              "name": "registre_creneaux.docx",
+                              "type": "file",
+                              "previewMode": "summary",
+                              "summary": "Registre de suivi des créneaux de fréquence — clients indépendants, cycles 18-19, 78 lignes. Les colonnes Message et Coordonnées sont chiffrées individuellement par client : illisibles sans les accès administrateur de station. Lecture = téléchargement du fichier.",
+                              "isCritical": true
+                            }
+                          ]
+                        },
+                        {
+                          "name": "notes",
+                          "type": "directory",
+                          "children": [
+                            {
+                              "name": "consignes_canal.txt",
+                              "type": "file"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "kallan.j",
+                  "type": "directory",
+                  "children": [
+                    {
+                      "name": "memo_service.txt",
+                      "type": "file"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "antennes",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "registre_antennes.docx",
+                  "type": "file",
+                  "previewMode": "full",
+                  "isCritical": true
+                }
+              ]
             }
           ]
         },
         {
           "name": "incoming",
           "type": "directory",
-          "children": []
+          "children": [
+            {
+              "name": "spool",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "file_0447.tmp",
+                  "type": "file"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "logs",
+          "type": "directory",
+          "children": [
+            {
+              "name": "transmissions.log",
+              "type": "file"
+            },
+            {
+              "name": "analyse_trafic.docx",
+              "type": "file",
+              "previewMode": "full",
+              "isCritical": true
+            }
+          ]
         }
       ]
     },
@@ -232,18 +315,123 @@
           "name": "note_technique.docx",
           "type": "file",
           "previewMode": "full"
+        },
+        {
+          "name": "depots",
+          "type": "directory",
+          "children": [
+            {
+              "name": "nuit",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "journal_nuit.docx",
+                  "type": "file",
+                  "previewMode": "full",
+                  "isCritical": true
+                }
+              ]
+            },
+            {
+              "name": "licences",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "correspondance_licence.docx",
+                  "type": "file",
+                  "previewMode": "full",
+                  "isCritical": true
+                },
+                {
+                  "name": "licence_expiree.txt",
+                  "type": "file"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "corbeille",
+          "type": "directory",
+          "children": [
+            {
+              "name": "tmp_5521.dat",
+              "type": "file"
+            }
+          ]
         }
       ]
     },
     {
       "name": "srv-tools",
       "type": "disk",
-      "children": []
+      "children": [
+        {
+          "name": "bin",
+          "type": "directory",
+          "children": []
+        },
+        {
+          "name": "maint",
+          "type": "directory",
+          "children": [
+            {
+              "name": "crontab.txt",
+              "type": "file"
+            },
+            {
+              "name": "motd.txt",
+              "type": "file"
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "srv-reporting",
       "type": "disk",
-      "children": []
+      "children": [
+        {
+          "name": "rapports",
+          "type": "directory",
+          "children": [
+            {
+              "name": "audits",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "audit_ccs4.docx",
+                  "type": "file",
+                  "previewMode": "full",
+                  "isCritical": true
+                }
+              ]
+            },
+            {
+              "name": "fret",
+              "type": "directory",
+              "children": [
+                {
+                  "name": "manifeste_fret.docx",
+                  "type": "file",
+                  "previewMode": "full",
+                  "isCritical": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "stats",
+          "type": "directory",
+          "children": [
+            {
+              "name": "frequentation.log",
+              "type": "file"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

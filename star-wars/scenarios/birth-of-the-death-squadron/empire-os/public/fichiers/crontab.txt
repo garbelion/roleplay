@@ -1,0 +1,4 @@
+# maint — Sienar Imperial Terminal
+0 */6 * * *  purge /var/spool/incoming
+0 2 * * *    rotation logs transmissions
+*/15 * * * * heartbeat relais subspatial
