@@ -71,6 +71,13 @@ Priorités : **Bloquant** > **Haute** > **Moyenne** > **Basse**.
   Durée estimée, nombre de joueurs, ton, mention **système D6**, et un encadré
   d'accroche prêt à lire pour les joueurs (comment ils reçoivent le signal).
 
+- [ ] **10. Reporter les 6 pré-tirés sur la feuille FDPJ.**
+  Produire une **fiche remplie par personnage** au format `FDPJ RV v.3.8.2`
+  (Renna, Dax, Yssha, Bren, Holt, Ithra) : attributs, compétences, équipement,
+  citation. Les **stats dérivées** (Initiative, Ténacité/Vitalité, Pénalité de
+  coordination) sont calculées **par l'utilisateur**. Voir #1 (stats sources,
+  ~18D compétences, système « visions de légendes »).
+
 ## Basse
 
 - [ ] **9. Fiche-solution récap MJ + trim de la présentation.**

@@ -114,7 +114,10 @@ adaptées aux PNJ actuels) — **à valider en rédaction** :
    ordinat./Droïds, Médecine, Résistance, Mouvement…) ; stats dérivées Initiative,
    Ténacité/Vitalité, Pénalité de coordination. Feuilles de référence dans `docs/` :
    **FDPJ RV v.3.8.2** (joueur) et **FDADV v.3.8.2** (adversaire/PNJ). Les 6 pré-tirés ont
-   été régénérés à cette nomenclature. Voir `TODO.md` #1 et #8.
+   été régénérés à cette nomenclature — **personnages expérimentés (~18D de compétences**,
+   décision utilisateur ; les stats dérivées Initiative/Ténacité/Pénalité sont calculées
+   par l'utilisateur). Report des pré-tirés sur la feuille FDPJ = `TODO.md` #10.
+   Voir `TODO.md` #1 et #8.
    **Workflow docx = HYBRIDE** (retour utilisateur) : je régénère depuis `generate_docx.js`
    tant que la todo n'est pas finie, puis on **gèle** (l'utilisateur polit à la main ; je
    ne régénère plus). Correction utilisateur intégrée : titre couverture **« SiGNAL »**
