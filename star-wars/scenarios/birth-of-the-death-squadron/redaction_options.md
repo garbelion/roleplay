@@ -94,14 +94,26 @@ adaptées aux PNJ actuels) — **à valider en rédaction** :
 ## 8. Questions ouvertes / ambiguïtés relevées
 
 1. **Collision de la lettre (d)** : dans la source, « (d) » désigne À LA FOIS la 4e énigme
-   (annonces du mess) ET le journal chiffré (document d). → **Résolution retenue** : je garde
-   les libellés source mais j'ajoute un encart d'avertissement clair dans la Présentation.
-   *(À signaler à l'utilisateur.)*
-2. **Système de jeu** : aucun stat-bloc chiffré dans les sources (Star Wars, système non
-   précisé). → Défaut : PNJ décrits narrativement (pas de stats), section « pré-tirés » = placeholder.
+   (annonces du mess) ET le journal chiffré (document d). → **Statut : À TRANCHER**
+   (retour utilisateur). La solution v1 (libellés conservés + encart d'avertissement) est
+   jugée insuffisante ; option pressentie = renommer le journal « document J » / « journal-trésor »
+   pour lever l'ambiguïté à la racine. Voir `TODO.md` #6.
+2. **Système de jeu** : **DÉCISION — système D6** (retour utilisateur). Les PNJ et les
+   personnages pré-tirés doivent recevoir des stat-blocks D6. *(Remplace l'ancien défaut
+   « aucun stat-bloc / description narrative seule ».)* Voir `TODO.md` #1 et #8.
 3. **Emplacement du fichier de sortie** : défaut = racine du scénario. À confirmer.
 4. **Identité des PJ** : implicitement cellule rebelle / sympathisants ayant capté le signal.
-   Non explicité dans les sources → je resterai générique dans la présentation.
+   Non explicité dans les sources → à préciser lors de la rédaction des pré-tirés (`TODO.md` #1).
+5. **`bafouille.exe` : ANNULÉ** (retour utilisateur). Supprimer toute mention de l'outil/exécutable
+   dans le brouillon ; le droïde Bafouille reste, mais sans référence à un `.exe` fourni au MJ.
+   Voir `TODO.md` #7.
+
+## 8bis. Suite de rédaction (retour critique)
+
+Le retour critique sur `docs/scenario_fusion_draft.md` est consolidé en checklist versionnée
+dédiée : **`TODO.md`** (racine du scénario). Priorités : section 3 pré-tirés (bloquant),
+horloge ISB + tables aléatoires (station / rayonnements de la Gueule) + climax (haute),
+nomenclature « (d) » & index handouts & front-matter D6 (moyenne), fiche-solution & trim (basse).
 
 ## 9. Progression
 
