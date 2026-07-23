@@ -490,10 +490,27 @@ evt("3", "Un enfant (rare sur la station) s'est perdu dans une coursive ; qui le
 evt("4", "Odeur persistante de caf brûlé au mess ; Kessa s'excuse platement.");
 evt("5", "Un haut-parleur défectueux répète une annonce en boucle jusqu'à ce qu'on le débranche.");
 evt("6", "Rien de notable — la station ronronne. *(Le calme avant quelque chose ?)*");
-// ---- ANNEXE B — HANDOUT (section PLEINE LARGEUR, hors 2 colonnes) ----
+
+// ---- ANNEXE B — MÉTÉO DES RAYONNEMENTS ----
+b.push(H2("B. Météo des rayonnements & incidents gravitationnels (la Gueule)"));
+b.push(P("Kessel-Tho est en bordure de **la Gueule**, l'amas de trous noirs du système. Tempêtes de rayonnement, pics gravitationnels et brouillage des senseurs font partie du décor — et de la mécanique. Roulez **1D par quart** (ou quand le récit s'y prête) ; en cas d'agitation, complétez par un **incident**."));
+keyHead("Échelle météo (1D par quart)")(b);
+b.push(B("**1-3 · Calme.** Rien de notable. Comms et senseurs nominaux ; départs normaux ; horloge ISB : avance normale."));
+b.push(B("**4-5 · Instable.** Grésillements, brouillage intermittent. **−1D** aux jets de Communications et Sensoreurs (et pour capter/émettre la détresse) ; astrogation de départ **+1 cran de difficulté** ; **l'horloge ISB n'avance pas passivement ce quart** (le rebond se noie dans le bruit) ; roulez un incident."));
+b.push(B("**6 · Tempête.** Rayonnement intense et turbulences gravitationnelles. **−2D** aux comms/senseurs, comms externes possiblement **coupées** ; **départs en hyperespace suspendus** (les vaisseaux sont cloués — l'exfiltration attendra) ; **horloge ISB gelée** ce quart (répit ambigu : les PJ aussi sont bloqués) ; **incident garanti** + danger radiologique pour qui reste exposé (coque fine, sortie extravéhiculaire)."));
+keyHead("Incidents (1D)")(b);
+evt("1", "**Cascade de parasites** : les comms internes grésillent 10 min ; un message important arrive tronqué (le MJ coupe une info en deux).");
+evt("2", "**Pic gravitationnel** : brève micro-gravité dans un secteur ; jet d'Esquive ou de Vigueur pour ne pas être déséquilibré ; un sas se coince.");
+evt("3", "**Bouffée de rayonnement** : alarme radiologique, coursives extérieures évacuées ; qui reste exposé encaisse des dégâts (jet de Vigueur / ~1D de dégâts, à l'appréciation du MJ).");
+evt("4", "**Senseurs aveugles** : la station est « sourde » 30 min — un vaisseau peut arriver ou repartir **inaperçu** (l'ISB… ou un allié). À double tranchant.");
+evt("5", "**Surtension** : couplée au réseau électrique fragile (cf. panne C19/J133), risque de **panne** — enchaînez sur l'événement technique 2·2 ; les lumières faiblissent.");
+evt("6", "**Fenêtre de silence** : le brouillage couvre tout — **moment idéal** pour une transmission clandestine (émettre/recevoir sans être triangulé) ou pour se faufiler pendant que les capteurs sont noyés.");
+b.push(P("**Pilotage.** Une tempête est un excellent **levier de rythme** : programmez-la pour le climax (piéger les PJ à quai, forcer un choix tendu), ou laissez-la émerger au dé. Elle **met en pause l'horloge ISB** — utile pour souffler — mais **verrouille aussi les départs** : le répit a un prix."));
+
+// ---- ANNEXE C — HANDOUT (section PLEINE LARGEUR, hors 2 colonnes) ----
 const HAND_W = 9638; // largeur utile en 1 colonne (A4 - 2 x marge 1134)
 const hand = [];
-hand.push(H2("B. Handout — Le message initial de Tana (le « message 0 »)"));
+hand.push(H2("C. Handout — Le message initial de Tana (le « message 0 »)"));
 hand.push(P("Point de départ du scénario. Avant de disparaître sous l'alias **Doiron**, Tana a posté une annonce sur un canal privé de marché noir : en apparence une brocante banale, mais **une ligne sur deux (les impaires)** forme un message d'alerte à l'Alliance — procédé **« Sand/Musset »** (un texte anodin dont une ligne sur deux cache un second message). Un intermédiaire, **le Courtier**, l'a relayé à la Rébellion : c'est ce qui amène les PJ à Kessel-Tho."));
 hand.push(P("**Volontairement, les coordonnées de la flotte n'y figurent pas** (ni en surface, ni en caché) : Tana refuse de les confier à un canal ouvert. Il faut la retrouver physiquement et déchiffrer son journal."));
 hand.push(new Paragraph({ spacing: { before: 40, after: 40 }, children: [ new TextRun({ text: "Le message caché (lignes impaires), en clair :", bold: true, color: ACCENT, size: 19 }) ] }));

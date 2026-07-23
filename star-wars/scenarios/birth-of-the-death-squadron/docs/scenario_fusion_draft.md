@@ -699,9 +699,34 @@ rayonnements → annexe B ; leviers sociaux)*.
 5. Un haut-parleur défectueux répète une annonce en boucle jusqu'à ce qu'on le débranche.
 6. Rien de notable — la station ronronne. *(Le calme avant quelque chose ?)*
 
+## B. Météo des rayonnements & incidents gravitationnels (la Gueule)
+
+Kessel-Tho est en bordure de **la Gueule**, l'amas de trous noirs du système.
+Tempêtes de rayonnement, pics gravitationnels et brouillage des senseurs font partie
+du décor — et de la mécanique. Roulez **1D par quart** (ou quand le récit s'y prête) ;
+en cas d'agitation, complétez par un **incident**.
+
+**Échelle météo (1D par quart)**
+- **1-3 · Calme.** Rien de notable. Comms et senseurs nominaux ; départs normaux ; horloge ISB : avance normale.
+- **4-5 · Instable.** Grésillements, brouillage intermittent. **−1D** aux jets de Communications et Sensoreurs (et pour capter/émettre la détresse) ; astrogation de départ **+1 cran de difficulté** ; **l'horloge ISB n'avance pas passivement ce quart** (le rebond se noie dans le bruit) ; roulez un incident.
+- **6 · Tempête.** Rayonnement intense et turbulences gravitationnelles. **−2D** aux comms/senseurs, comms externes possiblement **coupées** ; **départs en hyperespace suspendus** (les vaisseaux sont cloués — l'exfiltration attendra) ; **horloge ISB gelée** ce quart (répit ambigu : les PJ aussi sont bloqués) ; **incident garanti** + danger radiologique pour qui reste exposé (coque fine, sortie extravéhiculaire).
+
+**Incidents (1D)**
+1. **Cascade de parasites** : les comms internes grésillent 10 min ; un message important arrive tronqué (le MJ coupe une info en deux).
+2. **Pic gravitationnel** : brève micro-gravité dans un secteur ; jet d'Esquive ou de Vigueur pour ne pas être déséquilibré ; un sas se coince.
+3. **Bouffée de rayonnement** : alarme radiologique, coursives extérieures évacuées ; qui reste exposé encaisse des dégâts (jet de Vigueur / ~1D de dégâts, à l'appréciation du MJ).
+4. **Senseurs aveugles** : la station est « sourde » 30 min — un vaisseau peut arriver ou repartir **inaperçu** (l'ISB… ou un allié). À double tranchant.
+5. **Surtension** : couplée au réseau électrique fragile (cf. panne C19/J133), risque de **panne** — enchaînez sur l'événement technique 2·2 ; les lumières faiblissent.
+6. **Fenêtre de silence** : le brouillage couvre tout — **moment idéal** pour une transmission clandestine (émettre/recevoir sans être triangulé) ou pour se faufiler pendant que les capteurs sont noyés.
+
+**Pilotage.** Une tempête est un excellent **levier de rythme** : programmez-la pour
+le climax (piéger les PJ à quai, forcer un choix tendu), ou laissez-la émerger au dé.
+Elle **met en pause l'horloge ISB** — utile pour souffler — mais **verrouille aussi
+les départs** : le répit a un prix.
+
 ---
 
-## B. Handout — Le message initial de Tana (le « message 0 »)
+## C. Handout — Le message initial de Tana (le « message 0 »)
 
 *Cette section est en pleine largeur (hors mise en page à deux colonnes).*
 

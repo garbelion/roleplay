@@ -38,11 +38,14 @@ Priorités : **Bloquant** > **Haute** > **Moyenne** > **Basse**.
   l'horloge ISB (#2), les rayonnements (#4) et les leviers sociaux. Placée dans une
   nouvelle section **Annexes — outils de MJ** (annexe A) après la conclusion.
 
-- [ ] **4. Ajouter une table « météo des rayonnements » & incidents gravitationnels.**
-  Kessel-Tho est en bordure de la Gueule (amas de trous noirs) : tempêtes de
-  rayonnement, pics gravitationnels, brouillage des comms/senseurs. Table à
-  double usage : ambiance + complications mécaniques (impact sur détresse, sur
-  la triangulation ISB, sur les départs de vaisseaux).
+- [x] **4. Ajouter une table « météo des rayonnements » & incidents gravitationnels.** ✅ FAIT
+  **Annexe B**. Échelle météo (1D/quart : Calme 1-3 / Instable 4-5 / Tempête 6) à
+  effets mécaniques à double usage : comms & **détresse** (−1D/−2D), **horloge ISB**
+  (ralentie à Instable, **gelée** à Tempête, cf. #2), **départs de vaisseaux**
+  (astrogation +1 / hyperespace suspendu). + table d'**incidents (1D)** cross-liée
+  (#2 ISB, #3 événement technique 2·2, détresse). Note de pilotage (levier de rythme
+  pour le climax). Lettrage annexes acté : **A** Événements · **B** Rayonnements ·
+  **C** Handout (re-lettré depuis B).
 
 - [ ] **5. Étoffer le climax** (DMZ + exfiltration + confrontation Rennard).
   Actuellement sous-écrit face à l'enquête. Développer la scène finale : entrée

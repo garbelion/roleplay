@@ -127,9 +127,8 @@ Section **Annexes** (H1) après la conclusion :
   note MJ (chiffre « Sand/Musset » = 1 ligne sur 2, relais par « le Courtier »,
   message décodé, double sens de « impériaux ») + l'**encadré à imprimer** (police
   Consolas, liseré rouge/fond parchemin). Source détaillée : `docs/message_initial_tana.docx`.
-- **Lettrage** : quand #4 (météo des rayonnements) arrivera, décider l'ordre —
-  proposition : A Événements, B Rayonnements (outils MJ), **C Handout** (joueurs) en
-  dernier. Re-lettrer la section B→C à ce moment.
+- **Lettrage acté (fait)** : **A** Événements · **B** Météo des rayonnements (outils
+  MJ, 2 colonnes) · **C** Handout (joueurs, pleine largeur). Le handout a été re-lettré B→C.
 
 Technique docx : le passage 2 colonnes → 1 colonne se fait via une **nouvelle section**
 (`sections[]`), pas via un saut de colonne. Footer dupliqué via `makeFooter()`.
