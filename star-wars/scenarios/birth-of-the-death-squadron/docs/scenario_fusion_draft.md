@@ -484,11 +484,11 @@ bruyante, accès contrôlé. C'est le point sensible et la fin logique du parcou
 - Le résultat : les messages en clair du Projet Faucheur **et les coordonnées** de la
   base dissidente menacée (grille **L-14**, sous-secteur 4, proche de la balise
   Kessel Secondaire).
-- **Accès.** Deux voies : la **colonne de sécurité** blindée depuis N4/N3 (rapide
-  mais surveillée), ou, plus discret socialement mais risqué, le **terminal de la
-  salle de contrôle des transmissions** (N4) qui donne accès à l'interface de
-  consultation — sous l'œil d'Aashe. Présence probable de **Kavarel/Bissik** ou de
-  la **garnison** à proximité.
+- **Accès.** Inutile de forcer la DMZ elle-même : il suffit d'un **point d'accès
+  réseau** pour tirer la donnée du serveur isolé. Le plus élégant est dans le
+  **tunnel de maintenance** (là où se trouve la fresque, indice b) ; sinon
+  **convaincre Kavarel**, ou une **effraction** (badge + code, éviter les caméras).
+  *Mécanique du casse et de la trace inévitable : voir §5.*
 
 [SCHÉMA: N0 DMZ — colonne de sécurité (depuis N3/N4) → sas contrôlé → salle serveur
 (journal d, isolé) ; voie alternative : terminal salle transmissions N4.]
@@ -588,57 +588,121 @@ locatif jamais réclamé), **ancien bureau des licences** (dossiers papier oubli
 
 ---
 
-# 5. ISSUES POSSIBLES ET OUVERTURE
+# 5. LE CLIMAX ET LES ISSUES
 
-## Les dénouements
+Le scénario culmine en **deux goulots** enchaînés : **le casse** (récupérer le
+journal), puis **l'extraction** (fuir la station). Entre les deux, une **trace
+inévitable** lâche l'ISB aux trousses des PJ. Le tout se joue **au chrono**.
 
-Le scénario se joue sur deux tensions : **obtenir** le contenu du journal, et
-**repartir** avant que l'ISB ne verrouille la station. Les issues combinent ces deux
-axes.
+## Goulot 1 — Le casse
 
-**Réussite discrète (l'idéal).** Les PJ gagnent la confiance de Tana, réunissent les
-quatre indices, laissent Bafouille déchiffrer, et **exfiltrent les coordonnées** de
-la base dissidente **avant** que Vint ne boucle sa triangulation. La station ignore
-tout ; l'ISB arrive trop tard ou repart bredouille. Les PJ tiennent l'avertissement
-qui peut sauver la base de la grille L-14.
+Les données du journal (document d) sont sur le **serveur isolé** de la DMZ (N0). Les
+PJ ont les compétences pour les tirer du réseau ; il leur faut surtout un **point
+d'accès** où se brancher. **Trois voies**, de la plus propre à la plus risquée :
 
-**Réussite coûteuse.** Les PJ obtiennent l'information mais **laissent une trace** :
-un PNJ alarmé, une effraction repérée, une erreur devant Skarn. L'extraction se fait
-**sous tension** (course-poursuite, fusillade au quai, black-out provoqué au N0 pour
-couvrir la fuite). Ils repartent avec le journal, mais **Rennard sait** désormais où
-chercher — et retient leurs visages.
+- **Le tunnel de maintenance** *(le plus élégant)* — un point d'accès réseau s'y
+  trouve, là même où ils ont décodé la fresque (indice b). Rappel de décor, aucune
+  effraction.
+- **Convaincre Dosh Kavarel** — le technicien qui laisse Tana peindre ; voie sociale,
+  discrète.
+- **L'effraction** — contourner un contrôle d'accès basique (badge + code) et éviter
+  les caméras encore fonctionnelles.
 
-**Échec partiel.** Le déchiffrement échoue ou traîne (indices manqués, Bafouille
-endommagé, Tana refuse de coopérer). Les PJ repartent les mains vides ou avec des
-fragments inexploitables ; la base dissidente reste sans avertissement.
+Une fois branchés, les PJ se planquent (n'importe quel cagibi) et **slicent**.
+**Bafouille** assiste le déchiffrement (RépubliqueRetour + Argon2 + les phrases) —
+*sauf s'ils l'ont aliéné en médisant de Tana* : ils ne sortent alors que la **donnée
+brute chiffrée**. La fenêtre du casse ≈ la **durée de la session** (~2 h de jeu) : la
+vraie pression vient d'après.
 
-**Capture.** Un PJ ou **Tana** tombe entre les mains de Rennard. Le journal est saisi
-ou détruit ; l'ISB remonte la filière. Si l'ordre *« exécution immédiate »* du J199
-est confirmé, la **base de la grille L-14 est frappée** — conséquence lourde à faire
-peser sur la suite.
+## La trace — pourquoi l'ISB débarque, quoi qu'il arrive
+
+Le serveur héberge le **journal de facturation illégale de Kallan**. Or l'ISB, en
+épluchant les échanges des responsables du secteur pour jauger les loyautés, a
+**déjà repéré Kallan comme suspect** (fréquences revendues, pots-de-vin, doc i) et
+placé son segment sous **surveillance passive**.
+
+- **Conséquence :** *toute* extraction de cette donnée — quel que soit le compte,
+  quelle que soit la porte — **fait tomber le drapeau**. Le casse ne rate pas :
+  c'est **sa réussite même qui sonne l'alarme**. Utiliser le **compte de Tana** (hors
+  service) ou traîner ne fait qu'**accélérer** la réaction.
+- **Déclenchement :** au moment où le drapeau tombe, **Rennard est alerté** et
+  **signale Kessel** → une **corvette** appareille. L'horloge d'extraction démarre.
+
+## Goulot 2 — Le face-à-face au quai
+
+**Décor :** le quai principal en rue de western — vaisseaux, caisses de fret,
+devantures qui baissent leurs rideaux, le ***Murmure*** au bout de la « rue ».
+
+**La posture de Rennard dépend de l'horloge de traque** (les 6 crans, §Présentation) :
+- **Crans bas** (PJ rapides, propres) : il est **pris de court**, seul ou presque.
+  Contraint à l'**embuscade** ; il ne parle que s'il se retrouve en désavantage — et
+  seulement **pour gagner du temps et flouer les PJ**.
+- **Crans hauts** (PJ lents, repérés) : il a ses **renforts**, **bloque la sortie**
+  et **parle** d'emblée (« Je sais ce que vous emportez. Posez-le. »).
+
+**Parler est son arme.** Rennard « cherche un fait, pas un coupable » : ce n'est pas
+un boss de tir, c'est un **retardateur**. Chaque round où il vous tient est un round
+que la **corvette** gagne — confrontation et extraction sont **une seule séquence
+sous chrono**.
+
+- **Le baratin est à double tranchant :** tenter de le berner (Holt, code-cylindre
+  impérial + Autorité) peut lui coûter un round s'il doute — mais s'il **ne mord pas**
+  (il ne bluffe pas et se fait rarement avoir), il le **note** et durcit (renforts,
+  fenêtre réduite).
+- **Rennard est jetable** (one-shot) : le **tuer** est un **bonus** (un agent brillant
+  et loyal de moins pour l'ISB) — mais ne stoppe pas la corvette déjà signalée.
+
+## Le chrono corvette et la fuite
+
+**Fenêtre d'extraction : 10 rounds** au quai pour rejoindre le *Murmure* et décoller ;
+**+5 rounds si la météo est mauvaise** (la tempête freine aussi la corvette) ;
+**+5 rounds si les PJ ont été rapides et propres** (crans bas). Au-delà, la corvette
+est en position d'**interception**.
+
+**Décoller ne suffit pas.** Les PJ sont des rebelles : ils **forcent le départ** et
+enchaînent, en vol, des **jets de Piloter vaisseaux et de Réparation (Transports)**
+pour survivre à la turbulence (aggravée en tempête, annexe C). La fuite est **une
+scène active**, pas une transition.
+
+**BAD END :** trop lents → la corvette intercepte, et l'Empire **ne fait pas de
+quartier**. *(Mais nous sommes en space opera — voir « Gradient de fins ».)*
+
+## Les quatre axes de fin
+
+Les issues se combinent sur **quatre axes indépendants**, chacun un oui/non avec son bonus :
+1. **Données déchiffrées ?** *Bonus : l'Alliance peut préparer sa riposte — la base L-14 est prévenue.* Sinon : donnée brute à casser plus tard (course contre la frappe).
+2. **Tana (et Bafouille) embarquent ?** *Bonus : l'Alliance gagne une alliée honnête, motivée et compétente.*
+3. **Matériel récupéré ?** *Bonus : les PJ ont rempli leur contrat d'origine — ils étaient là pour ça.*
+4. **Assez rapides ?** Sinon : interception → **BAD END**, atténué par le ton space opera.
+
+> **Encart MJ — Soupapes de sacrifice** *(transformer un « game over » en fin héroïque)*
+> - **Larguer le matériel / la cargaison** — le *Murmure* s'allège : **+3 rounds** / bonus au décollage. *Prix : on repart bredouilles (axe 3 perdu) — la cupidité punie.*
+> - **Un PJ reste en couverture** (tir de suppression, verrouille un sas, sabote une passerelle) — les autres embarquent sans être suivis. *Prix : capturé ou tombé — accroche « évasion » pour une suite.*
+> - **Tana se rend / fait diversion** — c'est **elle** que Rennard veut ; il la prend, lâche les PJ. *Tragique — mais la donnée est déjà partie.*
+> - **Bafouille se sacrifie** (se branche pour brouiller la corvette, surcharge un relais) — **−1 palier de poursuite**. *Le droïde loyal s'éteint sur une dernière vanne.*
+> - **Provoquer le black-out** (surcharger un générateur, cf. panne C19/J133) — Rennard aveugle **1 round**, caméras HS. *Prix : dégâts, station en alerte.*
+> - **Larguer une nacelle-leurre / balise** — la corvette vérifie la fausse piste : **+5 rounds**. *Prix : matériel / nacelle perdus.*
+
+> **Encart MJ — Gradient de fins** *(même le pire garde un fil d'espoir)*
+> - **Triomphe** — données déchiffrées · Tana + Bafouille · matériel · Rennard mort · saut propre. *L'Alliance est prévenue et gagne une cryptographe ; L-14 est sauvée.*
+> - **Réussite coûteuse** — ils sautent, mais blessés / matériel largué / Rennard vivant. *La donnée passe ; reste une dette et une cicatrice.*
+> - **Demi-échec** — seule la donnée **brute (chiffrée)** est sortie (Bafouille aliéné). *L'Alliance mettra des semaines à la casser — course contre la frappe.*
+> - **PJ capturé au quai** — un tombe, les autres sautent avec la donnée. *Le prisonnier devient l'enjeu d'un futur sauvetage.*
+> - **« BAD END » space opera** — l'équipe est interceptée. *Mais Tana ou Bafouille a déjà relayé au Courtier : la mission a réussi sans eux ; une évasion se prépare.*
 
 ## Le sort de Tana
 
-À moduler selon la relation nouée :
-- **Elle part avec les PJ** — nouvelle alliée récurrente de la cellule, précieuse en
-  cryptanalyse et connaissance de l'Empire.
-- **Elle reste** — pour continuer à écouter depuis Kessel-Tho, source dormante et
-  point de contact futur (au prix d'un risque croissant).
-- **Elle se sacrifie** — pour couvrir la fuite des PJ ou détruire le journal avant
-  l'ISB : fin tragique et marquante, dette morale pour les personnages.
+À moduler selon la relation nouée (et selon qu'elle a embarqué ou non) :
+- **Elle part avec les PJ** *(convaincue)* — nouvelle alliée de la cellule, précieuse en cryptanalyse et connaissance de l'Empire ; Bafouille avec elle.
+- **Elle reste** — pour continuer à écouter depuis Kessel-Tho, source dormante et point de contact futur (au prix d'un risque croissant).
+- **Elle se sacrifie / se rend** — pour couvrir la fuite ou détourner Rennard : fin tragique, mais **la donnée est déjà partie** (elle ou Bafouille l'a relayée).
 
 ## Ouverture vers le futur
 
-- **L'avertissement.** Les coordonnées L-14 lancent une course : prévenir la base
-  dissidente avant la frappe — accroche directe pour la suite de campagne.
-- **La traque commence.** Ce que les PJ ont entrevu, c'est la **naissance de
-  l'Escadron de la Mort** : l'*Executor* et sa flotte entrent en scène. Le secteur
-  n'est plus sûr ; les PJ savent désormais ce qui approche.
-- **Une némésis.** Si Rennard a vu leurs visages, il devient un **antagoniste
-  récurrent** — patient, méthodique, sans colère et sans oubli.
-- **Kessel-Tho, point d'appui.** Selon leurs actes, la station reste une base
-  arrière possible (Kallan compromis et donc manipulable, PNJ ralliés, caches des
-  locaux désaffectés) — ou un lieu désormais trop chaud pour y remettre les pieds.
+- **L'avertissement.** Les coordonnées L-14 lancent une course : prévenir la base dissidente avant la frappe — accroche directe pour la suite.
+- **La traque commence.** Ce que les PJ ont entrevu, c'est la **naissance de l'Escadron de la Mort** : l'*Executor* et sa flotte entrent en scène. Le secteur n'est plus sûr.
+- **Si Rennard a survécu** *(crans hauts, fuite sans l'abattre)* — il devient une **némésis** possible : patient, méthodique, sans colère et sans oubli. Sinon, l'ISB a perdu son meilleur limier.
+- **Kessel-Tho, point d'appui.** Selon leurs actes, la station reste une base arrière possible (Kallan compromis et manipulable, PNJ ralliés, caches des locaux désaffectés) — ou un lieu désormais trop chaud.
 
 ---
 

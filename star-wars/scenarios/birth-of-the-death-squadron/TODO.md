@@ -47,10 +47,17 @@ Priorités : **Bloquant** > **Haute** > **Moyenne** > **Basse**.
   pour le climax). Lettrage annexes acté : **A** Événements · **B** Rayonnements ·
   **C** Handout (re-lettré depuis B).
 
-- [ ] **5. Étoffer le climax** (DMZ + exfiltration + confrontation Rennard).
-  Actuellement sous-écrit face à l'enquête. Développer la scène finale : entrée
-  en DMZ (2 voies déjà posées), extraction sous tension, options de fuite,
-  face-à-face possible avec l'agent Rennard. Rééquilibrer le rythme montée/sommet.
+- [x] **5. Étoffer le climax.** ✅ FAIT (design durci en séance /grill-me)
+  Section 5 réécrite : **deux goulots** (casse → extraction) sous chrono. Casse =
+  point d'accès réseau (tunnel de maintenance / Kavarel / effraction) + Bafouille.
+  **Trace inévitable** (le segment de Kallan, déjà sous surveillance ISB car déloyal)
+  → Rennard alerté → corvette de Kessel. **Face-à-face au quai (rue de western)** :
+  posture de Rennard mappée sur l'horloge de traque (crans bas = embuscade solo /
+  crans hauts = renforts + parle) ; **parler = son arme** (gagner du temps pour la
+  corvette). **Chrono corvette** : 10 rounds (+5 météo, +5 si rapides) ; fuite = jets
+  Piloter/Réparation en vol. **4 axes de fin** modulaires + 2 encarts MJ (soupapes de
+  sacrifice, gradient de fins, ton space opera « toujours un fil d'espoir »). Rennard
+  jetable (one-shot). 4.6 réaligné + renvoi vers §5.
 
 ## Moyenne
 

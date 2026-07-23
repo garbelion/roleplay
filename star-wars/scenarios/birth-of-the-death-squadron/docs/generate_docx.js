@@ -388,7 +388,7 @@ lieu(b, "4.6", "Locaux des ingénieurs & serveur DMZ *(N0 — le journal)*", [
   bul("C'est **ici** qu'est stocké, isolé en DMZ, le **journal de facturation illégale** de l'administrateur **Kallan** — celui dans lequel Tana a dissimulé ses **18 entrées** sous les trois faux alias. Kallan le **protège sans le savoir** (par intérêt : c'est aussi son registre de fréquences revendues au noir)."),
   bul("Une fois sur place avec les **quatre indices**, **Bafouille assemble** : RépubliqueRetour + Argon2 + **ORPHELINS** → clé des Coordonnées ; RépubliqueRetour + Argon2 + **JENESUISPLUSSEULEICI** → clé des Messages ; et (a) désigne **quelles 18 entrées** parmi 78 déchiffrer."),
   bul("Le résultat : les messages en clair du Projet Faucheur **et les coordonnées** de la base dissidente menacée (grille **L-14**, sous-secteur 4, proche de la balise Kessel Secondaire)."),
-  bul("**Accès** — deux voies : la **colonne de sécurité** blindée depuis N4/N3 (rapide mais surveillée), ou, plus discret socialement mais risqué, le **terminal de la salle de contrôle des transmissions** (N4) sous l'œil d'Aashe. Présence probable de Kavarel / Bissik ou de la garnison à proximité."),
+  bul("**Accès** — inutile de forcer la DMZ elle-même : il suffit d'un **point d'accès réseau** pour tirer la donnée du serveur isolé. Le plus élégant est dans le **tunnel de maintenance** (là où se trouve la fresque, indice b) ; sinon **convaincre Kavarel**, ou une **effraction** (badge + code, éviter les caméras). *Mécanique du casse et de la trace inévitable : voir §5.*"),
   sch("N0 — DMZ", ["Colonne de sécurité (depuis N3 / N4)", "Sas contrôlé", "Salle serveur — journal (d), isolé", "Voie alternative : terminal salle transmissions (N4)"]),
   pnjHead(),
   bul("**Naro Bissik** — Sullustan, vif, curieux, bavard sur la technique. En charge du **réseau interne** (bornes WN-01/02/03) ; complémentaire de Kavarel. Allié involontaire (adore les systèmes bien conçus) ou obstacle. *« Un réseau mal segmenté, c'est comme une porte laissée entrouverte. »*"),
@@ -425,22 +425,60 @@ encart(b, "Encart — Équipages de passage (manifeste j & rapport e)", [
   EP("*Autres coques citées : Perce-Brume, Étoile Voilée, Aube Grise.*"),
 ]);
 
-// ---- 5. ISSUES & OUVERTURE ----
-b.push(H1("5. Issues possibles et ouverture"));
-b.push(H2("Les dénouements"));
-b.push(P("Le scénario se joue sur deux tensions : **obtenir** le contenu du journal, et **repartir** avant que l'ISB ne verrouille la station. Les issues combinent ces deux axes."));
-b.push(P("**Réussite discrète (l'idéal).** Les PJ gagnent la confiance de Tana, réunissent les quatre indices, laissent Bafouille déchiffrer, et **exfiltrent les coordonnées** de la base dissidente **avant** que Vint ne boucle sa triangulation. La station ignore tout ; l'ISB arrive trop tard. Les PJ tiennent l'avertissement qui peut sauver la base de la grille L-14."));
-b.push(P("**Réussite coûteuse.** Les PJ obtiennent l'information mais **laissent une trace** : un PNJ alarmé, une effraction repérée, une erreur devant Skarn. L'extraction se fait **sous tension** (course-poursuite, fusillade au quai, black-out provoqué au N0 pour couvrir la fuite). Ils repartent avec le journal, mais **Rennard sait** désormais où chercher — et retient leurs visages."));
-b.push(P("**Échec partiel.** Le déchiffrement échoue ou traîne (indices manqués, Bafouille endommagé, Tana refuse de coopérer). Les PJ repartent les mains vides ou avec des fragments inexploitables ; la base dissidente reste sans avertissement."));
-b.push(P("**Capture.** Un PJ ou **Tana** tombe entre les mains de Rennard. Le journal est saisi ou détruit ; l'ISB remonte la filière. Si l'ordre *« exécution immédiate »* du J199 est confirmé, la **base de la grille L-14 est frappée** — conséquence lourde pour la suite."));
+// ---- 5. LE CLIMAX ET LES ISSUES ----
+b.push(H1("5. Le climax et les issues"));
+b.push(P("Le scénario culmine en **deux goulots** enchaînés : **le casse** (récupérer le journal), puis **l'extraction** (fuir la station). Entre les deux, une **trace inévitable** lâche l'ISB aux trousses des PJ. Le tout se joue **au chrono**."));
+b.push(H2("Goulot 1 — Le casse"));
+b.push(P("Les données du journal (document d) sont sur le **serveur isolé** de la DMZ (N0). Les PJ ont les compétences pour les tirer du réseau ; il leur faut surtout un **point d'accès** où se brancher. **Trois voies**, de la plus propre à la plus risquée :"));
+b.push(B("**Le tunnel de maintenance** *(le plus élégant)* — un point d'accès réseau s'y trouve, là même où ils ont décodé la fresque (indice b). Rappel de décor, aucune effraction."));
+b.push(B("**Convaincre Dosh Kavarel** — le technicien qui laisse Tana peindre ; voie sociale, discrète."));
+b.push(B("**L'effraction** — contourner un contrôle d'accès basique (badge + code) et éviter les caméras encore fonctionnelles."));
+b.push(P("Une fois branchés, les PJ se planquent (n'importe quel cagibi) et **slicent**. **Bafouille** assiste le déchiffrement (RépubliqueRetour + Argon2 + les phrases) — *sauf s'ils l'ont aliéné en médisant de Tana* : ils ne sortent alors que la **donnée brute chiffrée**. La fenêtre du casse ≈ la **durée de la session** (~2 h de jeu) : la vraie pression vient d'après."));
+b.push(H2("La trace — pourquoi l'ISB débarque, quoi qu'il arrive"));
+b.push(P("Le serveur héberge le **journal de facturation illégale de Kallan**. Or l'ISB, en épluchant les échanges des responsables du secteur pour jauger les loyautés, a **déjà repéré Kallan comme suspect** (fréquences revendues, pots-de-vin, doc i) et placé son segment sous **surveillance passive**."));
+b.push(B("**Conséquence :** *toute* extraction de cette donnée — quel que soit le compte, quelle que soit la porte — **fait tomber le drapeau**. Le casse ne rate pas : c'est **sa réussite même qui sonne l'alarme**. Utiliser le **compte de Tana** (hors service) ou traîner ne fait qu'**accélérer** la réaction."));
+b.push(B("**Déclenchement :** au moment où le drapeau tombe, **Rennard est alerté** et **signale Kessel** → une **corvette** appareille. L'horloge d'extraction démarre."));
+b.push(H2("Goulot 2 — Le face-à-face au quai"));
+b.push(P("**Décor :** le quai principal en rue de western — vaisseaux, caisses de fret, devantures qui baissent leurs rideaux, le ***Murmure*** au bout de la « rue »."));
+b.push(P("**La posture de Rennard dépend de l'horloge de traque** (les 6 crans, §Présentation) :"));
+b.push(B("**Crans bas** (PJ rapides, propres) : il est **pris de court**, seul ou presque. Contraint à l'**embuscade** ; il ne parle que s'il se retrouve en désavantage — et seulement **pour gagner du temps et flouer les PJ**."));
+b.push(B("**Crans hauts** (PJ lents, repérés) : il a ses **renforts**, **bloque la sortie** et **parle** d'emblée (« Je sais ce que vous emportez. Posez-le. »)."));
+b.push(P("**Parler est son arme.** Rennard « cherche un fait, pas un coupable » : ce n'est pas un boss de tir, c'est un **retardateur**. Chaque round où il vous tient est un round que la **corvette** gagne — confrontation et extraction sont **une seule séquence sous chrono**."));
+b.push(B("**Le baratin est à double tranchant :** tenter de le berner (Holt, code-cylindre impérial + Autorité) peut lui coûter un round s'il doute — mais s'il **ne mord pas** (il ne bluffe pas et se fait rarement avoir), il le **note** et durcit (renforts, fenêtre réduite)."));
+b.push(B("**Rennard est jetable** (one-shot) : le **tuer** est un **bonus** (un agent brillant et loyal de moins pour l'ISB) — mais ne stoppe pas la corvette déjà signalée."));
+b.push(H2("Le chrono corvette et la fuite"));
+b.push(P("**Fenêtre d'extraction : 10 rounds** au quai pour rejoindre le *Murmure* et décoller ; **+5 rounds si la météo est mauvaise** (la tempête freine aussi la corvette) ; **+5 rounds si les PJ ont été rapides et propres** (crans bas). Au-delà, la corvette est en position d'**interception**."));
+b.push(P("**Décoller ne suffit pas.** Les PJ sont des rebelles : ils **forcent le départ** et enchaînent, en vol, des **jets de Piloter vaisseaux et de Réparation (Transports)** pour survivre à la turbulence (aggravée en tempête, annexe C). La fuite est **une scène active**, pas une transition."));
+b.push(P("**BAD END :** trop lents → la corvette intercepte, et l'Empire **ne fait pas de quartier**. *(Mais nous sommes en space opera — voir « Gradient de fins ».)*"));
+b.push(H2("Les quatre axes de fin"));
+b.push(P("Les issues se combinent sur **quatre axes indépendants**, chacun un oui/non avec son bonus :"));
+b.push(NUM("**Données déchiffrées ?** *Bonus : l'Alliance peut préparer sa riposte — la base L-14 est prévenue.* Sinon : donnée brute à casser plus tard (course contre la frappe)."));
+b.push(NUM("**Tana (et Bafouille) embarquent ?** *Bonus : l'Alliance gagne une alliée honnête, motivée et compétente.*"));
+b.push(NUM("**Matériel récupéré ?** *Bonus : les PJ ont rempli leur contrat d'origine — ils étaient là pour ça.*"));
+b.push(NUM("**Assez rapides ?** Sinon : interception → **BAD END**, atténué par le ton space opera."));
+encart(b, "Encart MJ — Soupapes de sacrifice (transformer un « game over » en fin héroïque)", [
+  EB("**Larguer le matériel / la cargaison** — le *Murmure* s'allège : **+3 rounds** / bonus au décollage. *Prix : on repart bredouilles (axe 3 perdu) — la cupidité punie.*"),
+  EB("**Un PJ reste en couverture** (tir de suppression, verrouille un sas, sabote une passerelle) — les autres embarquent sans être suivis. *Prix : capturé ou tombé — accroche « évasion ».*"),
+  EB("**Tana se rend / fait diversion** — c'est **elle** que Rennard veut ; il la prend, lâche les PJ. *Tragique — mais la donnée est déjà partie.*"),
+  EB("**Bafouille se sacrifie** (brouille la corvette, surcharge un relais) — **−1 palier de poursuite**. *Le droïde loyal s'éteint sur une dernière vanne.*"),
+  EB("**Provoquer le black-out** (surcharger un générateur, cf. panne C19/J133) — Rennard aveugle **1 round**, caméras HS. *Prix : dégâts, station en alerte.*"),
+  EB("**Larguer une nacelle-leurre / balise** — la corvette vérifie la fausse piste : **+5 rounds**. *Prix : matériel / nacelle perdus.*"),
+]);
+encart(b, "Encart MJ — Gradient de fins (même le pire garde un fil d'espoir)", [
+  EB("**Triomphe** — données déchiffrées · Tana + Bafouille · matériel · Rennard mort · saut propre. *L'Alliance est prévenue et gagne une cryptographe ; L-14 est sauvée.*"),
+  EB("**Réussite coûteuse** — ils sautent, mais blessés / matériel largué / Rennard vivant. *La donnée passe ; reste une dette et une cicatrice.*"),
+  EB("**Demi-échec** — seule la donnée **brute (chiffrée)** est sortie (Bafouille aliéné). *L'Alliance mettra des semaines à la casser — course contre la frappe.*"),
+  EB("**PJ capturé au quai** — un tombe, les autres sautent avec la donnée. *Le prisonnier devient l'enjeu d'un futur sauvetage.*"),
+  EB("**« BAD END » space opera** — l'équipe est interceptée. *Mais Tana ou Bafouille a déjà relayé au Courtier : la mission a réussi sans eux ; une évasion se prépare.*"),
+]);
 b.push(H2("Le sort de Tana"));
-b.push(B("**Elle part avec les PJ** — nouvelle alliée récurrente, précieuse en cryptanalyse et connaissance de l'Empire."));
+b.push(B("**Elle part avec les PJ** *(convaincue)* — nouvelle alliée de la cellule, précieuse en cryptanalyse et connaissance de l'Empire ; Bafouille avec elle."));
 b.push(B("**Elle reste** — pour continuer à écouter depuis Kessel-Tho, source dormante et point de contact futur (au prix d'un risque croissant)."));
-b.push(B("**Elle se sacrifie** — pour couvrir la fuite des PJ ou détruire le journal avant l'ISB : fin tragique et marquante, dette morale pour les personnages."));
+b.push(B("**Elle se sacrifie / se rend** — pour couvrir la fuite ou détourner Rennard : fin tragique, mais **la donnée est déjà partie** (elle ou Bafouille l'a relayée)."));
 b.push(H2("Ouverture vers le futur"));
-b.push(B("**L'avertissement.** Les coordonnées L-14 lancent une course : prévenir la base dissidente avant la frappe — accroche directe pour la suite de campagne."));
+b.push(B("**L'avertissement.** Les coordonnées L-14 lancent une course : prévenir la base dissidente avant la frappe — accroche directe pour la suite."));
 b.push(B("**La traque commence.** Ce que les PJ ont entrevu, c'est la **naissance de l'Escadron de la Mort** : l'*Executor* et sa flotte entrent en scène. Le secteur n'est plus sûr."));
-b.push(B("**Une némésis.** Si Rennard a vu leurs visages, il devient un **antagoniste récurrent** — patient, méthodique, sans colère et sans oubli."));
+b.push(B("**Si Rennard a survécu** *(crans hauts, fuite sans l'abattre)* — il devient une **némésis** possible : patient, méthodique, sans colère et sans oubli. Sinon, l'ISB a perdu son meilleur limier."));
 b.push(B("**Kessel-Tho, point d'appui.** Selon leurs actes, la station reste une base arrière possible (Kallan manipulable, PNJ ralliés, caches des locaux désaffectés) — ou un lieu désormais trop chaud."));
 // ---- ANNEXES ----
 function evtHead(t) { b.push(new Paragraph({ spacing: { before: 90, after: 40 }, keepNext: true, children: [ new TextRun({ text: t, bold: true, size: 19, color: H2COL }) ] })); }
