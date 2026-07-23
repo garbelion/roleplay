@@ -447,7 +447,7 @@ function evtHead(t) { b.push(new Paragraph({ spacing: { before: 90, after: 40 },
 function evt(n, text) { b.push(new Paragraph({ spacing: { after: 20, line: 248 }, indent: { left: 300, hanging: 300 }, alignment: AlignmentType.JUSTIFIED, children: [ new TextRun({ text: n + "  ", bold: true, color: ACCENT }), ...md(text) ] })); }
 b.push(H1("Annexes"));
 b.push(H2("A. Événements aléatoires de la station"));
-b.push(P("Pour donner vie à la station entre deux temps d'enquête. **Lancez deux dés** (ou 1D deux fois) : le premier donne le **thème** (1-6), le second l'**événement** (1-6). Roulez une fois par **quart**, ou dès qu'une scène a besoin de texture. La plupart sont de l'ambiance ; certains portent un **crochet mécanique** *(horloge ISB ; rayonnements → annexe B ; leviers sociaux)*."));
+b.push(P("Pour donner vie à la station entre deux temps d'enquête. **Lancez deux dés** (ou 1D deux fois) : le premier donne le **thème** (1-6), le second l'**événement** (1-6). Roulez une fois par **quart**, ou dès qu'une scène a besoin de texture. La plupart sont de l'ambiance ; certains portent un **crochet mécanique** *(horloge ISB ; rayonnements → annexe C ; leviers sociaux)*."));
 evtHead("1 · Quai & vaisseaux");
 evt("1", "Arrivée du *Perce-Brume* (denrées) : déchargement bruyant, quai encombré une heure.");
 evt("2", "Un remorqueur ramène un caboteur en avarie (écho de l'*Étoile Voilée*) : l'infirmerie est sollicitée.");
@@ -484,21 +484,67 @@ evt("4", "Hooru Damm livre des vivres frais : petit attroupement, bonne occasion
 evt("5", "Fennik Doss reçoit une caisse « non déclarée » à l'armurerie ; il se fait discret.");
 evt("6", "Un colis mal étiqueté circule de main en main à la recherche de son destinataire.");
 evtHead("6 · Ambiance & anodin");
-evt("1", "Une **tempête électromagnétique** fait grésiller les comms 10 min *(voir annexe B)*.");
+evt("1", "Une **tempête électromagnétique** fait grésiller les comms 10 min *(voir annexe C)*.");
 evt("2", "Coupure d'eau chaude aux quartiers : ronchonnements généralisés.");
 evt("3", "Un enfant (rare sur la station) s'est perdu dans une coursive ; qui le raccompagne ?");
 evt("4", "Odeur persistante de caf brûlé au mess ; Kessa s'excuse platement.");
 evt("5", "Un haut-parleur défectueux répète une annonce en boucle jusqu'à ce qu'on le débranche.");
 evt("6", "Rien de notable — la station ronronne. *(Le calme avant quelque chose ?)*");
 
-// ---- ANNEXE B — MÉTÉO DES RAYONNEMENTS ----
-b.push(H2("B. Météo des rayonnements & incidents gravitationnels (la Gueule)"));
+// ---- ANNEXE B — INCIDENTS DU QUOTIDIEN (SCÈNES DE RUE) ----
+b.push(H2("B. Incidents du quotidien (scènes de rue)"));
+b.push(P("Le quotidien grouillant de la station — ce qui se passe **sous les yeux des PJ**, et parfois **à leurs dépens**. Même usage que la table A (**1D** thème + **1D** scène). Certaines scènes s'adressent directement aux PJ (on les aborde, on les détrousse) ; d'autres se déroulent devant eux et font vivre le décor."));
+evtHead("1 · Petite délinquance");
+evt("1", "Un pickpocket effleure un PJ (Perception vs Habileté manuelle) — bourse, comlink ou datapad visé.");
+evt("2", "Deux gamins créent une diversion pendant qu'un troisième fait les poches d'un badaud.");
+evt("3", "Un « vendeur » propose un cristal soi-disant kyber, manifestement faux, à prix cassé.");
+evt("4", "Un commerçant accuse un client de vol ; la foule se masse, ça peut déraper.");
+evt("5", "Un tire-laine détale avec une sacoche ; on crie « au voleur ! » — un PJ est-il sur son chemin ?");
+evt("6", "Un « gardien » propose de surveiller le vaisseau des PJ contre quelques crédits — sinon, « on ne sait jamais ».");
+evtHead("2 · Sollicitations (on aborde les PJ)");
+evt("1", "Un vendeur à la sauvette déballe sa camelote (pièces, comlinks trafiqués) sous le nez des PJ.");
+evt("2", "Un mendiant s'accroche et sert une histoire larmoyante — vraie ou non.");
+evt("3", "Un rabatteur vante une cantina ou un tripot « discret, pas de questions ».");
+evt("4", "Un prostitué ou une prostituée aborde un PJ, sourire fatigué.");
+evt("5", "Un « guide » propose de mener les PJ « où ils veulent, sans être vus » — utile, ou piège.");
+evt("6", "Un prêcheur d'une secte de la Bordure harangue les passants sur la fin des temps.");
+evtHead("3 · Marges & misère");
+evt("1", "Un spice-head hagard fouille les rebuts ; il a peut-être vu quelque chose cette nuit.");
+evt("2", "Une famille de réfugiés campe dans une coursive, surveillée de loin par la garnison.");
+evt("3", "Un joueur ruiné supplie Chessa Vorn pour un délai ; ça finit mal.");
+evt("4", "Un docker brade en douce sa ration ou ses médocs pour éponger une dette.");
+evt("5", "Une bagarre éclate autour d'une dose de spice ; personne n'intervient.");
+evt("6", "Un ancien de la station, sans le sou, connaît tous les recoins — et **se souvient de Tana**.");
+evtHead("4 · Foule & distractions");
+evt("1", "Un musicien joue pour quelques crédits ; sa sébile fait un bon point de rendez-vous discret.");
+evt("2", "Un bonneteau attire un cercle de badauds — arnaque garantie.");
+evt("3", "Un montreur de créature exotique fait son numéro ; l'animal s'échappe à moitié.");
+evt("4", "Deux équipages de passage se toisent au comptoir ; la tension monte.");
+evt("5", "Un attroupement se forme devant un écran crachant de la propagande impériale.");
+evt("6", "Une fête improvisée (fin de contrat d'un équipage) déborde dans la coursive.");
+evtHead("5 · Frictions");
+evt("1", "Bousculade : un PJ renverse l'étal d'un vendeur, qui exige réparation.");
+evt("2", "Un ivrogne prend un PJ pour un autre et cherche des noises.");
+evt("3", "Un garde procède à un contrôle « informel » en espérant un pot-de-vin.");
+evt("4", "Deux PNJ se disputent bruyamment et implorent un PJ de « dire qui a raison ».");
+evt("5", "Un droïde de service défectueux harcèle les passants avec une réclame en boucle.");
+evt("6", "Quelqu'un a pris la place d'amarrage, la table ou la file — négociation ou esclandre.");
+evtHead("6 · Couleur locale");
+evt("1", "Une odeur de cuisine exotique attire vers un stand dont la tenancière entend tout.");
+evt("2", "Un colporteur de rumeurs vend ses « informations » (à moitié vraies) au détail.");
+evt("3", "Un gosse suit les PJ en quémandant, puis lâche une info étonnamment précise.");
+evt("4", "Un vieux droïde de protocole cabossé fait la manche en six langues.");
+evt("5", "Un graffiti frais — slogan rebelle ? tag de gang ? — que la garnison n'a pas encore effacé.");
+evt("6", "Un passant dévisage les PJ un peu trop longtemps, puis s'éclipse. *(Parano… ou filature ISB ?)*");
+
+// ---- ANNEXE C — MÉTÉO DES RAYONNEMENTS ----
+b.push(H2("C. Météo des rayonnements & phénomènes gravitationnels (la Gueule)"));
 b.push(P("Kessel-Tho est en bordure de **la Gueule**, l'amas de trous noirs du système. Tempêtes de rayonnement, pics gravitationnels et brouillage des senseurs font partie du décor — et de la mécanique. Roulez **1D par quart** (ou quand le récit s'y prête) ; en cas d'agitation, complétez par un **incident**."));
 keyHead("Échelle météo (1D par quart)")(b);
 b.push(B("**1-3 · Calme.** Rien de notable. Comms et senseurs nominaux ; départs normaux ; horloge ISB : avance normale."));
 b.push(B("**4-5 · Instable.** Grésillements, brouillage intermittent. **−1D** aux jets de Communications et Sensoreurs (et pour capter/émettre la détresse) ; astrogation de départ **+1 cran de difficulté** ; **l'horloge ISB n'avance pas passivement ce quart** (le rebond se noie dans le bruit) ; roulez un incident."));
 b.push(B("**6 · Tempête.** Rayonnement intense et turbulences gravitationnelles. **−2D** aux comms/senseurs, comms externes possiblement **coupées** ; **départs en hyperespace suspendus** (les vaisseaux sont cloués — l'exfiltration attendra) ; **horloge ISB gelée** ce quart (répit ambigu : les PJ aussi sont bloqués) ; **incident garanti** + danger radiologique pour qui reste exposé (coque fine, sortie extravéhiculaire)."));
-keyHead("Incidents (1D)")(b);
+keyHead("Phénomènes (1D)")(b);
 evt("1", "**Cascade de parasites** : les comms internes grésillent 10 min ; un message important arrive tronqué (le MJ coupe une info en deux).");
 evt("2", "**Pic gravitationnel** : brève micro-gravité dans un secteur ; jet d'Esquive ou de Vigueur pour ne pas être déséquilibré ; un sas se coince.");
 evt("3", "**Bouffée de rayonnement** : alarme radiologique, coursives extérieures évacuées ; qui reste exposé encaisse des dégâts (jet de Vigueur / ~1D de dégâts, à l'appréciation du MJ).");
@@ -510,7 +556,7 @@ b.push(P("**Pilotage.** Une tempête est un excellent **levier de rythme** : pro
 // ---- ANNEXE C — HANDOUT (section PLEINE LARGEUR, hors 2 colonnes) ----
 const HAND_W = 9638; // largeur utile en 1 colonne (A4 - 2 x marge 1134)
 const hand = [];
-hand.push(H2("C. Handout — Le message initial de Tana (le « message 0 »)"));
+hand.push(H2("D. Handout — Le message initial de Tana (le « message 0 »)"));
 hand.push(P("Point de départ du scénario. Avant de disparaître sous l'alias **Doiron**, Tana a posté une annonce sur un canal privé de marché noir : en apparence une brocante banale, mais **une ligne sur deux (les impaires)** forme un message d'alerte à l'Alliance — procédé **« Sand/Musset »** (un texte anodin dont une ligne sur deux cache un second message). Un intermédiaire, **le Courtier**, l'a relayé à la Rébellion : c'est ce qui amène les PJ à Kessel-Tho."));
 hand.push(P("**Volontairement, les coordonnées de la flotte n'y figurent pas** (ni en surface, ni en caché) : Tana refuse de les confier à un canal ouvert. Il faut la retrouver physiquement et déchiffrer son journal."));
 hand.push(new Paragraph({ spacing: { before: 40, after: 40 }, children: [ new TextRun({ text: "Le message caché (lignes impaires), en clair :", bold: true, color: ACCENT, size: 19 }) ] }));

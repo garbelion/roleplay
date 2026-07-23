@@ -136,8 +136,13 @@ Section **Annexes** (H1) après la conclusion :
   note MJ (chiffre « Sand/Musset » = 1 ligne sur 2, relais par « le Courtier »,
   message décodé, double sens de « impériaux ») + l'**encadré à imprimer** (police
   Consolas, liseré rouge/fond parchemin). Source détaillée : `docs/message_initial_tana.docx`.
-- **Lettrage acté (fait)** : **A** Événements · **B** Météo des rayonnements (outils
-  MJ, 2 colonnes) · **C** Handout (joueurs, pleine largeur). Le handout a été re-lettré B→C.
+- **Lettrage acté (fait)** : **A** Événements de la station (operationnel, d66) ·
+  **B** Incidents du quotidien / scènes de rue (d66, ajout utilisateur — vol, sauvette,
+  prostitution, mendicité, arnaques…) · **C** Météo des rayonnements (sa sous-liste
+  « Incidents » renommée **Phénomènes** pour ne pas entrer en collision) · **D** Handout
+  (joueurs, pleine largeur). Tout en 2 colonnes sauf D.
+  NB terminologie : « table incidents » = quotidien de rue (annexe B) ; les phénomènes
+  radiologiques/gravitationnels restent dans la météo (annexe C).
 
 Technique docx : le passage 2 colonnes → 1 colonne se fait via une **nouvelle section**
 (`sections[]`), pas via un saut de colonne. Footer dupliqué via `makeFooter()`.

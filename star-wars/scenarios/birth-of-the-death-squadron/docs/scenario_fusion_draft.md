@@ -650,7 +650,7 @@ Pour donner vie à la station entre deux temps d'enquête. **Lancez deux dés** 
 deux fois) : le premier donne le **thème** (1-6), le second l'**événement** (1-6).
 Roulez une fois par **quart**, ou dès qu'une scène a besoin de texture. La plupart
 sont de l'ambiance ; certains portent un **crochet mécanique** *(horloge ISB §Présentation ;
-rayonnements → annexe B ; leviers sociaux)*.
+rayonnements → annexe C ; leviers sociaux)*.
 
 **1 · Quai & vaisseaux**
 1. Arrivée du *Perce-Brume* (denrées) : déchargement bruyant, quai encombré une heure.
@@ -693,14 +693,69 @@ rayonnements → annexe B ; leviers sociaux)*.
 6. Un colis mal étiqueté circule de main en main à la recherche de son destinataire.
 
 **6 · Ambiance & anodin**
-1. Une **tempête électromagnétique** fait grésiller les comms 10 min *(voir annexe B)*.
+1. Une **tempête électromagnétique** fait grésiller les comms 10 min *(voir annexe C)*.
 2. Coupure d'eau chaude aux quartiers : ronchonnements généralisés.
 3. Un enfant (rare sur la station) s'est perdu dans une coursive ; qui le raccompagne ?
 4. Odeur persistante de caf brûlé au mess ; Kessa s'excuse platement.
 5. Un haut-parleur défectueux répète une annonce en boucle jusqu'à ce qu'on le débranche.
 6. Rien de notable — la station ronronne. *(Le calme avant quelque chose ?)*
 
-## B. Météo des rayonnements & incidents gravitationnels (la Gueule)
+## B. Incidents du quotidien (scènes de rue)
+
+Le quotidien grouillant de la station — ce qui se passe **sous les yeux des PJ**, et
+parfois **à leurs dépens**. Même usage que la table A (**1D** thème + **1D** scène).
+Certaines scènes s'adressent directement aux PJ (on les aborde, on les détrousse) ;
+d'autres se déroulent devant eux et font vivre le décor.
+
+**1 · Petite délinquance**
+1. Un pickpocket effleure un PJ (Perception vs Habileté manuelle) — bourse, comlink ou datapad visé.
+2. Deux gamins créent une diversion pendant qu'un troisième fait les poches d'un badaud.
+3. Un « vendeur » propose un cristal soi-disant kyber, manifestement faux, à prix cassé.
+4. Un commerçant accuse un client de vol ; la foule se masse, ça peut déraper.
+5. Un tire-laine détale avec une sacoche ; on crie « au voleur ! » — un PJ est-il sur son chemin ?
+6. Un « gardien » propose de surveiller le vaisseau des PJ contre quelques crédits — sinon, « on ne sait jamais ».
+
+**2 · Sollicitations (on aborde les PJ)**
+1. Un vendeur à la sauvette déballe sa camelote (pièces, comlinks trafiqués) sous le nez des PJ.
+2. Un mendiant s'accroche et sert une histoire larmoyante — vraie ou non.
+3. Un rabatteur vante une cantina ou un tripot « discret, pas de questions ».
+4. Un prostitué ou une prostituée aborde un PJ, sourire fatigué.
+5. Un « guide » propose de mener les PJ « où ils veulent, sans être vus » — utile, ou piège.
+6. Un prêcheur d'une secte de la Bordure harangue les passants sur la fin des temps.
+
+**3 · Marges & misère**
+1. Un spice-head hagard fouille les rebuts ; il a peut-être vu quelque chose cette nuit.
+2. Une famille de réfugiés campe dans une coursive, surveillée de loin par la garnison.
+3. Un joueur ruiné supplie Chessa Vorn pour un délai ; ça finit mal.
+4. Un docker brade en douce sa ration ou ses médocs pour éponger une dette.
+5. Une bagarre éclate autour d'une dose de spice ; personne n'intervient.
+6. Un ancien de la station, sans le sou, connaît tous les recoins — et **se souvient de Tana**.
+
+**4 · Foule & distractions**
+1. Un musicien joue pour quelques crédits ; sa sébile fait un bon point de rendez-vous discret.
+2. Un bonneteau attire un cercle de badauds — arnaque garantie.
+3. Un montreur de créature exotique fait son numéro ; l'animal s'échappe à moitié.
+4. Deux équipages de passage se toisent au comptoir ; la tension monte.
+5. Un attroupement se forme devant un écran crachant de la propagande impériale.
+6. Une fête improvisée (fin de contrat d'un équipage) déborde dans la coursive.
+
+**5 · Frictions**
+1. Bousculade : un PJ renverse l'étal d'un vendeur, qui exige réparation.
+2. Un ivrogne prend un PJ pour un autre et cherche des noises.
+3. Un garde procède à un contrôle « informel » en espérant un pot-de-vin.
+4. Deux PNJ se disputent bruyamment et implorent un PJ de « dire qui a raison ».
+5. Un droïde de service défectueux harcèle les passants avec une réclame en boucle.
+6. Quelqu'un a pris la place d'amarrage, la table ou la file — négociation ou esclandre.
+
+**6 · Couleur locale**
+1. Une odeur de cuisine exotique attire vers un stand dont la tenancière entend tout.
+2. Un colporteur de rumeurs vend ses « informations » (à moitié vraies) au détail.
+3. Un gosse suit les PJ en quémandant, puis lâche une info étonnamment précise.
+4. Un vieux droïde de protocole cabossé fait la manche en six langues.
+5. Un graffiti frais — slogan rebelle ? tag de gang ? — que la garnison n'a pas encore effacé.
+6. Un passant dévisage les PJ un peu trop longtemps, puis s'éclipse. *(Parano… ou filature ISB ?)*
+
+## C. Météo des rayonnements & phénomènes gravitationnels (la Gueule)
 
 Kessel-Tho est en bordure de **la Gueule**, l'amas de trous noirs du système.
 Tempêtes de rayonnement, pics gravitationnels et brouillage des senseurs font partie
@@ -712,7 +767,7 @@ en cas d'agitation, complétez par un **incident**.
 - **4-5 · Instable.** Grésillements, brouillage intermittent. **−1D** aux jets de Communications et Sensoreurs (et pour capter/émettre la détresse) ; astrogation de départ **+1 cran de difficulté** ; **l'horloge ISB n'avance pas passivement ce quart** (le rebond se noie dans le bruit) ; roulez un incident.
 - **6 · Tempête.** Rayonnement intense et turbulences gravitationnelles. **−2D** aux comms/senseurs, comms externes possiblement **coupées** ; **départs en hyperespace suspendus** (les vaisseaux sont cloués — l'exfiltration attendra) ; **horloge ISB gelée** ce quart (répit ambigu : les PJ aussi sont bloqués) ; **incident garanti** + danger radiologique pour qui reste exposé (coque fine, sortie extravéhiculaire).
 
-**Incidents (1D)**
+**Phénomènes (1D)**
 1. **Cascade de parasites** : les comms internes grésillent 10 min ; un message important arrive tronqué (le MJ coupe une info en deux).
 2. **Pic gravitationnel** : brève micro-gravité dans un secteur ; jet d'Esquive ou de Vigueur pour ne pas être déséquilibré ; un sas se coince.
 3. **Bouffée de rayonnement** : alarme radiologique, coursives extérieures évacuées ; qui reste exposé encaisse des dégâts (jet de Vigueur / ~1D de dégâts, à l'appréciation du MJ).
@@ -727,7 +782,7 @@ les départs** : le répit a un prix.
 
 ---
 
-## C. Handout — Le message initial de Tana (le « message 0 »)
+## D. Handout — Le message initial de Tana (le « message 0 »)
 
 *Cette section est en pleine largeur (hors mise en page à deux colonnes).*
 
