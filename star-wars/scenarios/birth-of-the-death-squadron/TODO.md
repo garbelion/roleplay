@@ -30,10 +30,13 @@ Priorités : **Bloquant** > **Haute** > **Moyenne** > **Basse**.
   Branché sur #3 (événements), #4 (rayonnements) et le pré-tiré Holt.
   Rédigé dans la Présentation (remplace l'ancien « compte à rebours » flou).
 
-- [ ] **3. Ajouter une table d'événements aléatoires de la station.**
-  Incidents du quotidien, pannes, bagarres, arrivées/départs de vaisseaux.
-  S'appuyer sur le journal de nuit (doc g) et la panne électrique C19/J133 déjà
-  posée comme complication réutilisable.
+- [x] **3. Ajouter une table d'événements aléatoires de la station.** ✅ FAIT
+  Table **d66** (2 dés : thème 1-6 × événement 1-6 = 36 entrées, 100 % dés D6),
+  6 thèmes (quai/vaisseaux, technique/pannes, personnel/social, sécurité/impérial,
+  commerce/rumeurs, ambiance). Ancrée dans le journal de nuit (doc g : Perce-Brume,
+  Étoile Voilée, passerelle 3, panne élec C19/J133, altercations…) et crochetée sur
+  l'horloge ISB (#2), les rayonnements (#4) et les leviers sociaux. Placée dans une
+  nouvelle section **Annexes — outils de MJ** (annexe A) après la conclusion.
 
 - [ ] **4. Ajouter une table « météo des rayonnements » & incidents gravitationnels.**
   Kessel-Tho est en bordure de la Gueule (amas de trous noirs) : tempêtes de

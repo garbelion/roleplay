@@ -641,4 +641,64 @@ peser sur la suite.
 
 ---
 
+# ANNEXES — OUTILS DE MJ
+
+## A. Événements aléatoires de la station
+
+Pour donner vie à la station entre deux temps d'enquête. **Lancez deux dés** (ou 1D
+deux fois) : le premier donne le **thème** (1-6), le second l'**événement** (1-6).
+Roulez une fois par **quart**, ou dès qu'une scène a besoin de texture. La plupart
+sont de l'ambiance ; certains portent un **crochet mécanique** *(horloge ISB §Présentation ;
+rayonnements → annexe B ; leviers sociaux)*.
+
+**1 · Quai & vaisseaux**
+1. Arrivée du *Perce-Brume* (denrées) : déchargement bruyant, quai encombré une heure.
+2. Un remorqueur ramène un caboteur en avarie (écho de l'*Étoile Voilée*) : l'infirmerie est sollicitée.
+3. Départ précipité d'un contrebandier sans acquitter ses taxes de quai — Bregman fulmine.
+4. Deux vaisseaux non déclarés s'accrochent au loin (règlement de comptes) : **confinement partiel**, quai verrouillé ~2 h.
+5. Le *Long Sillage* (Fenn Yorrik) fait escale : rumeurs et marchandages à la cantina.
+6. La **passerelle 3 grince** de plus belle ; un docker se tord la cheville, ticket de maintenance relancé (en vain).
+
+**2 · Technique & pannes**
+1. Micro-coupure d'éclairage secteur D, réglée en moins d'une heure — mais une porte reste bloquée entre-temps.
+2. **Fluctuation du réseau électrique** (secteurs B/C), bascule de secours lente : noir de ~90 s *(diversion possible, cf. horloge ISB)*.
+3. Contrôle du recyclage d'air secteur C : léger défaut, odeur de brûlé, secteur évacué 20 min.
+4. Antenne AD-01 : micro-coupures des comms extérieures pendant 30 min (senseurs dégradés).
+5. Un droïde de maintenance tombe en panne au milieu d'une coursive et bloque le passage.
+6. Recalibrage d'antenne par Kavarel : accès à la galerie de maintenance temporairement restreint.
+
+**3 · Personnel & social**
+1. Altercation entre deux dockers (manutention ratée) : fin de service anticipée, tension palpable.
+2. Kessa Droman sert un plat spécial au mess : tout le monde s'y presse (bon moment social).
+3. Rumeur de réduction d'effectifs : le personnel est nerveux, moins bavard.
+4. Le centre culturel réclame (encore) des crédits à l'administration ; Maren Estil de mauvaise humeur.
+5. Passation Bregman/Voss houleuse : un rapport « oublié » refait surface.
+6. Quelqu'un a trop bu à la cantina ; Vezz Nurodo cherche à le faire raccompagner discrètement.
+
+**4 · Sécurité & présence impériale**
+1. Contrôle d'identité inopiné au quai (Denz & Voy) : file d'attente, nervosité générale.
+2. Le Lt Adrast inspecte un niveau au hasard, pour « faire du zèle » devant l'ISB.
+3. Une **silhouette grise** (Skarn ?) est aperçue à un carrefour, puis disparaît. *(Signe d'horloge ISB.)*
+4. Patrouille conjointe : Denz bavarde (info gratuite), Voy raccourcit la conversation.
+5. Rennard demande à consulter un registre à la capitainerie : l'étau se resserre *(avancer l'horloge ?)*.
+6. Fausse alerte capteur : **confinement 15 min**, tout le monde sur les nerfs.
+
+**5 · Commerce & rumeurs**
+1. Trik Ossoval propose une « pièce rare » (peut-être utile, peut-être volée).
+2. Chessa Vorn fait la tournée de ses débiteurs : on apprend qui est endetté *(levier social)*.
+3. Le chasseur de primes *Widowmaker* (Krul Ashen) est de passage : la cantina se tait à son entrée.
+4. Hooru Damm livre des vivres frais : petit attroupement, bonne occasion d'écouter des ragots.
+5. Fennik Doss reçoit une caisse « non déclarée » à l'armurerie ; il se fait discret.
+6. Un colis mal étiqueté circule de main en main à la recherche de son destinataire.
+
+**6 · Ambiance & anodin**
+1. Une **tempête électromagnétique** fait grésiller les comms 10 min *(voir annexe B)*.
+2. Coupure d'eau chaude aux quartiers : ronchonnements généralisés.
+3. Un enfant (rare sur la station) s'est perdu dans une coursive ; qui le raccompagne ?
+4. Odeur persistante de caf brûlé au mess ; Kessa s'excuse platement.
+5. Un haut-parleur défectueux répète une annonce en boucle jusqu'à ce qu'on le débranche.
+6. Rien de notable — la station ronronne. *(Le calme avant quelque chose ?)*
+
+---
+
 *Fin du document fusionné. Handouts (d)→(j) fournis séparément.*

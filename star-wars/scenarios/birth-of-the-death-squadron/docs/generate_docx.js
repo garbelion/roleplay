@@ -442,6 +442,54 @@ b.push(B("**L'avertissement.** Les coordonnées L-14 lancent une course : préve
 b.push(B("**La traque commence.** Ce que les PJ ont entrevu, c'est la **naissance de l'Escadron de la Mort** : l'*Executor* et sa flotte entrent en scène. Le secteur n'est plus sûr."));
 b.push(B("**Une némésis.** Si Rennard a vu leurs visages, il devient un **antagoniste récurrent** — patient, méthodique, sans colère et sans oubli."));
 b.push(B("**Kessel-Tho, point d'appui.** Selon leurs actes, la station reste une base arrière possible (Kallan manipulable, PNJ ralliés, caches des locaux désaffectés) — ou un lieu désormais trop chaud."));
+// ---- ANNEXES ----
+function evtHead(t) { b.push(new Paragraph({ spacing: { before: 90, after: 40 }, keepNext: true, children: [ new TextRun({ text: t, bold: true, size: 19, color: H2COL }) ] })); }
+function evt(n, text) { b.push(new Paragraph({ spacing: { after: 20, line: 248 }, indent: { left: 300, hanging: 300 }, alignment: AlignmentType.JUSTIFIED, children: [ new TextRun({ text: n + "  ", bold: true, color: ACCENT }), ...md(text) ] })); }
+b.push(H1("Annexes — outils de MJ"));
+b.push(H2("A. Événements aléatoires de la station"));
+b.push(P("Pour donner vie à la station entre deux temps d'enquête. **Lancez deux dés** (ou 1D deux fois) : le premier donne le **thème** (1-6), le second l'**événement** (1-6). Roulez une fois par **quart**, ou dès qu'une scène a besoin de texture. La plupart sont de l'ambiance ; certains portent un **crochet mécanique** *(horloge ISB ; rayonnements → annexe B ; leviers sociaux)*."));
+evtHead("1 · Quai & vaisseaux");
+evt("1", "Arrivée du *Perce-Brume* (denrées) : déchargement bruyant, quai encombré une heure.");
+evt("2", "Un remorqueur ramène un caboteur en avarie (écho de l'*Étoile Voilée*) : l'infirmerie est sollicitée.");
+evt("3", "Départ précipité d'un contrebandier sans acquitter ses taxes de quai — Bregman fulmine.");
+evt("4", "Deux vaisseaux non déclarés s'accrochent au loin (règlement de comptes) : **confinement partiel**, quai verrouillé ~2 h.");
+evt("5", "Le *Long Sillage* (Fenn Yorrik) fait escale : rumeurs et marchandages à la cantina.");
+evt("6", "La **passerelle 3 grince** de plus belle ; un docker se tord la cheville, ticket de maintenance relancé (en vain).");
+evtHead("2 · Technique & pannes");
+evt("1", "Micro-coupure d'éclairage secteur D, réglée en moins d'une heure — mais une porte reste bloquée entre-temps.");
+evt("2", "**Fluctuation du réseau électrique** (secteurs B/C), bascule de secours lente : noir de ~90 s *(diversion possible, cf. horloge ISB)*.");
+evt("3", "Contrôle du recyclage d'air secteur C : léger défaut, odeur de brûlé, secteur évacué 20 min.");
+evt("4", "Antenne AD-01 : micro-coupures des comms extérieures pendant 30 min (senseurs dégradés).");
+evt("5", "Un droïde de maintenance tombe en panne au milieu d'une coursive et bloque le passage.");
+evt("6", "Recalibrage d'antenne par Kavarel : accès à la galerie de maintenance temporairement restreint.");
+evtHead("3 · Personnel & social");
+evt("1", "Altercation entre deux dockers (manutention ratée) : fin de service anticipée, tension palpable.");
+evt("2", "Kessa Droman sert un plat spécial au mess : tout le monde s'y presse (bon moment social).");
+evt("3", "Rumeur de réduction d'effectifs : le personnel est nerveux, moins bavard.");
+evt("4", "Le centre culturel réclame (encore) des crédits à l'administration ; Maren Estil de mauvaise humeur.");
+evt("5", "Passation Bregman/Voss houleuse : un rapport « oublié » refait surface.");
+evt("6", "Quelqu'un a trop bu à la cantina ; Vezz Nurodo cherche à le faire raccompagner discrètement.");
+evtHead("4 · Sécurité & présence impériale");
+evt("1", "Contrôle d'identité inopiné au quai (Denz & Voy) : file d'attente, nervosité générale.");
+evt("2", "Le Lt Adrast inspecte un niveau au hasard, pour « faire du zèle » devant l'ISB.");
+evt("3", "Une **silhouette grise** (Skarn ?) est aperçue à un carrefour, puis disparaît. *(Signe d'horloge ISB.)*");
+evt("4", "Patrouille conjointe : Denz bavarde (info gratuite), Voy raccourcit la conversation.");
+evt("5", "Rennard demande à consulter un registre à la capitainerie : l'étau se resserre *(avancer l'horloge ?)*.");
+evt("6", "Fausse alerte capteur : **confinement 15 min**, tout le monde sur les nerfs.");
+evtHead("5 · Commerce & rumeurs");
+evt("1", "Trik Ossoval propose une « pièce rare » (peut-être utile, peut-être volée).");
+evt("2", "Chessa Vorn fait la tournée de ses débiteurs : on apprend qui est endetté *(levier social)*.");
+evt("3", "Le chasseur de primes *Widowmaker* (Krul Ashen) est de passage : la cantina se tait à son entrée.");
+evt("4", "Hooru Damm livre des vivres frais : petit attroupement, bonne occasion d'écouter des ragots.");
+evt("5", "Fennik Doss reçoit une caisse « non déclarée » à l'armurerie ; il se fait discret.");
+evt("6", "Un colis mal étiqueté circule de main en main à la recherche de son destinataire.");
+evtHead("6 · Ambiance & anodin");
+evt("1", "Une **tempête électromagnétique** fait grésiller les comms 10 min *(voir annexe B)*.");
+evt("2", "Coupure d'eau chaude aux quartiers : ronchonnements généralisés.");
+evt("3", "Un enfant (rare sur la station) s'est perdu dans une coursive ; qui le raccompagne ?");
+evt("4", "Odeur persistante de caf brûlé au mess ; Kessa s'excuse platement.");
+evt("5", "Un haut-parleur défectueux répète une annonce en boucle jusqu'à ce qu'on le débranche.");
+evt("6", "Rien de notable — la station ronronne. *(Le calme avant quelque chose ?)*");
 b.push(new Paragraph({ spacing: { before: 240 }, alignment: AlignmentType.CENTER, children: [ new TextRun({ text: "— Fin du document · Handouts (d)→(j) fournis séparément —", italics: true, size: 18, color: "888888" }) ] }));
 
 // ---------- footer ----------
