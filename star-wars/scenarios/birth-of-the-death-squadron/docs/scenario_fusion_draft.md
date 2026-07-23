@@ -96,19 +96,46 @@ la cryptographie : les joueurs fournissent les paramètres, la machine calcule.*
 > **journal chiffré** (document d, le trésor final). Ce document conserve les deux
 > libellés d'origine ; ne les confondez pas en jeu.
 
-## La menace : le compte à rebours ISB
+## La menace : l'horloge ISB (la triangulation)
 
-L'anomalie de rebond de fréquence qui a permis l'interception a aussi trahi son
-existence. Une équipe restreinte du **Bureau de Sécurité Impériale** ratisse les
-stations-relais du secteur pour en localiser la source :
+Le **moteur de tension** du scénario. Une équipe restreinte du **Bureau de Sécurité
+Impériale** — l'agent **Rennard**, l'analyste **Sorae Vint**, les commandos **Ferrus
+& Skarn** (fiches en §4.7) — ratisse le secteur. Vint retrace pas à pas le **rebond
+de fréquence** qui a trahi l'interception. Ce n'est pas « l'Empire soupçonne les
+PJ » : c'est l'Empire qui **resserre l'endroit** d'où le signal est parti — et cet
+endroit converge vers Kessel-Tho, puis la DMZ et le journal, puis Tana et ceux qui
+l'aident. La triangulation est **inexorable** : elle avance toujours.
 
-- **Agent Ivo Rennard** — le chasseur méthodique, ne bluffe jamais.
-- **Analyste Sorae Vint** — retrace le rebond ; **sa progression = l'horloge réelle**.
-- **Commandos Ferrus & Skarn** — la menace physique, si l'enquête débouche sur une prise.
+**La piste — 6 crans.** L'horloge démarre au **cran 2** (l'équipe arrive sur
+Kessel-Tho, parmi d'autres stations ratissées). Chaque cran change concrètement la
+situation :
 
-Le MJ gère cette pression comme un **compte à rebours** : chaque erreur visible des
-PJ (question de trop, effraction repérée, PNJ alarmé) fait avancer Vint. Quand elle
-boucle sa triangulation, l'ISB verrouille la station.
+- **Cran 1 — Ratissage large.** L'équipe est encore ailleurs dans le secteur. *(Départ possible pour une intro plus lente.)*
+- **Cran 2 — Arrivée.** Rennard prend ses quartiers (zone commandos, N3). Skarn amorce une reconnaissance discrète du quai et des niveaux publics. *Départ recommandé.*
+- **Cran 3 — Corrélation.** Vint relie le rebond à Kessel-Tho précisément. Contrôles d'accès renforcés ; premiers entretiens avec le personnel (Aashe, Kallan, garnison).
+- **Cran 4 — Le trafic de fréquences.** Rennard réquisitionne les registres (capitainerie, transmissions). **Tout départ de vaisseau exige désormais un feu vert de l'ISB.** L'étau se resserre sur la DMZ.
+- **Cran 5 — Les faux clients.** Vint isole l'anomalie des trois alias. L'ISB cherche activement « Doiron » : la boutique est surveillée, les contacts de Tana (re)interrogés.
+- **Cran 6 — VERROUILLAGE.** Station bouclée : quais fermés, tout départ inspecté, Ferrus et Skarn en intervention. Chasse ouverte à Tana et à quiconque la couvre. *Le climax se joue maintenant, de gré ou de force.*
+
+**Ce qui fait avancer l'horloge.**
+- **Avance passive (le temps) :** +1 cran par **quart** écoulé (~8 h de fiction). À défaut de suivre l'heure, comptez +1 après chaque **scène-clé** (indice bouclé, changement de niveau majeur). L'horloge ne recule jamais d'elle-même.
+- **Bavure mineure (+1) :** une question de trop qui remonte (interroger un impérial ou un PNJ prudent sur Tana / Doiron / les fréquences) ; un jet social raté devant un uniforme ; se faire remarquer au quai ou au marché gris ; un achat voyant à l'armurerie.
+- **Bavure majeure (+2) :** effraction repérée (DMZ, bureau Kallan, terminal des transmissions) ; alarme déclenchée ; PNJ alarmé qui alerte la garnison ou l'ISB ; violence ou arme dégainée en public ; **trace numérique laissée au slicing** (échec critique en Sécurité / Programmation).
+
+**Ce qui peut la ralentir (−1, une fois chacun).**
+- **Désinformation active :** planter une fausse piste crédible — faire porter le rebond au *Long Sillage* déjà « suspecté » (rapport e), brouiller une borne WN, falsifier un registre.
+- **Holt Marek de l'intérieur :** exploiter les procédures ISB (faux ordre, lenteur administrative provoquée) — −1 sur un jet de *Bureaucratie impériale* réussi.
+- **Diversion coûteuse :** provoquer un incident de station (cf. table d'événements §… ; ex. panne électrique C19/J133) qui accapare l'attention — gare aux dégâts collatéraux.
+
+**Signes à télégraphier** (faire *sentir* l'horloge sans montrer le chiffre) : une
+silhouette grise (Skarn) aperçue deux fois ; le personnel plus nerveux, moins bavard ;
+un contrôle d'identité au quai qui n'y était pas la veille ; l'annonce que « les
+départs sont soumis à autorisation ». Chaque montée d'un cran mérite un signe concret.
+
+**Pilotage & variantes.** Gardez le compteur caché ; laissez les joueurs lire la
+pression aux signes. One-shot tendu : démarrez au **cran 3**. Intro posée : **cran 1**.
+Une **tempête de rayonnements** (cf. table météo) peut geler l'avance passive d'un
+quart — répit ambigu, car les comms des PJ sautent aussi.
 
 ## Conseils de conduite
 

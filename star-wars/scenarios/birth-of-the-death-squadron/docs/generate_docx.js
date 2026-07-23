@@ -150,12 +150,25 @@ encart(b, "⚠ Attention à la lettre « (d) »", [
   EP("Dans les documents source, « (d) » désigne **deux choses distinctes** : la **4ᵉ énigme** (les annonces du mess) **et** le **journal chiffré** (document d, le trésor final). Ce document conserve les deux libellés d'origine ; ne les confondez pas en jeu."),
 ]);
 
-b.push(H2("La menace : le compte à rebours ISB"));
-b.push(P("L'anomalie de rebond de fréquence qui a permis l'interception a aussi trahi son existence. Une équipe restreinte du **Bureau de Sécurité Impériale** ratisse les stations-relais du secteur pour en localiser la source :"));
-b.push(B("**Agent Ivo Rennard** — le chasseur méthodique, ne bluffe jamais."));
-b.push(B("**Analyste Sorae Vint** — retrace le rebond ; **sa progression = l'horloge réelle**."));
-b.push(B("**Commandos Ferrus & Skarn** — la menace physique, si l'enquête débouche sur une prise."));
-b.push(P("Le MJ gère cette pression comme un **compte à rebours** : chaque erreur visible des PJ (question de trop, effraction repérée, PNJ alarmé) fait avancer Vint. Quand elle boucle sa triangulation, l'ISB verrouille la station."));
+b.push(H2("La menace : l'horloge ISB (la triangulation)"));
+b.push(P("Le **moteur de tension** du scénario. Une équipe restreinte du **Bureau de Sécurité Impériale** — l'agent **Rennard**, l'analyste **Sorae Vint**, les commandos **Ferrus & Skarn** (fiches en §4.7) — ratisse le secteur. Vint retrace pas à pas le **rebond de fréquence** qui a trahi l'interception. Ce n'est pas « l'Empire soupçonne les PJ » : c'est l'Empire qui **resserre l'endroit** d'où le signal est parti — et cet endroit converge vers Kessel-Tho, puis la DMZ et le journal, puis Tana et ceux qui l'aident. La triangulation est **inexorable** : elle avance toujours."));
+b.push(P("**La piste — 6 crans.** L'horloge démarre au **cran 2** (l'équipe arrive sur Kessel-Tho, parmi d'autres stations ratissées). Chaque cran change concrètement la situation :"));
+b.push(B("**Cran 1 — Ratissage large.** L'équipe est encore ailleurs dans le secteur. *(Départ possible pour une intro plus lente.)*"));
+b.push(B("**Cran 2 — Arrivée.** Rennard prend ses quartiers (zone commandos, N3). Skarn amorce une reconnaissance discrète du quai et des niveaux publics. *Départ recommandé.*"));
+b.push(B("**Cran 3 — Corrélation.** Vint relie le rebond à Kessel-Tho précisément. Contrôles d'accès renforcés ; premiers entretiens avec le personnel (Aashe, Kallan, garnison)."));
+b.push(B("**Cran 4 — Le trafic de fréquences.** Rennard réquisitionne les registres (capitainerie, transmissions). **Tout départ de vaisseau exige désormais un feu vert de l'ISB.** L'étau se resserre sur la DMZ."));
+b.push(B("**Cran 5 — Les faux clients.** Vint isole l'anomalie des trois alias. L'ISB cherche activement « Doiron » : la boutique est surveillée, les contacts de Tana (re)interrogés."));
+b.push(B("**Cran 6 — VERROUILLAGE.** Station bouclée : quais fermés, tout départ inspecté, Ferrus et Skarn en intervention. Chasse ouverte à Tana et à quiconque la couvre. *Le climax se joue maintenant, de gré ou de force.*"));
+keyHead("Ce qui fait avancer l'horloge")(b);
+b.push(B("**Avance passive (le temps) :** +1 cran par **quart** écoulé (~8 h de fiction). À défaut de suivre l'heure, comptez +1 après chaque **scène-clé** (indice bouclé, changement de niveau majeur). L'horloge ne recule jamais d'elle-même."));
+b.push(B("**Bavure mineure (+1) :** une question de trop qui remonte (interroger un impérial ou un PNJ prudent sur Tana / Doiron / les fréquences) ; un jet social raté devant un uniforme ; se faire remarquer au quai ou au marché gris ; un achat voyant à l'armurerie."));
+b.push(B("**Bavure majeure (+2) :** effraction repérée (DMZ, bureau Kallan, terminal des transmissions) ; alarme déclenchée ; PNJ alarmé qui alerte la garnison ou l'ISB ; violence ou arme dégainée en public ; **trace numérique laissée au slicing** (échec critique en Sécurité / Programmation)."));
+keyHead("Ce qui peut la ralentir (−1, une fois chacun)")(b);
+b.push(B("**Désinformation active :** planter une fausse piste crédible — faire porter le rebond au *Long Sillage* déjà « suspecté » (rapport e), brouiller une borne WN, falsifier un registre."));
+b.push(B("**Holt Marek de l'intérieur :** exploiter les procédures ISB (faux ordre, lenteur administrative provoquée) — −1 sur un jet de *Bureaucratie impériale* réussi."));
+b.push(B("**Diversion coûteuse :** provoquer un incident de station (cf. table d'événements ; ex. panne électrique C19/J133) qui accapare l'attention — gare aux dégâts collatéraux."));
+b.push(P("**Signes à télégraphier** *(faire sentir l'horloge sans montrer le chiffre)* : une silhouette grise (Skarn) aperçue deux fois ; le personnel plus nerveux, moins bavard ; un contrôle d'identité au quai qui n'y était pas la veille ; l'annonce que « les départs sont soumis à autorisation ». Chaque montée d'un cran mérite un signe concret."));
+b.push(P("**Pilotage & variantes.** Gardez le compteur caché ; laissez les joueurs lire la pression aux signes. One-shot tendu : démarrez au **cran 3**. Intro posée : **cran 1**. Une **tempête de rayonnements** (cf. table météo) peut geler l'avance passive d'un quart — répit ambigu, car les comms des PJ sautent aussi."));
 
 b.push(H2("Conseils de conduite"));
 b.push(B("**Tana observe avant d'aider.** Elle jauge les PJ depuis sa boutique buggée ; sa coopération se mérite. Tant qu'elle n'a pas décidé, elle joue Doiron la marchande."));

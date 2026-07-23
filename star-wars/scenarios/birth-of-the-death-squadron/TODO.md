@@ -22,11 +22,13 @@ Priorités : **Bloquant** > **Haute** > **Moyenne** > **Basse**.
 
 ## Haute
 
-- [ ] **2. Concrétiser l'horloge ISB** (moteur de tension, actuellement flou).
-  Définir : paliers de triangulation de l'analyste Sorae Vint, déclencheurs
-  concrets (question de trop, effraction repérée, PNJ alarmé…), seuil de
-  verrouillage de la station. Objectif : une échelle pilotable et reproductible
-  d'un MJ à l'autre.
+- [x] **2. Concrétiser l'horloge ISB** (moteur de tension). ✅ FAIT
+  Piste en **6 crans** (états escaladés jusqu'au VERROUILLAGE), avance passive
+  (+1/quart ou /scène-clé) + bavures chiffrées (mineure +1 / majeure +2),
+  leviers de ralentissement (−1 : désinformation, Holt/procédures ISB, diversion),
+  signes à télégraphier, pilotage caché + variantes de départ (cran 1/2/3).
+  Branché sur #3 (événements), #4 (rayonnements) et le pré-tiré Holt.
+  Rédigé dans la Présentation (remplace l'ancien « compte à rebours » flou).
 
 - [ ] **3. Ajouter une table d'événements aléatoires de la station.**
   Incidents du quotidien, pannes, bagarres, arrivées/départs de vaisseaux.
