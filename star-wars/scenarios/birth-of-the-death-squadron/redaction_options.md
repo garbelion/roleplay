@@ -107,9 +107,18 @@ adaptées aux PNJ actuels) — **à valider en rédaction** :
    (retour utilisateur). La solution v1 (libellés conservés + encart d'avertissement) est
    jugée insuffisante ; option pressentie = renommer le journal « document J » / « journal-trésor »
    pour lever l'ambiguïté à la racine. Voir `TODO.md` #6.
-2. **Système de jeu** : **DÉCISION — système D6** (retour utilisateur). Les PNJ et les
-   personnages pré-tirés doivent recevoir des stat-blocks D6. *(Remplace l'ancien défaut
-   « aucun stat-bloc / description narrative seule ».)* Voir `TODO.md` #1 et #8.
+2. **Système de jeu** : **variante D6 francophone « visions de légendes »** (retour
+   utilisateur — *pas* le WEG standard). 6 attributs : **Coordination** (ex-Dextérité),
+   Savoir, Perception, Mécanique, Technique, Vigueur ; compétences propres (Furtivité,
+   Subterfuge, Autorité, Recherche, Commerce, Piloter vaisseaux, Senseurs, Prog. et Rép.
+   ordinat./Droïds, Médecine, Résistance, Mouvement…) ; stats dérivées Initiative,
+   Ténacité/Vitalité, Pénalité de coordination. Feuilles de référence dans `docs/` :
+   **FDPJ RV v.3.8.2** (joueur) et **FDADV v.3.8.2** (adversaire/PNJ). Les 6 pré-tirés ont
+   été régénérés à cette nomenclature. Voir `TODO.md` #1 et #8.
+   **Workflow docx = HYBRIDE** (retour utilisateur) : je régénère depuis `generate_docx.js`
+   tant que la todo n'est pas finie, puis on **gèle** (l'utilisateur polit à la main ; je
+   ne régénère plus). Correction utilisateur intégrée : titre couverture **« SiGNAL »**
+   (i minuscule = meilleur glyphe Star Jedi).
 3. **Emplacement du fichier de sortie** : défaut = racine du scénario. À confirmer.
 4. **Identité des PJ** : implicitement cellule rebelle / sympathisants ayant capté le signal.
    Non explicité dans les sources → à préciser lors de la rédaction des pré-tirés (`TODO.md` #1).

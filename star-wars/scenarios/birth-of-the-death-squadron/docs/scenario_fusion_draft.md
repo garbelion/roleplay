@@ -12,7 +12,7 @@
 
 ## Page de titre *(pleine largeur — mise en page à part)*
 
-- Titre : **SIGNAL DE DÉTRESSE**
+- Titre : **SiGNAL DE DÉTRESSE** *(« i » minuscule volontaire : meilleur glyphe en Star Jedi)*
 - Sous-titre : *Station-relais impériale Kessel-Tho — Bordure Extérieure*
 - Accroche : « Un signal a rebondi jusqu'ici. L'Empire aussi le cherche. »
 - Mention : *Scénario d'enquête et d'infiltration — à l'usage du Maître de Jeu*
@@ -205,83 +205,84 @@ selon sa campagne. Toute sous-partie de 4 à 6 de ces profils forme un groupe jo
 pilotage & extraction (Bren) · force & procédures impériales (Holt) · soins, savoir
 & lien avec Alderaan (Ithra).
 
-> *Profils bâtis sur le gabarit standard **Star Wars D6** (West End Games, édition
-> révisée) : 18D d'attributs, ~7D de compétences, Déplacement 10. Ajustez librement.
-> Attributs : Dextérité, Perception, Savoir, Vigueur, Mécanique, Technique. Les
-> compétences non citées valent la valeur de leur attribut.*
+> *Profils au format **« visions de légendes »** (variante D6 francophone — cf. feuilles
+> **FDPJ / FDADV** du dossier). Six attributs : **Coordination, Savoir, Perception,
+> Mécanique, Technique, Vigueur**. Les compétences non citées valent la valeur de leur
+> attribut. Reportez **Initiative, Ténacité / Vitalité** et la **Pénalité de coordination**
+> sur la fiche selon les règles ; ajustez les dés à votre création de personnage.*
 
 ## Renna Calder — Agent de liaison *(meneuse)*
-*Humaine · femme · Chandrila · commandement, contacts, baratin*
-- **DEXTÉRITÉ 2D+2** — Blaster 3D+2, Esquive 3D+2
-- **PERCEPTION 4D** — Baratin 5D, Commandement 5D, Marchandage 4D+2, Persuasion 4D+2
-- **SAVOIR 3D** — Bureaucratie impériale 4D, Cultures 4D, Systèmes planétaires 3D+2
-- **VIGUEUR 2D**
-- **MÉCANIQUE 3D** — Communications 4D, Sensoreurs 3D+2
-- **TECHNIQUE 3D+1** — Sécurité 3D+2
-- **Déplacement** 10 · **Points de Force** 1 · **Points de Personnage** 5
+*Humaine · femme · Chandrila · autorité, contacts, bagou*
+- **COORDINATION 2D+2** — Blaster 3D+2, Esquive 3D
+- **SAVOIR 3D** — Administration 4D, Systèmes Planétaires 3D+2, Illégalité 3D+2
+- **PERCEPTION 4D** — Subterfuge 5D, Persuasion 5D, Commerce 4D+2, Empathie 4D+1
+- **MÉCANIQUE 3D** — Communications 4D, Senseurs 3D+2
+- **TECHNIQUE 3D** — Sécurité 3D+2
+- **VIGUEUR 2D** — Autorité 4D
+- **Points de personnage** 5 · **Points de Force** 1
 - **Équipement** — blaster léger (holster discret), comlink chiffré, datapad de faux ordres, code-cylindre volé (périmé)
 - *Accroche — c'est elle qui a décodé l'en-tête du signal de Tana. Convaincue qu'il y a « plus gros que nous » derrière ; porte le poids de mener vers le danger des gens qu'elle aime.*
 
 ## Dax « Fil » Orrin — Slicer / technicien
 *Humain · homme · Corellia · réseaux, déchiffrement, portes verrouillées*
-- **DEXTÉRITÉ 2D** — Esquive 2D+2
-- **PERCEPTION 3D** — Fouille 3D+2, Discrétion 3D+1
-- **SAVOIR 3D** — Valeur (milieu) 3D+2, Technologie 4D
+- **COORDINATION 2D** — Esquive 2D+2, Habileté manuelle 3D
+- **SAVOIR 3D** — Illégalité 3D+2, Erudition 4D
+- **PERCEPTION 3D** — Recherche 3D+2, Furtivité 3D+1
+- **MÉCANIQUE 3D** — Communications 3D+2, Senseurs 3D+1
+- **TECHNIQUE 5D** — Prog. et Rép. ordinat. 6D, Sécurité 5D+2, Prog. et Rép. Droïds 5D+1
 - **VIGUEUR 2D**
-- **MÉCANIQUE 3D** — Communications 3D+2
-- **TECHNIQUE 5D** — Programmation/réparation d'ordinateurs 6D, Sécurité 5D+2, Réparation de droïdes 5D+1
-- **Déplacement** 10 · **Points de Force** 1 · **Points de Personnage** 5
+- **Points de personnage** 5 · **Points de Force** 1
 - **Équipement** — datapad de slicing, kit de crochetage électronique (spikes), multitool, comlink
 - *Accroche — le seul à pouvoir dialoguer avec Bafouille d'égal à égal, et à mesurer ce qu'implique un déchiffrement Argon2. Tendance à foncer sur un terminal en oubliant la discrétion.*
 
 ## Yssha Vel — Éclaireuse / infiltratrice
-*Twi'lek · femme · Ryloth · discrétion, filature, repérage*
-- **DEXTÉRITÉ 4D** — Blaster 4D+1, Corps à corps 4D+1, Esquive 4D+2
-- **PERCEPTION 4D** — Discrétion 5D+1, Fouille 4D+2, Pickpocket 4D+1
-- **SAVOIR 2D** — Langues 2D+2
-- **VIGUEUR 3D** — Escalade/saut 3D+2
+*Twi'lek · femme · Ryloth · furtivité, filature, repérage*
+- **COORDINATION 4D** — Blaster 4D+1, Esquive 4D+2, Habileté manuelle 4D+1, Agilité 4D
+- **SAVOIR 2D** — Langages 2D+2, Illégalité 2D+2
+- **PERCEPTION 4D** — Furtivité 5D+1, Recherche 4D+2, Subterfuge 4D
 - **MÉCANIQUE 2D**
 - **TECHNIQUE 3D** — Sécurité 3D+2
+- **VIGUEUR 3D** — Mouvement 3D+2, Arme de mêlée 3D+2
 - *Capacité twi'lek — communication discrète par micro-mouvements des lekku.*
-- **Déplacement** 10 · **Points de Force** 1 · **Points de Personnage** 5
+- **Points de personnage** 5 · **Points de Force** 1
 - **Équipement** — blaster hold-out, combinaison souple sombre, brouilleur de capteurs de proximité, macrojumelles
-- *Accroche — repère la filature de la commando Skarn avant tout le monde… si on l'écoute. A appris la discrétion en fuyant les rafles impériales de Ryloth.*
+- *Accroche — repère la filature de la commando Skarn avant tout le monde… si on l'écoute. A appris la furtivité en fuyant les rafles impériales de Ryloth.*
 
 ## Bren Sarkori — Pilote / franc-tireur
 *Humain · homme · Nar Shaddaa · pilotage, extraction, sang-froid*
-- **DEXTÉRITÉ 3D** — Blaster 4D, Esquive 3D+2
-- **PERCEPTION 3D** — Baratin 3D+2, Jeu 3D+2
-- **SAVOIR 2D** — Astrographie 2D+2
+- **COORDINATION 3D** — Blaster 4D, Esquive 3D+2
+- **SAVOIR 2D** — Systèmes Planétaires 2D+2, Illégalité 3D
+- **PERCEPTION 3D** — Subterfuge 3D+2, Commerce 3D+1
+- **MÉCANIQUE 4D** — Piloter vaisseaux 5D, Armes vaisseaux 4D+2, Astrogation 4D+1, Senseurs 4D, Propulseurs indiv 4D
+- **TECHNIQUE 3D** — Réparation Transports 4D
 - **VIGUEUR 2D+2**
-- **MÉCANIQUE 4D** — Pilotage spatial 5D, Artillerie spatiale 4D+2, Astrogation 4D+1, Sensoreurs 4D
-- **TECHNIQUE 3D+1** — Réparation de vaisseaux 4D
-- **Déplacement** 10 · **Points de Force** 1 · **Points de Personnage** 5
+- **Points de personnage** 5 · **Points de Force** 1
 - **Équipement** — blaster lourd, veste de vol, comlink, les clés du *Murmure*
 - *Accroche — capitaine-pilote du Murmure. Garde le vaisseau chaud sur l'aire d'amarrage : le plan d'extraction, c'est lui. Déteste rester à quai à attendre.*
 
 ## Holt Marek — Ancien sergent impérial *(déserteur)*
 *Humain · homme · monde de garnison · force, sécurité, procédures impériales*
-- **DEXTÉRITÉ 4D** — Blaster 5D, Armes lourdes 4D+2, Esquive 4D+1
-- **PERCEPTION 3D** — Commandement 3D+2, Intimidation 4D
-- **SAVOIR 3D** — Bureaucratie impériale 3D+2, Tactique militaire 3D+2
-- **VIGUEUR 3D** — Bagarre 4D, Encaissement 4D
+- **COORDINATION 4D** — Blaster 5D, Lance-projectiles 4D+2, Esquive 4D+1
+- **SAVOIR 3D** — Administration 3D+2, Tactique 3D+2
+- **PERCEPTION 3D** — Subterfuge 3D+1
 - **MÉCANIQUE 2D**
-- **TECHNIQUE 3D** — Sécurité 4D, Premiers soins 3D+2
-- **Déplacement** 10 · **Points de Force** 1 · **Points de Personnage** 5
+- **TECHNIQUE 3D** — Sécurité 4D, Armures et Exos. 3D+2, Médecine 3D+2
+- **VIGUEUR 3D** — Autorité 4D, Arme de mêlée 4D, Résistance 4D, Arts martiaux 3D+2
+- **Points de personnage** 5 · **Points de Force** 1
 - **Équipement** — blaster E-11 « emprunté », armure légère sous vareuse civile, code-cylindre impérial périmé, plaques d'identité arrachées
 - *Accroche — connaît de l'intérieur les protocoles d'une station-relais et les manies de l'ISB : inestimable pour lire la menace Rennard. Chaque uniforme impérial croisé réveille ce qu'il a fui.*
 
 ## Ithra Wen — Médecin de bord / érudite
 *Humaine · femme · réfugiée d'Alderaan · soins, savoir, histoire alderaanienne*
-- **DEXTÉRITÉ 2D** — Esquive 2D+2
-- **PERCEPTION 3D** — Baratin 3D+2, Persuasion 4D
-- **SAVOIR 4D** — Cultures 5D, Histoire alderaanienne & républicaine 5D, Langues 4D+2
-- **VIGUEUR 3D**
+- **COORDINATION 2D** — Esquive 2D+2
+- **SAVOIR 4D** — Erudition 5D, Xénologie 4D+2, Langages 4D+2, Systèmes Planétaires 4D
+- **PERCEPTION 3D** — Empathie 4D, Persuasion 3D+2
 - **MÉCANIQUE 2D**
-- **TECHNIQUE 4D** — Premiers soins 5D, (A) Médecine 4D+2
-- **Déplacement** 10 · **Points de Force** 2 · **Points de Personnage** 5
+- **TECHNIQUE 4D** — Médecine 5D, Réparation Équipement 4D
+- **VIGUEUR 3D** — Volonté 3D+2
+- **Points de personnage** 5 · **Points de Force** 2
 - **Équipement** — trousse médicale de campagne, injecteurs de stims, exemplaire annoté d'un ouvrage d'histoire alderaanienne
-- *Accroche — comme Tana, elle a vu Alderaan mourir. C'est elle qui reconnaît d'emblée les trois noms de l'indice (a) comme des figures réelles, et qui gagnera le plus vite la confiance de Tana. Le deuil la rend parfois imprudente face à l'Empire.*
+- *Accroche — comme Tana, elle a vu Alderaan mourir. C'est elle qui reconnaît d'emblée les trois noms de l'indice (a) comme des figures réelles (Erudition), et qui gagnera le plus vite la confiance de Tana. Le deuil la rend parfois imprudente face à l'Empire.*
 
 ---
 
