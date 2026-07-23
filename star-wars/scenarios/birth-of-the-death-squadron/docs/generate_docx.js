@@ -1,0 +1,384 @@
+// Générateur du document fusionné « Signal de Détresse » (docx-js).
+// Prérequis : dans ce dossier, `npm init -y && npm i docx@8`, puis `node generate_docx.js`.
+// Le contenu de référence (texte) est docs/scenario_fusion_draft.md.
+const path = require("path");
+const fs = require("fs");
+// Résout `docx` depuis un node_modules local (ce dossier) ou global.
+const docx = require("docx");
+const {
+  Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, LevelFormat,
+  Table, TableRow, TableCell, WidthType, BorderStyle, ShadingType, TableOfContents,
+  PageBreak, Footer, PageNumber,
+} = docx;
+
+// ---------- palette / layout ----------
+const H1COL = "26425C", H2COL = "3A5A7A", H3COL = "555555";
+const ACCENT = "8A1C1C", BOXFILL = "EEEEE8", ENCFILL = "F4F1E8";
+const COL_W = 4592;            // two-column body: usable column width (dxa)
+const MARGIN = 1134;           // 2cm
+
+// ---------- inline markdown -> runs ----------
+function md(text) {
+  const parts = String(text).split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
+  const runs = [];
+  for (const p of parts) {
+    if (!p) continue;
+    if (p.startsWith("**") && p.endsWith("**")) runs.push(new TextRun({ text: p.slice(2, -2), bold: true }));
+    else if (p.startsWith("*") && p.endsWith("*")) runs.push(new TextRun({ text: p.slice(1, -1), italics: true }));
+    else if (p.startsWith("`") && p.endsWith("`")) runs.push(new TextRun({ text: p.slice(1, -1), font: "Consolas", size: 18 }));
+    else runs.push(new TextRun({ text: p }));
+  }
+  return runs;
+}
+
+// ---------- paragraph helpers ----------
+const P = (t, o = {}) => new Paragraph({ children: md(t), alignment: AlignmentType.JUSTIFIED, spacing: { after: 120, line: 264 }, ...o });
+const H1 = (t) => new Paragraph({ heading: HeadingLevel.HEADING_1, children: md(t) });
+const H2 = (t) => new Paragraph({ heading: HeadingLevel.HEADING_2, children: md(t) });
+const H3 = (t) => new Paragraph({ heading: HeadingLevel.HEADING_3, children: md(t) });
+const B = (t) => new Paragraph({ children: md(t), numbering: { reference: "bul", level: 0 }, alignment: AlignmentType.JUSTIFIED, spacing: { after: 60, line: 260 } });
+const NUM = (t) => new Paragraph({ children: md(t), numbering: { reference: "ord", level: 0 }, alignment: AlignmentType.JUSTIFIED, spacing: { after: 60, line: 260 } });
+
+// ---------- schema (simple boxed flow) ----------
+function box(text) {
+  return new Table({
+    width: { size: COL_W, type: WidthType.DXA },
+    columnWidths: [COL_W],
+    borders: allBorders("999999", 4),
+    rows: [ new TableRow({ children: [ new TableCell({
+      width: { size: COL_W, type: WidthType.DXA },
+      shading: { type: ShadingType.CLEAR, fill: BOXFILL, color: "auto" },
+      margins: { top: 40, bottom: 40, left: 80, right: 80 },
+      children: [ new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 0, line: 240 }, children: md(text) }) ],
+    }) ] }) ],
+  });
+}
+const arrow = () => new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 20, after: 20 }, children: [ new TextRun({ text: "▼", color: ACCENT, size: 18 }) ] });
+function schema(arr, title, nodes) {
+  arr.push(new Paragraph({ spacing: { before: 60, after: 40 }, keepNext: true, children: [ new TextRun({ text: "PLAN — " + title, bold: true, italics: true, size: 17, color: ACCENT }) ] }));
+  nodes.forEach((n, i) => { arr.push(box(n)); if (i < nodes.length - 1) arr.push(arrow()); });
+  arr.push(new Paragraph({ spacing: { after: 80 }, children: [] }));
+}
+
+// ---------- encart (call-out box) ----------
+function allBorders(color, size) {
+  const b = { style: BorderStyle.SINGLE, size, color };
+  return { top: b, bottom: b, left: b, right: b, insideHorizontal: b, insideVertical: b };
+}
+function encart(arr, title, contentParas) {
+  const inner = [];
+  if (title) inner.push(new Paragraph({ spacing: { after: 80 }, children: [ new TextRun({ text: title, bold: true, size: 19, color: ACCENT }) ] }));
+  contentParas.forEach((p) => inner.push(p));
+  arr.push(new Table({
+    width: { size: COL_W, type: WidthType.DXA },
+    columnWidths: [COL_W],
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 4, color: "D8D2BE" },
+      bottom: { style: BorderStyle.SINGLE, size: 4, color: "D8D2BE" },
+      right: { style: BorderStyle.SINGLE, size: 4, color: "D8D2BE" },
+      left: { style: BorderStyle.SINGLE, size: 28, color: ACCENT },
+      insideHorizontal: { style: BorderStyle.NONE }, insideVertical: { style: BorderStyle.NONE },
+    },
+    rows: [ new TableRow({ children: [ new TableCell({
+      width: { size: COL_W, type: WidthType.DXA },
+      shading: { type: ShadingType.CLEAR, fill: ENCFILL, color: "auto" },
+      margins: { top: 100, bottom: 100, left: 160, right: 140 },
+      children: inner,
+    }) ] }) ],
+  }));
+  arr.push(new Paragraph({ spacing: { after: 80 }, children: [] }));
+}
+// encart content paragraph helpers (tight)
+const EP = (t) => new Paragraph({ children: md(t), alignment: AlignmentType.JUSTIFIED, spacing: { after: 60, line: 258 } });
+const EB = (t) => new Paragraph({ children: md(t), numbering: { reference: "bul", level: 0 }, spacing: { after: 40, line: 252 } });
+
+// ====================================================================
+//  TITLE PAGE
+// ====================================================================
+const rule = () => new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 120, after: 120 }, border: { bottom: { style: BorderStyle.SINGLE, size: 12, color: ACCENT } }, children: [] });
+const title = [
+  new Paragraph({ spacing: { before: 2600 }, children: [] }),
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 80 }, children: [ new TextRun({ text: "SIGNAL DE DÉTRESSE", bold: true, size: 60, font: "Calibri", color: H1COL }) ] }),
+  rule(),
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 120, after: 60 }, children: [ new TextRun({ text: "Un scénario Star Wars", italics: true, size: 26, color: "333333" }) ] }),
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 200 }, children: [ new TextRun({ text: "Station-relais impériale de Kessel-Tho — Bordure Extérieure", italics: true, size: 24, color: "333333" }) ] }),
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 900 }, children: [ new TextRun({ text: "« La naissance de l'Escadron de la Mort »", size: 24, bold: true, color: ACCENT }) ] }),
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 120 }, children: [ new TextRun({ text: "« Un signal a rebondi jusqu'ici. L'Empire aussi le cherche. »", italics: true, size: 22, color: "444444" }) ] }),
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 1400 }, children: [ new TextRun({ text: "Scénario d'enquête et d'infiltration — à l'usage du Maître de Jeu", size: 18, color: "777777" }) ] }),
+];
+
+// ====================================================================
+//  TABLE OF CONTENTS
+// ====================================================================
+const toc = [
+  new Paragraph({ spacing: { after: 240 }, children: [ new TextRun({ text: "Sommaire", bold: true, size: 34, font: "Calibri", color: H1COL }) ] }),
+  new TableOfContents("Sommaire", { hyperlink: true, headingStyleRange: "1-2" }),
+];
+
+// ====================================================================
+//  BODY (two columns)
+// ====================================================================
+const b = [];
+
+// ---- 1. PRÉSENTATION ----
+b.push(H1("1. Présentation"));
+b.push(H2("Le pitch"));
+b.push(P("Un signal de détresse chiffré a fini par atteindre les personnages-joueurs. Il ne vient pas d'un vaisseau en perte de puissance, mais d'une femme qui sait quelque chose que l'Empire tuerait pour enterrer. Sur une petite station-relais oubliée en bordure du secteur de Kessel, une technicienne du nom de **Tana Wrey** a intercepté, quart après quart, les fragments d'une opération militaire de très grande ampleur : le **Projet Faucheur**."));
+b.push(P("Traquée par ses propres soupçons autant que par ceux de son supérieur, Tana s'est effacée derrière un alias — **Doiron**, tenancière d'une modeste échoppe du quai. Elle a dispersé aux quatre coins de la station les clés qui permettent de lire ce qu'elle a caché, de sorte que personne — pas même elle — ne puisse tout livrer sous la contrainte. Les PJ devront gagner sa confiance, reconstituer ces clés en résolvant quatre énigmes physiques, et exfiltrer l'information **avant** qu'une équipe du Bureau de Sécurité Impériale (ISB), déjà en route, ne remonte la trace du signal jusqu'à eux."));
+
+b.push(H2("Le contexte : le Projet Faucheur"));
+b.push(P("Ce que Tana a assemblé sans le vouloir, c'est le portrait en creux de la **naissance de l'Escadron de la Mort** : la sortie de chantier d'un bâtiment « hors normes, aucune désignation officielle » en orbite de **Fondor** — le Super Destroyer Stellaire *Executor* — et le déploiement d'une flotte chargée de ratisser méthodiquement une portion de la Bordure Extérieure à la recherche d'une **base dissidente**. Les entrées les plus récentes parlent d'une flotte « maintenue en position, prête à exécution sur ordre », puis d'un dernier fragment avant brouillage : *« …si confirmation reçue, exécution immédiate… »*."));
+b.push(P("Autrement dit : les coordonnées cachées dans le journal de Tana pointent vers une cible que l'Empire s'apprête à frapper. Les PJ ne mettent pas seulement la main sur un secret — ils tiennent peut-être le seul avertissement capable de sauver une base entière."));
+encart(b, "La station Kessel-Tho", [
+  EP("Station-relais de communication de la Bordure Extérieure, sur une route commerciale secondaire de Kessel. Cinq niveaux superposés :"),
+  EB("**N4** — Communications"),
+  EB("**N3** — Administration & sécurité"),
+  EB("**N2** — Vie quotidienne"),
+  EB("**N1** — Amarrage & commerce"),
+  EB("**N0** — Soubassement technique"),
+  EP("Une colonne de sécurité blindée relie directement le commandement (N4/N3) au niveau technique (N0) sans traverser les niveaux civils."),
+]);
+
+b.push(H2("Comment fonctionne l'enquête"));
+b.push(P("Le point de départ est la **boutique de Doiron** (N1). Tana y a laissé un **message (0)** — un datapad — qui, une fois consulté, oriente vers **quatre contacts**. Chaque contact garde, sans le savoir, l'un des quatre **indices** physiques que Tana a dissimulés :"));
+b.push(B("**(a) Faux clients** — Centre culturel (Maren Estil) : donne les **3 alias** à cibler dans le journal."));
+b.push(B("**(b) Fresque** — Galerie de maintenance (Dosh Kavarel) : phrase **ORPHELINS** (clé des Coordonnées)."));
+b.push(B("**(c) Pentaminos** — Centre sportif (Grash Meloi) : phrase **JENESUISPLUSSEULEICI** (clé des Messages)."));
+b.push(B("**(d) Annonces du mess** — Mess (Kessa Droman) : clé maître **RépubliqueRetour** + **Argon2**."));
+b.push(P("Une fois les paramètres réunis, c'est le droïde **Bafouille** (ou l'outil `bafouille.exe` fourni au MJ) qui effectue les calculs et restitue en clair les **18 entrées** cachées de Tana parmi les 78 lignes du **journal (document d)**, isolé dans la **DMZ** du niveau 0. *Le jeu, c'est la résolution des énigmes — pas la cryptographie : les joueurs fournissent les paramètres, la machine calcule.*"));
+encart(b, "⚠ Attention à la lettre « (d) »", [
+  EP("Dans les documents source, « (d) » désigne **deux choses distinctes** : la **4ᵉ énigme** (les annonces du mess) **et** le **journal chiffré** (document d, le trésor final). Ce document conserve les deux libellés d'origine ; ne les confondez pas en jeu."),
+]);
+
+b.push(H2("La menace : le compte à rebours ISB"));
+b.push(P("L'anomalie de rebond de fréquence qui a permis l'interception a aussi trahi son existence. Une équipe restreinte du **Bureau de Sécurité Impériale** ratisse les stations-relais du secteur pour en localiser la source :"));
+b.push(B("**Agent Ivo Rennard** — le chasseur méthodique, ne bluffe jamais."));
+b.push(B("**Analyste Sorae Vint** — retrace le rebond ; **sa progression = l'horloge réelle**."));
+b.push(B("**Commandos Ferrus & Skarn** — la menace physique, si l'enquête débouche sur une prise."));
+b.push(P("Le MJ gère cette pression comme un **compte à rebours** : chaque erreur visible des PJ (question de trop, effraction repérée, PNJ alarmé) fait avancer Vint. Quand elle boucle sa triangulation, l'ISB verrouille la station."));
+
+b.push(H2("Conseils de conduite"));
+b.push(B("**Tana observe avant d'aider.** Elle jauge les PJ depuis sa boutique buggée ; sa coopération se mérite. Tant qu'elle n'a pas décidé, elle joue Doiron la marchande."));
+b.push(B("**Les quatre indices sont indépendants** : l'ordre de résolution n'a pas d'importance mécanique. L'ordre présenté ici est le plus probable, pas le seul."));
+b.push(B("**Les PNJ gardiens des indices ignorent leur sens.** Ils coopèrent si on les aborde avec tact et/ou si on leur montre le datapad (0)."));
+b.push(B("**Les handouts (d)→(j)** existent comme documents séparés à distribuer selon les fouilles des PJ ; ils ne sont pas reproduits ici."));
+
+// ---- 2. CHRONOLOGIE ----
+b.push(H1("2. Chronologie des événements"));
+b.push(P("*Le calendrier local se compte en cycles et en jours. Trois fils se superposent : ce que le journal de Tana révèle, la vie récente de la station, et le présent du scénario.*"));
+b.push(H2("Ce que révèle le journal (arrière-plan, C18-C19)"));
+b.push(B("**C18 / J058** — Première mention : *« Faucheur activé selon calendrier. »*"));
+b.push(B("**C18 / J140** — Ratissage systématique du **Bras Occidental** engagé."));
+b.push(B("**C18 / J145** — *« Essais finaux du châssis en orbite de Fondor. Dimensions hors normes… »* → l'*Executor* en construction."));
+b.push(B("**C18 / J160-298** — Le ratissage s'enlise ; premiers signes d'**activité dissidente** (grille L-14)."));
+b.push(B("**C19 / J020** — *« Signature compatible avec une base dissidente établie. »*"));
+b.push(B("**C19 / J030** — *« Le chantier de Fondor confirme la sortie de dock de l'*Executor*. »*"));
+b.push(B("**C19 / J089** — *« Le Faucheur se repositionne. Flotte principale en approche. »*"));
+b.push(B("**C19 / J178** — *« Autorisation de frappe en attente de confirmation finale. »*"));
+b.push(B("**C19 / J199** — Dernier fragment avant brouillage : *« …si confirmation reçue, exécution immédiate… »* — **c'est le signal que Tana a intercepté**, et dont le rebond a alerté l'ISB."));
+b.push(H2("La station, récemment (journal de nuit, doc g)"));
+b.push(B("**C19 / J121** — Altercation entre techniciens de quai (incident disciplinaire)."));
+b.push(B("**C19 / J133** — **Panne électrique majeure** (secteurs B/C) ; bascule de secours anormalement lente — réseau jugé préoccupant."));
+b.push(B("**C19 / J140** — Deux vaisseaux non identifiés s'accrochent près de la station (règlement de comptes de contrebandiers)."));
+b.push(B("**C19 / J149** — **Signal de détresse** du caboteur *Étoile Voilée*, remorqué et amarré en urgence."));
+b.push(B("**C19 / J150** — Situation nominale ; la **passerelle 3 grince** toujours (marronnier)."));
+b.push(H2("Le présent du scénario"));
+b.push(NUM("Les soupçons de **Torvin Aashe** (supérieur de Tana) la poussent à disparaître derrière l'alias **Doiron** et à disperser ses indices."));
+b.push(NUM("Le rebond du signal du J199 alerte le Bureau : l'équipe **Rennard** est dépêchée dans le secteur."));
+b.push(NUM("Le **signal de détresse chiffré** de Tana atteint les PJ, qui gagnent Kessel-Tho."));
+b.push(NUM("**Le scénario commence** à leur arrivée au quai. L'horloge ISB tourne déjà."));
+
+// ---- 3. PERSONNAGES PRÉ-TIRÉS ----
+b.push(H1("3. Personnages pré-tirés"));
+encart(b, "À compléter (TODO MJ)", [
+  EP("Réservez ici les fiches des personnages pré-tirés (cellule / équipage ayant capté le signal de Tana). Emplacement prévu pour 4 à 6 fiches : identité, motivations, atouts utiles à une enquête d'infiltration (contacts, technique, discrétion, baratin, force)."),
+  EP("*Section volontairement laissée vierge dans cette version.*"),
+]);
+
+// ---- 4. LES LIEUX ----
+b.push(H1("4. Les lieux de la station"));
+b.push(P("*Parcourus dans l'ordre de visite le plus probable. Pour chaque lieu : une **description**, les **éléments-clés** du scénario, un **plan** schématique, et les **PNJ** rencontrés. Les lieux purement secondaires sont regroupés en fin de section.*"));
+
+function lieu(arr, num, titre, blocks) {
+  arr.push(H2(num + " — " + titre));
+  blocks.forEach((fn) => fn(arr));
+}
+function descP(t){ return (a)=> a.push(new Paragraph({ spacing:{after:80,line:264}, alignment:AlignmentType.JUSTIFIED, children:[ new TextRun({text:"Description. ",bold:true,color:H2COL}), ...md(t) ] })); }
+function keyHead(t){ return (a)=> a.push(new Paragraph({ spacing:{before:40,after:60}, keepNext:true, children:[ new TextRun({text:t,bold:true,color:ACCENT,size:19}) ] })); }
+function para(t){ return (a)=> a.push(P(t)); }
+function bul(t){ return (a)=> a.push(B(t)); }
+function sch(t,nodes){ return (a)=> schema(a,t,nodes); }
+function pnjHead(){ return (a)=> a.push(new Paragraph({ spacing:{before:40,after:40}, keepNext:true, children:[ new TextRun({text:"PNJ",bold:true,color:H2COL,size:19}) ] })); }
+
+// 4.0 Quai
+lieu(b, "4.0", "Quai principal & Capitainerie *(N1 — arrivée)*", [
+  descP("Le point d'entrée de la station : sas d'amarrage, quai principal et **passerelle 3** (qui grince depuis des cycles, jamais réparée). La **capitainerie** attenante tient les registres d'entrée/sortie des vaisseaux. Ambiance de bordure : néons fatigués, odeur de carburant froid, personnel de quart débordé."),
+  keyHead("Éléments-clés"),
+  bul("Premier contact des PJ avec la station : contrôle d'amarrage, formalités sommaires. Bonne scène d'introduction et de prise de température."),
+  bul("La **capitainerie** permet de recouper les mouvements de vaisseaux avec le **rapport d'analyse de trafic (doc e)** et le **manifeste de fret (doc j)** : un PJ méthodique peut y repérer le *Long Sillage* (« suspicion modérée ») ou les passages de chasseurs de primes."),
+  bul("**Amorce de tension** : c'est aussi par ce quai qu'arrivera l'équipe ISB. Le MJ peut y semer un premier signe (navette de liaison inhabituelle, la **commando Skarn** en reconnaissance discrète)."),
+  sch("Quai (N1)", ["Sas d'amarrage", "Passerelle 3 (grince)", "Quai principal", "Guichet capitainerie — registres (e / j)", "Vers échoppes du quai · ascenseur central"]),
+  pnjHead(),
+  bul("**Nills Bregman** — humain, contremaître du **quart de nuit**. Consciencieux, protecteur de son équipe. Auteur du journal de bord (g). *« Un quart calme, c'est un quart où personne n'a besoin de moi. »*"),
+  bul("**Elin Voss** — Devaronienne, contremaîtresse du **quart de jour**, plus bavarde. Source complémentaire sur la vie diurne. *« Bregman note tout, sauf l'essentiel. »*"),
+]);
+
+// 4.1 Doiron
+lieu(b, "4.1", "Boutique de Doiron *(N1 — le point de départ)*", [
+  descP("Une devanture modeste coincée entre deux échoppes du quai : pièces détachées, bricoles d'occasion, un comptoir encombré et un astromécano cabossé qui cliquette dans un coin. Rien n'y attire l'œil — c'est exactement le but."),
+  keyHead("Éléments-clés"),
+  bul("**Point de départ de toute l'enquête.** Le **message (0)** y est laissé sur un datapad ; consulté, il oriente vers les **quatre contacts** en termes voilés (« mes lectures du mois », « ma marque là où il travaille », « mes jeux d'hiver, casier 12-3-20 », le mess)."),
+  bul("**La boutique est buggée par Tana elle-même.** Elle **observe les PJ** dès leur arrivée et jauge leur fiabilité avant de se dévoiler. Selon leur comportement, elle se révèle tôt (aide active) ou reste Doiron la marchande méfiante."),
+  bul("Le datapad (0) sert aussi de **laissez-passer social** : le montrer aux PNJ gardiens lève leurs réticences."),
+  sch("Boutique", ["Devanture / quai", "Comptoir — datapad (0)", "Arrière-boutique — Bafouille + poste d'observation caché de Tana"]),
+  pnjHead(),
+  bul("**Tana Wrey (alias Doiron)** — humaine, Alderaan, ~25 ans, mains tachées d'encre et de peinture, veste trop grande. Vive, méthodique jusqu'à l'obsession, marquée par la perte d'Alderaan. **Cœur de l'intrigue.** *« Je n'ai pas fui Alderaan pour regarder l'Empire recommencer ailleurs sans rien dire. »*"),
+  bul("**Bafouille** — astromécano série R rafistolé, roue voilée au cliquetis caractéristique. Loyal à Tana au-delà de toute logique ; comprend plus qu'il n'en montre. C'est lui qui **assemble les clés et déchiffre**. *(Bips ≈ « Ça dépend qui demande. »)*"),
+]);
+
+// 4.2 Culturel
+lieu(b, "4.2", "Centre culturel *(N2 — indice a)*", [
+  descP("La petite bibliothèque de la station, tenue avec soin par une Alderaanienne exilée. Rayonnages serrés, quelques ouvrages d'histoire républicaine, une table de lecture. Un îlot de calme dans une station utilitaire."),
+  keyHead("Éléments-clés — INDICE (a), « Les faux clients »"),
+  bul("Tana a emprunté *« Histoire d'Alderaan des origines à la Haute République »* et **glissé entre ses pages une liste manuscrite de trois noms** : **Ulic Qel-Droma**, **Liana Merian**, **Agrippa Aldrete** — figures secondaires alderaaniennes (Jedi / sénateurs) vérifiables mais obscures."),
+  bul("Ce sont les **trois alias** sous lesquels Tana a caché ses entrées. Comprendre que ce sont de **vrais noms historiques** est la clé : cela permet de cibler **18 entrées** au lieu de trier 78 lignes à la main."),
+  bul("Le livre est **toujours dans le rayon** (Tana ne l'a pas rendu). *Sans (a) : 1 h de transfert du journal entier + tri manuel.*"),
+  sch("Centre culturel", ["Entrée", "Comptoir — Maren Estil", "Rayon Histoire — le livre + liste manuscrite (3 noms)", "Table de lecture"]),
+  pnjHead(),
+  bul("**Maren Estil** — humaine, Alderaan, ~60 ans, chignon gris, châle alderaanien. Passionnée d'histoire républicaine. Confirme l'emprunt de Tana si on lui montre le datapad (0) ; ignore le sens des annotations. *« Un livre d'histoire, ça se manipule avec des mains propres et un esprit ouvert. »*"),
+]);
+
+// 4.3 Mess
+lieu(b, "4.3", "Mess du personnel *(N2 — indice d, la clé maître)*", [
+  descP("La cantine commune, cœur de la vie sociale : tablées bruyantes, odeur de caf noir, un grand **tableau d'affichage** couvert de petites annonces. Tenu par une Zabrak chaleureuse qui entend tout sans en avoir l'air."),
+  keyHead("Éléments-clés — INDICE (d), « Les petites annonces »"),
+  bul("Six annonces épinglées, mêlées à d'autres, forment **trois paires**. Pour chaque paire, **seuls les mots communs aux deux annonces** composent le message : Paire 1-2 → *« Le début de la clé est République »* ; Paire 3-4 → *« La deuxième moitié est retour »* ; Paire 5-6 → *« Pour dériver, prendre Argon2 »*."),
+  bul("**Solution assemblée** : clé maître **« RépubliqueRetour »** (16 caractères) + algorithme **Argon2**. C'est le socle de tous les déchiffrements."),
+  bul("Les six annonces ont un **style homogène** (mêmes doigts) : les repérer comme un ensemble fait partie de l'énigme. L'annonce 6 (« Vendu chez Doiron ») **renvoie clin d'œil vers le point de départ**."),
+  para("*Handout recommandé : les six annonces sur des bouts de papier séparés — les comparer côte à côte est bien plus efficace qu'une lecture à voix haute.*"),
+  sch("Mess", ["Comptoir — Kessa Droman", "Tablées", "Tableau d'affichage — 6 annonces en 3 paires (parmi le bruit)"]),
+  pnjHead(),
+  bul("**Kessa Droman** — Zabrak, Iridonia, tatouages estompés, sourire facile, observatrice redoutable. **Quatrième contact** de Tana. Sait qu'elle passe épingler des annonces, sans en connaître le contenu. *« Ici, on nourrit tout le monde pareil. »*"),
+]);
+
+// 4.4 Galerie
+lieu(b, "4.4", "Galerie de maintenance *(N0 — indice b)*", [
+  descP("Un corridor technique du soubassement, éclairage cru, faisceaux de câbles. Sur un pan de mur, incongrue, une **fresque** peinte : les jardins du palais du Vice-roi d'Alderaan. L'administration l'a tolérée comme « dégradation esthétique sans conséquence »."),
+  keyHead("Éléments-clés — INDICE (b), « La fresque stéganographique »"),
+  bul("La fresque cache deux éléments : la **façade du palais** (4 étages × 5 fenêtres), dont **neuf fenêtres sont allumées** selon un **dégradé de teinte** (du plus pâle au plus sombre) ; et, séparé dans le couloir, un **graffiti-grille 4×5** qui sert de **légende** — un **carré de Polybe à mot-clé LOTUS**."),
+  bul("En lisant les neuf fenêtres **dans l'ordre du dégradé** et en les décodant via la grille, on obtient la phrase de passe **ORPHELINS** → clé des **Coordonnées** du journal."),
+  bul("**Dosh Kavarel** ne montre le mur que si on l'aborde avec tact ; pour lui, c'est juste « le mur que la fille aimait peindre »."),
+  para("*Handouts : (1) photo de la fresque aux neuf fenêtres allumées, (2) photo du graffiti-grille.*"),
+  sch("Galerie (N0)", ["Couloir — graffiti-grille 4×5 (Polybe / LOTUS)", "Fresque — façade 4×5, 9 fenêtres allumées en dégradé", "Lecture ordonnée → ORPHELINS"]),
+  pnjHead(),
+  bul("**Dosh Kavarel** — Duros, taciturne, peu curieux. Technicien antennes / maintenance ; connaît Tana de longue date sans s'être interrogé. *« Elle peint, je répare. On n'a jamais eu besoin de se poser plus de questions. »*"),
+]);
+
+// 4.5 Sportif
+lieu(b, "4.5", "Centre sportif *(N2 — indice c)*", [
+  descP("Une salle d'entraînement fonctionnelle et des vestiaires alignés de casiers métalliques, tenue par un Trandoshan bourru attaché à la propreté et à la discipline. Odeur de métal et de désinfectant."),
+  keyHead("Éléments-clés — INDICE (c), « Le puzzle pentaminos »"),
+  bul("Le **casier 12-3-20** (mnémonique : 12 pentaminos, 3 rangées, 20 colonnes) contient un **puzzle physique** : assembler les 12 pentaminos en rectangle 3×20. Il n'existe que **deux solutions** ; Tana a peint des lettres sur les pièces."),
+  bul("**Une seule** solution fait apparaître une phrase cohérente sur la ligne centrale : **JENESUISPLUSSEULEICI** → clé des **Messages** du journal."),
+  bul("**Piège volontaire** : les six premières lettres (JENESU) sont identiques dans les deux solutions ; la mauvaise vire ensuite au charabia. Un joueur peut croire avoir réussi avant de buter sur le milieu."),
+  bul("Grash Meloi ouvre le casier si on lui montre le datapad (0) ; il ignore ce qu'il contient (« c'était pour un ami qui passerait le chercher »)."),
+  sch("Centre sportif", ["Salle d'entraînement", "Vestiaires — casier 12-3-20", "Puzzle 3×20 → ligne centrale = JENESUISPLUSSEULEICI"]),
+  pnjHead(),
+  bul("**Grash Meloi** — Trandoshan, bourru mais juste, respecte l'effort et méprise la paresse. Gère les casiers. *« Un casier qui reste fermé un an, ce n'est pas mes affaires. Un casier qui déborde, ça l'est. »*"),
+]);
+
+// 4.6 DMZ
+lieu(b, "4.6", "Locaux des ingénieurs & serveur DMZ *(N0 — le journal)*", [
+  descP("Au plus bas de la station, la **zone démilitarisée (DMZ)** : systèmes critiques isolés du réseau commercial courant, salle serveur froide et bruyante, accès contrôlé. Le point sensible et la fin logique du parcours."),
+  keyHead("Éléments-clés — LE JOURNAL (document d)"),
+  bul("C'est **ici** qu'est stocké, isolé en DMZ, le **journal de facturation illégale** de l'administrateur **Kallan** — celui dans lequel Tana a dissimulé ses **18 entrées** sous les trois faux alias. Kallan le **protège sans le savoir** (par intérêt : c'est aussi son registre de fréquences revendues au noir)."),
+  bul("Une fois sur place avec les **quatre indices**, **Bafouille assemble** : RépubliqueRetour + Argon2 + **ORPHELINS** → clé des Coordonnées ; RépubliqueRetour + Argon2 + **JENESUISPLUSSEULEICI** → clé des Messages ; et (a) désigne **quelles 18 entrées** parmi 78 déchiffrer."),
+  bul("Le résultat : les messages en clair du Projet Faucheur **et les coordonnées** de la base dissidente menacée (grille **L-14**, sous-secteur 4, proche de la balise Kessel Secondaire)."),
+  bul("**Accès** — deux voies : la **colonne de sécurité** blindée depuis N4/N3 (rapide mais surveillée), ou, plus discret socialement mais risqué, le **terminal de la salle de contrôle des transmissions** (N4) sous l'œil d'Aashe. Présence probable de Kavarel / Bissik ou de la garnison à proximité."),
+  sch("N0 — DMZ", ["Colonne de sécurité (depuis N3 / N4)", "Sas contrôlé", "Salle serveur — journal (d), isolé", "Voie alternative : terminal salle transmissions (N4)"]),
+  pnjHead(),
+  bul("**Naro Bissik** — Sullustan, vif, curieux, bavard sur la technique. En charge du **réseau interne** (bornes WN-01/02/03) ; complémentaire de Kavarel. Allié involontaire (adore les systèmes bien conçus) ou obstacle. *« Un réseau mal segmenté, c'est comme une porte laissée entrouverte. »*"),
+]);
+
+// 4.7 Secondaires
+b.push(H2("4.7 — Lieux secondaires *(encarts)*"));
+b.push(P("*Décors d'appui, sources d'information et de tension. À piocher selon les besoins.*"));
+b.push(B("**Cantina Le Sas** *(N1)* — Bar des équipages de passage, distinct du mess. **Vezz Nurodo** (Gran, trois yeux, jovial) y surveille toute la salle. Meilleure source de **rumeurs** sur visiteurs, chasseurs de primes et contrebandiers (j)."));
+b.push(B("**Échoppe de Trik Ossoval** *(N1)* — Brocante et **recel** de pièces (Rodien retors mais pas malhonnête). Matériel hors circuit, rumeurs sur les vaisseaux."));
+b.push(B("**Commerce de Hooru Damm** *(N1)* — Vivres et équipement courant (Ithorien doux et patient). Fournisseur du mess et des livraisons fraîches (j)."));
+b.push(B("**Armurerie de Fennik Doss** *(N1)* — Armes légères et protection, marché gris toléré. Tenancier méfiant, peu bavard."));
+b.push(B("**Comptoir de change de Chessa Vorn** *(N1)* — Change et prêts sur gages (Muun froide). **Sait qui a des dettes** — bon **levier** sur un PNJ endetté."));
+b.push(B("**Infirmerie** *(N2)* — **Docteure Lyra Senn** (Twi'lek, calme, discrète). A soigné l'équipage de l'*Étoile Voilée* (g) ; reçoit les évacuations du *Bacta Express*. Discrétion à toute épreuve."));
+b.push(B("**Atelier de droïdes « Rouages »** *(N1)* — Loué à la semaine par un réparateur itinérant. Lieu plausible pour une **intervention sur Bafouille** en cours de jeu."));
+b.push(B("**Salle de contrôle des transmissions** *(N4)* — Poste **habituel de Tana** ; c'est d'ici qu'elle a intercepté les fragments. Supervisée par **Torvin Aashe** (méticuleux, pointilleux) — le supérieur **dont les soupçons ont déclenché la fuite** de Tana. Voie d'accès alternative au journal."));
+b.push(B("**Bureau de l'administrateur Kallan** *(N3)* — **Joreth Kallan** (Corellia, pragmatique et vénal). Revend des fréquences ; a mené la correspondance du **pot-de-vin** (doc i). Protège le vrai journal **par intérêt**. *« Tant que les chiffres tombent juste, je ne pose pas de questions inutiles. »*"));
+b.push(B("**Salle de passation Bregman/Voss** *(N3)* — Relève des quarts, source du **journal de bord (g)**."));
+b.push(B("**Quartiers & poste de la garnison** *(N3)* — Autorité impériale **visible** (distincte de l'ISB). **Lt Corin Adrast** (ambitieux) ; **Soldat Denz** (bavard, corruptible, bonne source informelle) ; **Soldat Ansel Voy** (rigide, contrepoids de Denz) ; **Ss-Lt Pello Rance** (navette de liaison *Aigle du Secteur*)."));
+b.push(B("**Zone d'intervention des commandos** *(N3)* — Base temporaire de l'**équipe ISB Rennard** : la menace antagoniste la plus directe (voir encart)."));
+b.push(B("**Niveaux techniques restants** *(N0)* — **Réseau électrique (secteur B)** : panne du C19/J133 (**complication réutilisable** : un black-out isole une zone). **Recyclage d'air (secteur C)**. **Bornes WN-01/02/03**. **Ateliers de Kavarel & Bissik**."));
+b.push(B("**Locaux désaffectés** *(N1)* — **Bazar Ryloth** (casier locatif jamais réclamé), **ancien bureau des licences** (dossiers oubliés), **coursive B condamnée** (scellée mais pas hermétique) : bonnes **caches** ou scènes annexes."));
+
+encart(b, "Encart — La menace ISB (équipe Rennard)", [
+  EB("**Agent Ivo Rennard** (humain, Coruscant) : méthodique, sans affect, ne bluffe presque jamais. *« Je ne cherche pas un coupable. Je cherche un fait. »*"),
+  EB("**Analyste Sorae Vint** : obsédée par les données, retrace le rebond. **Sa progression = le compte à rebours.** Plus manipulable que Rennard."),
+  EB("**Commando Ferrus** : ne parle qu'en accusés de réception — menace physique."),
+  EB("**Commando Skarn** : reconnaissance / infiltration ; peut être **repérée en filature** avant même que l'équipe se déclare."),
+]);
+encart(b, "Encart — Équipages de passage (manifeste j & rapport e)", [
+  EB("**Fenn Yorrik** — Bothan, capitaine du *Long Sillage*, affréteur régulier classé « suspicion modérée » (e). Ambigu : information et discrétion se négocient."),
+  EB("**Ossa Trill** — Mon Calamari, pilote-médecin du *Bacta Express* (évacuations)."),
+  EB("**Krul Ashen « Widowmaker »** — Weequay, chasseur de primes de passage (j) : source de tension si les PJ croisent sa route ou sa cible."),
+  EP("*Autres coques citées : Perce-Brume, Étoile Voilée, Aube Grise.*"),
+]);
+
+// ---- 5. ISSUES & OUVERTURE ----
+b.push(H1("5. Issues possibles & ouverture"));
+b.push(H2("Les dénouements"));
+b.push(P("Le scénario se joue sur deux tensions : **obtenir** le contenu du journal, et **repartir** avant que l'ISB ne verrouille la station. Les issues combinent ces deux axes."));
+b.push(P("**Réussite discrète (l'idéal).** Les PJ gagnent la confiance de Tana, réunissent les quatre indices, laissent Bafouille déchiffrer, et **exfiltrent les coordonnées** de la base dissidente **avant** que Vint ne boucle sa triangulation. La station ignore tout ; l'ISB arrive trop tard. Les PJ tiennent l'avertissement qui peut sauver la base de la grille L-14."));
+b.push(P("**Réussite coûteuse.** Les PJ obtiennent l'information mais **laissent une trace** : un PNJ alarmé, une effraction repérée, une erreur devant Skarn. L'extraction se fait **sous tension** (course-poursuite, fusillade au quai, black-out provoqué au N0 pour couvrir la fuite). Ils repartent avec le journal, mais **Rennard sait** désormais où chercher — et retient leurs visages."));
+b.push(P("**Échec partiel.** Le déchiffrement échoue ou traîne (indices manqués, Bafouille endommagé, Tana refuse de coopérer). Les PJ repartent les mains vides ou avec des fragments inexploitables ; la base dissidente reste sans avertissement."));
+b.push(P("**Capture.** Un PJ ou **Tana** tombe entre les mains de Rennard. Le journal est saisi ou détruit ; l'ISB remonte la filière. Si l'ordre *« exécution immédiate »* du J199 est confirmé, la **base de la grille L-14 est frappée** — conséquence lourde pour la suite."));
+b.push(H2("Le sort de Tana"));
+b.push(B("**Elle part avec les PJ** — nouvelle alliée récurrente, précieuse en cryptanalyse et connaissance de l'Empire."));
+b.push(B("**Elle reste** — pour continuer à écouter depuis Kessel-Tho, source dormante et point de contact futur (au prix d'un risque croissant)."));
+b.push(B("**Elle se sacrifie** — pour couvrir la fuite des PJ ou détruire le journal avant l'ISB : fin tragique et marquante, dette morale pour les personnages."));
+b.push(H2("Ouverture vers le futur"));
+b.push(B("**L'avertissement.** Les coordonnées L-14 lancent une course : prévenir la base dissidente avant la frappe — accroche directe pour la suite de campagne."));
+b.push(B("**La traque commence.** Ce que les PJ ont entrevu, c'est la **naissance de l'Escadron de la Mort** : l'*Executor* et sa flotte entrent en scène. Le secteur n'est plus sûr."));
+b.push(B("**Une némésis.** Si Rennard a vu leurs visages, il devient un **antagoniste récurrent** — patient, méthodique, sans colère et sans oubli."));
+b.push(B("**Kessel-Tho, point d'appui.** Selon leurs actes, la station reste une base arrière possible (Kallan manipulable, PNJ ralliés, caches des locaux désaffectés) — ou un lieu désormais trop chaud."));
+b.push(new Paragraph({ spacing: { before: 240 }, alignment: AlignmentType.CENTER, children: [ new TextRun({ text: "— Fin du document · Handouts (d)→(j) fournis séparément —", italics: true, size: 18, color: "888888" }) ] }));
+
+// ---------- footer ----------
+const footer = new Footer({ children: [ new Paragraph({ alignment: AlignmentType.CENTER, border: { top: { style: BorderStyle.SINGLE, size: 4, color: "CCCCCC" } }, children: [ new TextRun({ text: "Signal de Détresse — Kessel-Tho     ", size: 16, color: "999999" }), new TextRun({ children: [PageNumber.CURRENT], size: 16, color: "999999" }) ] }) ] });
+
+// ---------- document ----------
+const heading = (size, color) => ({ run: { font: "Calibri", size, bold: true, color }, paragraph: { spacing: { before: 240, after: 100 }, keepNext: true } });
+const doc = new Document({
+  creator: "MJ",
+  title: "Signal de Détresse — Kessel-Tho",
+  features: { updateFields: true },
+  styles: {
+    default: { document: { run: { font: "Cambria", size: 20, color: "1A1A1A" } } },
+    paragraphStyles: [
+      { id: "Heading1", name: "Heading 1", basedOn: "Normal", next: "Normal", quickFormat: true, run: { font: "Calibri", size: 30, bold: true, color: H1COL }, paragraph: { spacing: { before: 280, after: 120 }, keepNext: true, border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: "C9C2AE" } } } },
+      { id: "Heading2", name: "Heading 2", basedOn: "Normal", next: "Normal", quickFormat: true, run: { font: "Calibri", size: 24, bold: true, color: H2COL }, paragraph: { spacing: { before: 200, after: 80 }, keepNext: true } },
+      { id: "Heading3", name: "Heading 3", basedOn: "Normal", next: "Normal", quickFormat: true, run: { font: "Calibri", size: 21, bold: true, color: H3COL }, paragraph: { spacing: { before: 140, after: 60 }, keepNext: true } },
+    ],
+  },
+  numbering: {
+    config: [
+      { reference: "bul", levels: [ { level: 0, format: LevelFormat.BULLET, text: "•", alignment: AlignmentType.LEFT, style: { run: { color: ACCENT }, paragraph: { indent: { left: 300, hanging: 200 } } } } ] },
+      { reference: "ord", levels: [ { level: 0, format: LevelFormat.DECIMAL, text: "%1.", alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: 320, hanging: 220 } } } } ] },
+    ],
+  },
+  sections: [
+    { properties: { page: { margin: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN } } }, children: title },
+    { properties: { page: { margin: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN } } }, children: toc },
+    { properties: { page: { margin: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN } }, column: { count: 2, space: 454, equalWidth: true } }, footers: { default: footer }, children: b },
+  ],
+});
+
+const OUT = path.join(__dirname, "scenario_signal_detresse_FUSION.docx");
+Packer.toBuffer(doc).then((buf) => { fs.writeFileSync(OUT, buf); console.log("WROTE", OUT, buf.length, "bytes"); }).catch((e) => { console.error("FAIL", e); process.exit(1); });
