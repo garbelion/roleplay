@@ -117,6 +117,23 @@ adaptées aux PNJ actuels) — **à valider en rédaction** :
    dans le brouillon ; le droïde Bafouille reste, mais sans référence à un `.exe` fourni au MJ.
    Voir `TODO.md` #7.
 
+## 8ter. Annexes (état)
+
+Section **Annexes** (H1) après la conclusion :
+- **A. Événements aléatoires de la station** — table d66 (2 colonnes, TODO #3, fait).
+- **B. Handout — Le message initial de Tana (« message 0 »)** — ajout intermède
+  utilisateur. **Rendue en section PLEINE LARGEUR** (exception à la mise en page 2
+  colonnes, demandée par l'utilisateur) : 4ᵉ section Word, 1 colonne. Contient la
+  note MJ (chiffre « Sand/Musset » = 1 ligne sur 2, relais par « le Courtier »,
+  message décodé, double sens de « impériaux ») + l'**encadré à imprimer** (police
+  Consolas, liseré rouge/fond parchemin). Source détaillée : `docs/message_initial_tana.docx`.
+- **Lettrage** : quand #4 (météo des rayonnements) arrivera, décider l'ordre —
+  proposition : A Événements, B Rayonnements (outils MJ), **C Handout** (joueurs) en
+  dernier. Re-lettrer la section B→C à ce moment.
+
+Technique docx : le passage 2 colonnes → 1 colonne se fait via une **nouvelle section**
+(`sections[]`), pas via un saut de colonne. Footer dupliqué via `makeFooter()`.
+
 ## 8bis. Suite de rédaction (retour critique)
 
 Le retour critique sur `docs/scenario_fusion_draft.md` est consolidé en checklist versionnée

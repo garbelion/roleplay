@@ -445,7 +445,7 @@ b.push(B("**Kessel-Tho, point d'appui.** Selon leurs actes, la station reste une
 // ---- ANNEXES ----
 function evtHead(t) { b.push(new Paragraph({ spacing: { before: 90, after: 40 }, keepNext: true, children: [ new TextRun({ text: t, bold: true, size: 19, color: H2COL }) ] })); }
 function evt(n, text) { b.push(new Paragraph({ spacing: { after: 20, line: 248 }, indent: { left: 300, hanging: 300 }, alignment: AlignmentType.JUSTIFIED, children: [ new TextRun({ text: n + "  ", bold: true, color: ACCENT }), ...md(text) ] })); }
-b.push(H1("Annexes — outils de MJ"));
+b.push(H1("Annexes"));
 b.push(H2("A. Événements aléatoires de la station"));
 b.push(P("Pour donner vie à la station entre deux temps d'enquête. **Lancez deux dés** (ou 1D deux fois) : le premier donne le **thème** (1-6), le second l'**événement** (1-6). Roulez une fois par **quart**, ou dès qu'une scène a besoin de texture. La plupart sont de l'ambiance ; certains portent un **crochet mécanique** *(horloge ISB ; rayonnements → annexe B ; leviers sociaux)*."));
 evtHead("1 · Quai & vaisseaux");
@@ -490,10 +490,61 @@ evt("3", "Un enfant (rare sur la station) s'est perdu dans une coursive ; qui le
 evt("4", "Odeur persistante de caf brûlé au mess ; Kessa s'excuse platement.");
 evt("5", "Un haut-parleur défectueux répète une annonce en boucle jusqu'à ce qu'on le débranche.");
 evt("6", "Rien de notable — la station ronronne. *(Le calme avant quelque chose ?)*");
-b.push(new Paragraph({ spacing: { before: 240 }, alignment: AlignmentType.CENTER, children: [ new TextRun({ text: "— Fin du document · Handouts (d)→(j) fournis séparément —", italics: true, size: 18, color: "888888" }) ] }));
+// ---- ANNEXE B — HANDOUT (section PLEINE LARGEUR, hors 2 colonnes) ----
+const HAND_W = 9638; // largeur utile en 1 colonne (A4 - 2 x marge 1134)
+const hand = [];
+hand.push(H2("B. Handout — Le message initial de Tana (le « message 0 »)"));
+hand.push(P("Point de départ du scénario. Avant de disparaître sous l'alias **Doiron**, Tana a posté une annonce sur un canal privé de marché noir : en apparence une brocante banale, mais **une ligne sur deux (les impaires)** forme un message d'alerte à l'Alliance — procédé **« Sand/Musset »** (un texte anodin dont une ligne sur deux cache un second message). Un intermédiaire, **le Courtier**, l'a relayé à la Rébellion : c'est ce qui amène les PJ à Kessel-Tho."));
+hand.push(P("**Volontairement, les coordonnées de la flotte n'y figurent pas** (ni en surface, ni en caché) : Tana refuse de les confier à un canal ouvert. Il faut la retrouver physiquement et déchiffrer son journal."));
+hand.push(new Paragraph({ spacing: { before: 40, after: 40 }, children: [ new TextRun({ text: "Le message caché (lignes impaires), en clair :", bold: true, color: ACCENT, size: 19 }) ] }));
+[
+  "**« Le Faucheur est de sortie »** → le Projet Faucheur est opérationnel et en mouvement.",
+  "**« …trajectoire mesurée et calibrée sur plus de deux semaines »** → elle a suivi et calculé leur trajectoire : elle sait où ils vont.",
+  "**« …à l'écoute notamment chez les / impériaux »** → le canal est surveillé par l'Empire (prudence).",
+  "**« Bafouille … chez la marchande Doiron, quai de Kessel-Tho »** → point de contact et identité de couverture.",
+  "**« Je change de casier tous les jours, situation instable »** → elle est traquée, elle se déplace.",
+  "**« Ne tardez pas, l'offre ne durera pas »** → urgence absolue.",
+].forEach((t) => hand.push(new Paragraph({ children: md(t), numbering: { reference: "bul", level: 0 }, spacing: { after: 40, line: 258 } })));
+hand.push(P("**Le double sens de « impériaux ».** Le mot revient deux fois : en surface c'est la devise (« crédits impériaux »), mais isolé dans la lecture cachée il se lit « les Impériaux » — l'Empire. L'effet est voulu."));
+hand.push(P("**Aide si les joueurs bloquent :** les redondances (« nommé Bafouille / chez la marchande Doiron ») et le mot « impériaux » répété sont des anomalies de rédaction qui trahissent une structure. Qui connaît la correspondance Sand/Musset trouve aussitôt — bonne récompense de culture générale."));
+hand.push(new Paragraph({ spacing: { before: 80, after: 60 }, children: [ new TextRun({ text: "À imprimer pour les joueurs :", bold: true, size: 19, color: H2COL }) ] }));
+// encadré handout (pleine largeur)
+const adLines = [
+  "Le Faucheur est de sortie",
+  "Lots disponibles comme d'habitude, premier arrivé, premier servi",
+  "Il y a du gros et du très gros cette fois-ci avec ces",
+  "lots de convertisseurs d'énergie, état correct, prix 200 crédits",
+  "impériaux, pas de négociation possible",
+  "Aussi disponible un casque de pilote Z-95 avec son émission de",
+  "trajectoire mesurée et calibrée sur plus de deux semaines,",
+  "visière à remplacer, prix 50 crédits impériaux, négociation",
+  "possible",
+  "Containers de pièces de blindage, en gros uniquement. J'espère",
+  "que du monde soit intéressé et à l'écoute notamment chez les",
+  "pirates. Paiement par virement exigé, prix à la tonne 500 crédits",
+  "impériaux",
+  "Droïde astromécano listé en commission, dévoué, compétent nommé",
+  "Bafouille disponible chez la marchande Doiron, quai de Kessel-Tho",
+  "Réservoirs auxiliaires, fuite mineure, bon pour pièces.",
+  "Je change de casier tous les jours, situation instable.",
+  "Livraison main à main uniquement, pas d'intermédiaire.",
+  "Ne tardez pas, l'offre ne durera pas.",
+  "Contactez le Courtier habituel pour les détails.",
+];
+const adInner = [
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 20 }, children: [ new TextRun({ text: "PETITES ANNONCES — SECTEUR KESSEL", bold: true, font: "Consolas", size: 22, color: "222222" }) ] }),
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 160 }, border: { bottom: { style: BorderStyle.SINGLE, size: 4, color: "C9B99A" } }, children: [ new TextRun({ text: "canal privé — lot du cycle", italics: true, font: "Consolas", size: 16, color: "666666" }) ] }),
+  ...adLines.map((l) => new Paragraph({ spacing: { after: 26, line: 240 }, children: [ new TextRun({ text: l, font: "Consolas", size: 18, color: "222222" }) ] })),
+];
+hand.push(new Table({
+  width: { size: HAND_W, type: WidthType.DXA }, columnWidths: [HAND_W], borders: allBorders("8A1C1C", 10),
+  rows: [ new TableRow({ children: [ new TableCell({ width: { size: HAND_W, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill: "FBF7EE", color: "auto" }, margins: { top: 200, bottom: 200, left: 240, right: 240 }, children: adInner }) ] }) ],
+}));
+hand.push(new Paragraph({ spacing: { before: 100 }, children: md("*Source détaillée (version annotée ligne à ligne, traduction complète) : `docs/message_initial_tana.docx`.*") }));
+hand.push(new Paragraph({ spacing: { before: 240 }, alignment: AlignmentType.CENTER, children: [ new TextRun({ text: "— Fin du document · Handouts (d)→(j) fournis séparément —", italics: true, size: 18, color: "888888" }) ] }));
 
 // ---------- footer ----------
-const footer = new Footer({ children: [ new Paragraph({ alignment: AlignmentType.CENTER, border: { top: { style: BorderStyle.SINGLE, size: 4, color: "CCCCCC" } }, children: [ new TextRun({ text: "Signal de Détresse — Kessel-Tho     ", size: 16, color: "999999" }), new TextRun({ children: [PageNumber.CURRENT], size: 16, color: "999999" }) ] }) ] });
+const makeFooter = () => new Footer({ children: [ new Paragraph({ alignment: AlignmentType.CENTER, border: { top: { style: BorderStyle.SINGLE, size: 4, color: "CCCCCC" } }, children: [ new TextRun({ text: "Signal de Détresse — Kessel-Tho     ", size: 16, color: "999999" }), new TextRun({ children: [PageNumber.CURRENT], size: 16, color: "999999" }) ] }) ] });
 
 // ---------- document ----------
 const heading = (size, color) => ({ run: { font: "Calibri", size, bold: true, color }, paragraph: { spacing: { before: 240, after: 100 }, keepNext: true } });
@@ -518,7 +569,8 @@ const doc = new Document({
   sections: [
     { properties: { page: { margin: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN } } }, children: title },
     { properties: { page: { margin: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN } } }, children: toc },
-    { properties: { page: { margin: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN } }, column: { count: 2, space: 454, equalWidth: true } }, footers: { default: footer }, children: b },
+    { properties: { page: { margin: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN } }, column: { count: 2, space: 454, equalWidth: true } }, footers: { default: makeFooter() }, children: b },
+    { properties: { page: { margin: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN } } }, footers: { default: makeFooter() }, children: hand },
   ],
 });
 

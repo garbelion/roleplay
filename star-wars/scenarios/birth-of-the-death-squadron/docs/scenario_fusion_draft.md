@@ -641,7 +641,7 @@ peser sur la suite.
 
 ---
 
-# ANNEXES — OUTILS DE MJ
+# ANNEXES
 
 ## A. Événements aléatoires de la station
 
@@ -698,6 +698,69 @@ rayonnements → annexe B ; leviers sociaux)*.
 4. Odeur persistante de caf brûlé au mess ; Kessa s'excuse platement.
 5. Un haut-parleur défectueux répète une annonce en boucle jusqu'à ce qu'on le débranche.
 6. Rien de notable — la station ronronne. *(Le calme avant quelque chose ?)*
+
+---
+
+## B. Handout — Le message initial de Tana (le « message 0 »)
+
+*Cette section est en pleine largeur (hors mise en page à deux colonnes).*
+
+Point de départ du scénario. Avant de disparaître sous l'alias **Doiron**, Tana a
+posté une annonce sur un canal privé de marché noir : en apparence une brocante
+banale, mais **une ligne sur deux (les impaires)** forme un message d'alerte à
+l'Alliance — procédé **« Sand/Musset »** (un texte anodin dont une ligne sur deux
+cache un second message). Un intermédiaire, **le Courtier**, l'a relayé à la
+Rébellion : c'est ce qui amène les PJ à Kessel-Tho.
+
+**Volontairement, les coordonnées de la flotte n'y figurent pas** (ni en surface, ni
+en caché) : Tana refuse de les confier à un canal ouvert. Il faut la retrouver
+physiquement et déchiffrer son journal.
+
+**Le message caché (lignes impaires), en clair :**
+- **« Le Faucheur est de sortie »** → le Projet Faucheur est opérationnel et en mouvement.
+- **« …trajectoire mesurée et calibrée sur plus de deux semaines »** → elle a suivi et calculé leur trajectoire : elle sait où ils vont.
+- **« …à l'écoute notamment chez les / impériaux »** → le canal est surveillé par l'Empire (prudence).
+- **« Bafouille … chez la marchande Doiron, quai de Kessel-Tho »** → point de contact et identité de couverture.
+- **« Je change de casier tous les jours, situation instable »** → elle est traquée, elle se déplace.
+- **« Ne tardez pas, l'offre ne durera pas »** → urgence absolue.
+
+**Le double sens de « impériaux ».** Le mot revient deux fois : en surface c'est la
+devise (« crédits impériaux »), mais isolé dans la lecture cachée il se lit « les
+Impériaux » — l'Empire. L'effet est voulu.
+
+**Aide si les joueurs bloquent :** les redondances (« nommé Bafouille / chez la
+marchande Doiron ») et le mot « impériaux » répété sont des anomalies de rédaction
+qui trahissent une structure. Qui connaît la correspondance Sand/Musset trouve
+aussitôt — bonne récompense de culture générale.
+
+**À imprimer pour les joueurs :**
+
+> **PETITES ANNONCES — SECTEUR KESSEL**
+> *canal privé — lot du cycle*
+>
+> Le Faucheur est de sortie
+> Lots disponibles comme d'habitude, premier arrivé, premier servi
+> Il y a du gros et du très gros cette fois-ci avec ces
+> lots de convertisseurs d'énergie, état correct, prix 200 crédits
+> impériaux, pas de négociation possible
+> Aussi disponible un casque de pilote Z-95 avec son émission de
+> trajectoire mesurée et calibrée sur plus de deux semaines,
+> visière à remplacer, prix 50 crédits impériaux, négociation
+> possible
+> Containers de pièces de blindage, en gros uniquement. J'espère
+> que du monde soit intéressé et à l'écoute notamment chez les
+> pirates. Paiement par virement exigé, prix à la tonne 500 crédits
+> impériaux
+> Droïde astromécano listé en commission, dévoué, compétent nommé
+> Bafouille disponible chez la marchande Doiron, quai de Kessel-Tho
+> Réservoirs auxiliaires, fuite mineure, bon pour pièces.
+> Je change de casier tous les jours, situation instable.
+> Livraison main à main uniquement, pas d'intermédiaire.
+> Ne tardez pas, l'offre ne durera pas.
+> Contactez le Courtier habituel pour les détails.
+
+*Source détaillée (version annotée ligne à ligne, traduction complète) :
+`docs/message_initial_tana.docx`.*
 
 ---
 
