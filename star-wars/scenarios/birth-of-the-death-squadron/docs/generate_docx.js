@@ -1,6 +1,7 @@
 // Générateur du document fusionné « Signal de Détresse » (docx-js).
 // Prérequis : dans ce dossier, `npm init -y && npm i docx@8`, puis `node generate_docx.js`.
 // Le contenu de référence (texte) est docs/scenario_fusion_draft.md.
+// Embarque la police Star Jedi (titres) directement dans le .docx (police OOXML obfusquée).
 const path = require("path");
 const fs = require("fs");
 // Résout `docx` depuis un node_modules local (ce dossier) ou global.
@@ -10,6 +11,12 @@ const {
   Table, TableRow, TableCell, WidthType, BorderStyle, ShadingType, TableOfContents,
   PageBreak, Footer, PageNumber,
 } = docx;
+let JSZip; try { JSZip = require("jszip"); } catch (e) { JSZip = require(path.join(__dirname, "../empire-os/node_modules/jszip")); }
+
+// ---------- police de titre embarquée ----------
+const TITLE_FONT = "Star Jedi";
+const FONT_TTF = path.join(__dirname, "../empire-os/src/assets/starjedi/Starjedi.ttf");
+const FONT_GUID = "6F5E4D3C-2B1A-4F9C-8B7A-1234567890AB";
 
 // ---------- palette / layout ----------
 const H1COL = "26425C", H2COL = "3A5A7A", H3COL = "555555";
@@ -98,7 +105,7 @@ const EB = (t) => new Paragraph({ children: md(t), numbering: { reference: "bul"
 const rule = () => new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 120, after: 120 }, border: { bottom: { style: BorderStyle.SINGLE, size: 12, color: ACCENT } }, children: [] });
 const title = [
   new Paragraph({ spacing: { before: 2600 }, children: [] }),
-  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 80 }, children: [ new TextRun({ text: "SIGNAL DE DÉTRESSE", bold: true, size: 60, font: "Calibri", color: H1COL }) ] }),
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 80 }, children: [ new TextRun({ text: "SIGNAL DE DÉTRESSE", bold: true, size: 64, font: TITLE_FONT, color: H1COL }) ] }),
   rule(),
   new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 120, after: 60 }, children: [ new TextRun({ text: "Un scénario Star Wars", italics: true, size: 26, color: "333333" }) ] }),
   new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 200 }, children: [ new TextRun({ text: "Station-relais impériale de Kessel-Tho — Bordure Extérieure", italics: true, size: 24, color: "333333" }) ] }),
@@ -111,7 +118,7 @@ const title = [
 //  TABLE OF CONTENTS
 // ====================================================================
 const toc = [
-  new Paragraph({ spacing: { after: 240 }, children: [ new TextRun({ text: "Sommaire", bold: true, size: 34, font: "Calibri", color: H1COL }) ] }),
+  new Paragraph({ spacing: { after: 240 }, children: [ new TextRun({ text: "Sommaire", bold: true, size: 40, font: TITLE_FONT, color: H1COL }) ] }),
   new TableOfContents("Sommaire", { hyperlink: true, headingStyleRange: "1-2" }),
 ];
 
@@ -419,7 +426,7 @@ encart(b, "Encart — Équipages de passage (manifeste j & rapport e)", [
 ]);
 
 // ---- 5. ISSUES & OUVERTURE ----
-b.push(H1("5. Issues possibles & ouverture"));
+b.push(H1("5. Issues possibles et ouverture"));
 b.push(H2("Les dénouements"));
 b.push(P("Le scénario se joue sur deux tensions : **obtenir** le contenu du journal, et **repartir** avant que l'ISB ne verrouille la station. Les issues combinent ces deux axes."));
 b.push(P("**Réussite discrète (l'idéal).** Les PJ gagnent la confiance de Tana, réunissent les quatre indices, laissent Bafouille déchiffrer, et **exfiltrent les coordonnées** de la base dissidente **avant** que Vint ne boucle sa triangulation. La station ignore tout ; l'ISB arrive trop tard. Les PJ tiennent l'avertissement qui peut sauver la base de la grille L-14."));
@@ -449,7 +456,7 @@ const doc = new Document({
   styles: {
     default: { document: { run: { font: "Cambria", size: 20, color: "1A1A1A" } } },
     paragraphStyles: [
-      { id: "Heading1", name: "Heading 1", basedOn: "Normal", next: "Normal", quickFormat: true, run: { font: "Calibri", size: 30, bold: true, color: H1COL }, paragraph: { spacing: { before: 280, after: 120 }, keepNext: true, border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: "C9C2AE" } } } },
+      { id: "Heading1", name: "Heading 1", basedOn: "Normal", next: "Normal", quickFormat: true, run: { font: TITLE_FONT, size: 30, bold: true, color: H1COL }, paragraph: { spacing: { before: 280, after: 120 }, keepNext: true, border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: "C9C2AE" } } } },
       { id: "Heading2", name: "Heading 2", basedOn: "Normal", next: "Normal", quickFormat: true, run: { font: "Calibri", size: 24, bold: true, color: H2COL }, paragraph: { spacing: { before: 200, after: 80 }, keepNext: true } },
       { id: "Heading3", name: "Heading 3", basedOn: "Normal", next: "Normal", quickFormat: true, run: { font: "Calibri", size: 21, bold: true, color: H3COL }, paragraph: { spacing: { before: 140, after: 60 }, keepNext: true } },
     ],
@@ -468,4 +475,43 @@ const doc = new Document({
 });
 
 const OUT = path.join(__dirname, "scenario_signal_detresse_FUSION.docx");
-Packer.toBuffer(doc).then((buf) => { fs.writeFileSync(OUT, buf); console.log("WROTE", OUT, buf.length, "bytes"); }).catch((e) => { console.error("FAIL", e); process.exit(1); });
+
+// Post-traitement : embarque la police de titre (TTF -> police OOXML obfusquée).
+function obfuscate(buf, guid) {
+  const key = Buffer.from(guid.replace(/[{}-]/g, ""), "hex").reverse(); // clé ECMA-376 (16 octets, inversés)
+  const out = Buffer.from(buf);
+  for (let i = 0; i < 32 && i < out.length; i++) out[i] ^= key[i % 16];
+  return out;
+}
+async function embedTitleFont(docxBuf) {
+  if (!fs.existsSync(FONT_TTF)) { console.warn("! police introuvable, embarquement ignoré :", FONT_TTF); return docxBuf; }
+  const z = await JSZip.loadAsync(docxBuf);
+  z.file("word/fonts/font1.odttf", obfuscate(fs.readFileSync(FONT_TTF), FONT_GUID));
+  let ft = await z.file("word/fontTable.xml").async("string");
+  const entry = `<w:font w:name="${TITLE_FONT}"><w:charset w:val="00"/><w:family w:val="auto"/><w:pitch w:val="variable"/><w:embedRegular r:id="rIdFont1" w:fontKey="{${FONT_GUID}}" w:subsetted="false"/></w:font>`;
+  ft = ft.replace(/<w:fonts\b([^>]*)\/>/, `<w:fonts$1>${entry}</w:fonts>`);
+  if (!ft.includes(entry)) ft = ft.replace(/<\/w:fonts>/, `${entry}</w:fonts>`);
+  z.file("word/fontTable.xml", ft);
+  let rels = await z.file("word/_rels/fontTable.xml.rels").async("string");
+  const rel = `<Relationship Id="rIdFont1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/font" Target="fonts/font1.odttf"/>`;
+  rels = /<\/Relationships>/.test(rels) ? rels.replace(/<\/Relationships>/, `${rel}</Relationships>`) : rels.replace(/(<Relationships\b[^>]*)\/>/, `$1>${rel}</Relationships>`);
+  z.file("word/_rels/fontTable.xml.rels", rels);
+  let drels = await z.file("word/_rels/document.xml.rels").async("string");
+  if (!drels.includes("/fontTable")) {
+    drels = drels.replace(/<\/Relationships>/, `<Relationship Id="rIdFontTable" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/></Relationships>`);
+    z.file("word/_rels/document.xml.rels", drels);
+  }
+  let st = await z.file("word/settings.xml").async("string");
+  if (!st.includes("embedTrueTypeFonts")) {
+    st = st.includes("<w:displayBackgroundShape/>")
+      ? st.replace("<w:displayBackgroundShape/>", `<w:displayBackgroundShape/><w:embedTrueTypeFonts/><w:saveSubsetFonts w:val="false"/>`)
+      : st.replace(/(<w:settings\b[^>]*>)/, `$1<w:embedTrueTypeFonts/><w:saveSubsetFonts w:val="false"/>`);
+    z.file("word/settings.xml", st);
+  }
+  return z.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
+}
+
+Packer.toBuffer(doc)
+  .then(embedTitleFont)
+  .then((buf) => { fs.writeFileSync(OUT, buf); console.log("WROTE", OUT, buf.length, "bytes (police", TITLE_FONT, "embarquée)"); })
+  .catch((e) => { console.error("FAIL", e); process.exit(1); });

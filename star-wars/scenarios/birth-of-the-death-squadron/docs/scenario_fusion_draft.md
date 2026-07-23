@@ -587,7 +587,7 @@ locatif jamais réclamé), **ancien bureau des licences** (dossiers papier oubli
 
 ---
 
-# 5. ISSUES POSSIBLES & OUVERTURE
+# 5. ISSUES POSSIBLES ET OUVERTURE
 
 ## Les dénouements
 

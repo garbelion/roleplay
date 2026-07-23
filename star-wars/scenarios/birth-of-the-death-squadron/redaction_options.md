@@ -25,7 +25,16 @@ Fusionner les documents du scénario en **un seul document neuf**, avec :
 - **Format : Word `.docx`** (décision utilisateur). Deux colonnes natives via
   sauts de section Word ; page de titre + sommaire en pleine largeur.
   Produit via la skill `docx` (docx-js / OOXML).
-- Fichier cible : `scenario_signal_detresse_FUSION.docx` (dossier `docs/` ou racine du scénario — à confirmer, défaut = racine du scénario).
+- Fichier cible : `docs/scenario_signal_detresse_FUSION.docx`.
+- **Police de titre Star Jedi embarquée** (demande utilisateur) : couverture,
+  « Sommaire » et les 5 titres de section H1 en **Star Jedi** ; H2/H3 restent en
+  Calibri (lisibilité). La police est **embarquée dans le .docx** (police OOXML
+  obfusquée, algo ECMA-376 : clé GUID 16 octets inversés, XOR des 32 premiers
+  octets ; `embedTrueTypeFonts` dans settings.xml). L'embarquement est intégré au
+  générateur (`generate_docx.js`, fonction `embedTitleFont`, via `jszip`). Source
+  de la police : `empire-os/src/assets/starjedi/Starjedi.ttf` (déjà dans le repo).
+  NB : `&` n'a pas de glyphe littéral dans Star Jedi (rendu = petit soleil) → le
+  titre §5 a été passé à « Issues possibles **et** ouverture ».
 
 ## 3. Décisions utilisateur (validées)
 
