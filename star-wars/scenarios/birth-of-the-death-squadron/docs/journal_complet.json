@@ -1,0 +1,800 @@
+[
+  {
+    "id": "F1",
+    "date": "Cycle 18 / Jour 015",
+    "message": "...ravitaillement en carburant confirmé, quai 4, prochaine rotation dans six jours standard. Rien à signaler côté cargo...",
+    "coordonnees": "Grille N-11, secteur extérieur, sans repère local exploitable",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "isolé",
+    "type": "faux",
+    "client": "Liana Merian",
+    "ligne": 1
+  },
+  {
+    "id": "R28",
+    "date": "Cycle 18 / Jour 020",
+    "client": "Miri Vann",
+    "message": "Demande de canal secondaire en doublon, activité en hausse ce cycle-ci.",
+    "coordonnees": "Quai 3, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 2
+  },
+  {
+    "id": "R22",
+    "date": "Cycle 18 / Jour 021",
+    "client": "Renard Karnas",
+    "message": "Renouvellement trimestriel standard, aucune modification par rapport au contrat en cours.",
+    "coordonnees": "Poste d'amarrage temporaire, secteur B",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 3
+  },
+  {
+    "id": "R38",
+    "date": "Cycle 18 / Jour 021",
+    "client": "Ossa Corbis",
+    "message": "Nouveau contact, référé par un client existant, demande tarif de première prise de contact.",
+    "coordonnees": "Quai 5, station Kessel-Tho",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 4
+  },
+  {
+    "id": "R43",
+    "date": "Cycle 18 / Jour 024",
+    "client": "Orla Ferrin",
+    "message": "Besoin d'un canal discret pour coordination de livraison, dossier urgent.",
+    "coordonnees": "Canal local, zone de fret",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 5
+  },
+  {
+    "id": "R47",
+    "date": "Cycle 18 / Jour 028",
+    "client": "Voth Bellum",
+    "message": "Demande de discrétion accrue, client visiblement nerveux sans motif précisé.",
+    "coordonnees": "Quai 3, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 6
+  },
+  {
+    "id": "R60",
+    "date": "Cycle 18 / Jour 036",
+    "client": "Halden Solveig",
+    "message": "Coordination d'un transfert de cargaison discret, créneau court mais précis exigé.",
+    "coordonnees": "Quai visiteur, aile est",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 7
+  },
+  {
+    "id": "R16",
+    "date": "Cycle 18 / Jour 040",
+    "client": "Voth Bellum",
+    "message": "Renouvellement trimestriel standard, aucune modification par rapport au contrat en cours.",
+    "coordonnees": "Quai 4, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 8
+  },
+  {
+    "id": "R20",
+    "date": "Cycle 18 / Jour 051",
+    "client": "Toma Ossik",
+    "message": "Signalement d'une coupure de canal la semaine dernière, demande de compensation.",
+    "coordonnees": "Quai 4, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 9
+  },
+  {
+    "id": "F2",
+    "date": "Cycle 18 / Jour 058",
+    "message": "...Faucheur activé selon calendrier. Effectifs en cours d'affectation, commandement transmis sous peu. Fin de transmission...",
+    "coordonnees": "Grille M-12, environ 3 jours de trajet de la balise Anaxes",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "significatif",
+    "type": "faux",
+    "client": "Ulic Qel-Droma",
+    "ligne": 10
+  },
+  {
+    "id": "R19",
+    "date": "Cycle 18 / Jour 078",
+    "client": "Vex Halkor",
+    "message": "Coordination d'un transfert de cargaison discret, créneau court mais précis exigé.",
+    "coordonnees": "Zone d'amarrage principale",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 11
+  },
+  {
+    "id": "F3",
+    "date": "Cycle 18 / Jour 097",
+    "message": "...deux unités de patrouille signalent un accrochage mineur, dégâts superficiels, aucune suite requise de notre part...",
+    "coordonnees": "Signal trop bref pour triangulation fiable",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "isolé",
+    "type": "faux",
+    "client": "Agrippa Aldrete",
+    "ligne": 12
+  },
+  {
+    "id": "R25",
+    "date": "Cycle 18 / Jour 124",
+    "client": "Dara Halkor",
+    "message": "Ouverture d'un nouveau canal pour une opération encore à préciser, acompte versé.",
+    "coordonnees": "Quai 4, station Kessel-Tho",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 13
+  },
+  {
+    "id": "R44",
+    "date": "Cycle 18 / Jour 128",
+    "client": "Quinn Vantry",
+    "message": "Besoin d'un canal discret pour coordination de livraison, dossier urgent.",
+    "coordonnees": "Zone d'amarrage principale",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 14
+  },
+  {
+    "id": "R36",
+    "date": "Cycle 18 / Jour 134",
+    "client": "Toma Brenna",
+    "message": "Demande d'ouverture de canal privé pour cinq jours, paiement comptant à réception.",
+    "coordonnees": "Quai 1, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 15
+  },
+  {
+    "id": "F4",
+    "date": "Cycle 18 / Jour 140",
+    "message": "...ratissage systématique du Bras Occidental engagé conformément aux ordres. Aucune détection à ce jour. Poursuite du quadrillage...",
+    "coordonnees": "Grille L-13, dérive lente vers le sud galactique",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "significatif",
+    "type": "faux",
+    "client": "Ulic Qel-Droma",
+    "ligne": 16
+  },
+  {
+    "id": "F16",
+    "date": "Cycle 18 / Jour 145",
+    "message": "...essais finaux du châssis en orbite de Fondor. Dimensions hors normes, aucune désignation officielle transmise sur ce canal. Sécurité renforcée sur l'ensemble du chantier, tout trafic civil détourné...",
+    "coordonnees": "Grille L-13, orbite de Fondor",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "significatif",
+    "type": "faux",
+    "client": "Ulic Qel-Droma",
+    "ligne": 17
+  },
+  {
+    "id": "F18",
+    "date": "Cycle 18 / Jour 160",
+    "message": "...réquisition supplémentaire de droïdes sondes demandée pour la zone de ratissage. Taux de perte supérieur aux prévisions initiales — terrain accidenté, plusieurs unités hors service ou sans retour de signal. Priorité de livraison élevée...",
+    "coordonnees": "Grille L-13, convoi logistique en transit vers la zone de ratissage",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "significatif",
+    "type": "faux",
+    "client": "Liana Merian",
+    "ligne": 18
+  },
+  {
+    "id": "R40",
+    "date": "Cycle 18 / Jour 167",
+    "client": "Bassa Solveig",
+    "message": "Changement de fréquence demandé suite à interférences répétées sur le canal habituel.",
+    "coordonnees": "Quai 4, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 19
+  },
+  {
+    "id": "R17",
+    "date": "Cycle 18 / Jour 173",
+    "client": "Anja Dovrun",
+    "message": "Signalement d'une coupure de canal la semaine dernière, demande de compensation.",
+    "coordonnees": "Quai 2, station Kessel-Tho",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 20
+  },
+  {
+    "id": "R11",
+    "date": "Cycle 18 / Jour 176",
+    "client": "Yara Ostavo",
+    "message": "Coordination d'un transfert de cargaison discret, créneau court mais précis exigé.",
+    "coordonnees": "Zone d'amarrage principale",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 21
+  },
+  {
+    "id": "F5",
+    "date": "Cycle 18 / Jour 181",
+    "message": "...rotation d'équipage approuvée, douze personnels transférés, dossier administratif joint en annexe...",
+    "coordonnees": "Non exploitable — fragment purement administratif",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "isolé",
+    "type": "faux",
+    "client": "Liana Merian",
+    "ligne": 22
+  },
+  {
+    "id": "R3",
+    "date": "Cycle 18 / Jour 182",
+    "client": "Ilse Yannis",
+    "message": "Renouvellement trimestriel standard, aucune modification par rapport au contrat en cours.",
+    "coordonnees": "Canal local, zone de fret",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 23
+  },
+  {
+    "id": "R42",
+    "date": "Cycle 18 / Jour 192",
+    "client": "Ambre Karnas",
+    "message": "Renouvellement anticipé proposé en échange d'un tarif préférentiel.",
+    "coordonnees": "Quai 1, station Kessel-Tho",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 24
+  },
+  {
+    "id": "R50",
+    "date": "Cycle 18 / Jour 195",
+    "client": "Bron Ferrin",
+    "message": "Extension de plage horaire demandée pour opérations de nuit, tarif majoré accepté.",
+    "coordonnees": "Zone d'amarrage principale",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 25
+  },
+  {
+    "id": "R41",
+    "date": "Cycle 18 / Jour 207",
+    "client": "Halden Yannis",
+    "message": "Renouvellement du créneau habituel, mêmes conditions que la dernière fois.",
+    "coordonnees": "Quai 2, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 26
+  },
+  {
+    "id": "R14",
+    "date": "Cycle 18 / Jour 216",
+    "client": "Voth Ostrun",
+    "message": "Nouveau contact, référé par un client existant, demande tarif de première prise de contact.",
+    "coordonnees": "Poste d'amarrage temporaire, secteur B",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 27
+  },
+  {
+    "id": "F6",
+    "date": "Cycle 18 / Jour 220",
+    "message": "...premiers signes d'activité dissidente rapportés dans le secteur assigné. Vérification en cours, ne pas alerter le commandement avant confirmation...",
+    "coordonnees": "Grille L-14, à proximité de la balise Kessel Secondaire",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "significatif",
+    "type": "faux",
+    "client": "Ulic Qel-Droma",
+    "ligne": 28
+  },
+  {
+    "id": "R9",
+    "date": "Cycle 18 / Jour 239",
+    "client": "Halden Corbis",
+    "message": "Renouvellement trimestriel standard, aucune modification par rapport au contrat en cours.",
+    "coordonnees": "Canal local, zone de fret",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 29
+  },
+  {
+    "id": "R57",
+    "date": "Cycle 18 / Jour 255",
+    "client": "Toth Ferrin",
+    "message": "Ouverture d'un nouveau canal pour une opération encore à préciser, acompte versé.",
+    "coordonnees": "Quai 1, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 30
+  },
+  {
+    "id": "R56",
+    "date": "Cycle 18 / Jour 267",
+    "client": "Toma Ossik",
+    "message": "Ouverture d'un nouveau canal pour une opération encore à préciser, acompte versé.",
+    "coordonnees": "Quai 3, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 31
+  },
+  {
+    "id": "R5",
+    "date": "Cycle 18 / Jour 283",
+    "client": "Corin Kettren",
+    "message": "Réservation du canal habituel pour la semaine, facturation groupée en fin de cycle.",
+    "coordonnees": "Quai 1, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 32
+  },
+  {
+    "id": "R6",
+    "date": "Cycle 18 / Jour 292",
+    "client": "Vex Brenna",
+    "message": "Nouveau contact, référé par un client existant, demande tarif de première prise de contact.",
+    "coordonnees": "Quai 5, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 33
+  },
+  {
+    "id": "R45",
+    "date": "Cycle 18 / Jour 294",
+    "client": "Kael Kettren",
+    "message": "Extension de plage horaire demandée pour opérations de nuit, tarif majoré accepté.",
+    "coordonnees": "Quai 4, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 34
+  },
+  {
+    "id": "F7",
+    "date": "Cycle 18 / Jour 298",
+    "message": "...confirmation toujours en attente. Renforts demandés au commandement sectoriel avant poursuite des opérations sur zone...",
+    "coordonnees": "Grille L-14, position stationnaire",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "significatif",
+    "type": "faux",
+    "client": "Agrippa Aldrete",
+    "ligne": 35
+  },
+  {
+    "id": "R54",
+    "date": "Cycle 18 / Jour 299",
+    "client": "Vex Brenna",
+    "message": "Coordination d'un transfert de cargaison discret, créneau court mais précis exigé.",
+    "coordonnees": "Zone d'amarrage principale",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 36
+  },
+  {
+    "id": "R46",
+    "date": "Cycle 18 / Jour 300",
+    "client": "Bron Ferrin",
+    "message": "Renouvellement anticipé proposé en échange d'un tarif préférentiel.",
+    "coordonnees": "Canal local, zone de fret",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 37
+  },
+  {
+    "id": "R51",
+    "date": "Cycle 18 / Jour 321",
+    "client": "Toma Ossik",
+    "message": "Changement de fréquence demandé suite à interférences répétées sur le canal habituel.",
+    "coordonnees": "Poste d'amarrage temporaire, secteur B",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 38
+  },
+  {
+    "id": "R23",
+    "date": "Cycle 18 / Jour 357",
+    "client": "Toma Ostavo",
+    "message": "Demande de canal secondaire en doublon, activité en hausse ce cycle-ci.",
+    "coordonnees": "Quai visiteur, aile est",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 39
+  },
+  {
+    "id": "R13",
+    "date": "Cycle 18 / Jour 358",
+    "client": "Bassa Brenna",
+    "message": "Demande de canal secondaire en doublon, activité en hausse ce cycle-ci.",
+    "coordonnees": "Quai visiteur, aile est",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 40
+  },
+  {
+    "id": "F8",
+    "date": "Cycle 19 / Jour 020",
+    "message": "...activité confirmée. Signature compatible avec une base dissidente établie. Position en cours d'affinement, ne rien transmettre sur canal ouvert...",
+    "coordonnees": "Grille L-14, sous-secteur 7, environ 6 heures de la balise Kessel Secondaire",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "significatif",
+    "type": "faux",
+    "client": "Liana Merian",
+    "ligne": 41
+  },
+  {
+    "id": "R4",
+    "date": "Cycle 19 / Jour 023",
+    "client": "Bron Karnas",
+    "message": "Demande de canal secondaire en doublon, activité en hausse ce cycle-ci.",
+    "coordonnees": "Quai 1, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 42
+  },
+  {
+    "id": "F17",
+    "date": "Cycle 19 / Jour 030",
+    "message": "...le chantier de Fondor confirme la sortie de dock de l'Executor. Essais en vol prévus sous escorte renforcée avant affectation. Rien de comparable n'était jamais sorti des chantiers de Kuat...",
+    "coordonnees": "Grille L-13, en route, destination non précisée",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "significatif",
+    "type": "faux",
+    "client": "Agrippa Aldrete",
+    "ligne": 43
+  },
+  {
+    "id": "R59",
+    "date": "Cycle 19 / Jour 040",
+    "client": "Vella Rusk",
+    "message": "Besoin d'un canal discret pour coordination de livraison, dossier urgent.",
+    "coordonnees": "Quai 5, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 44
+  },
+  {
+    "id": "F9",
+    "date": "Cycle 19 / Jour 055",
+    "message": "...réquisition de carburant supplémentaire approuvée, livraison sous quarante-huit heures, rien d'autre à signaler...",
+    "coordonnees": "Non exploitable — fragment purement logistique",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "isolé",
+    "type": "faux",
+    "client": "Agrippa Aldrete",
+    "ligne": 45
+  },
+  {
+    "id": "R31",
+    "date": "Cycle 19 / Jour 078",
+    "client": "Ossa Vantry",
+    "message": "Paiement en retard de deux jours, merci de maintenir le canal actif jusqu'à régularisation.",
+    "coordonnees": "Zone d'amarrage secondaire",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 46
+  },
+  {
+    "id": "R48",
+    "date": "Cycle 19 / Jour 078",
+    "client": "Bron Karnas",
+    "message": "Demande de discrétion accrue, client visiblement nerveux sans motif précisé.",
+    "coordonnees": "Quai 2, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 47
+  },
+  {
+    "id": "R27",
+    "date": "Cycle 19 / Jour 083",
+    "client": "Halden Yannis",
+    "message": "Besoin d'un canal discret pour coordination de livraison, dossier urgent.",
+    "coordonnees": "Canal local, zone de fret",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 48
+  },
+  {
+    "id": "F10",
+    "date": "Cycle 19 / Jour 089",
+    "message": "...le Faucheur se repositionne. Flotte principale en approche du secteur désigné. Maintenir le silence radio jusqu'à nouvel ordre...",
+    "coordonnees": "Grille L-14, sous-secteur 4, environ 2 heures de la balise Kessel Secondaire",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "significatif",
+    "type": "faux",
+    "client": "Ulic Qel-Droma",
+    "ligne": 49
+  },
+  {
+    "id": "R12",
+    "date": "Cycle 19 / Jour 103",
+    "client": "Toth Ferrin",
+    "message": "Renouvellement trimestriel standard, aucune modification par rapport au contrat en cours.",
+    "coordonnees": "Quai 2, station Kessel-Tho",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 50
+  },
+  {
+    "id": "R24",
+    "date": "Cycle 19 / Jour 108",
+    "client": "Vex Rusk",
+    "message": "Paiement en retard de deux jours, merci de maintenir le canal actif jusqu'à régularisation.",
+    "coordonnees": "Quai 5, station Kessel-Tho",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 51
+  },
+  {
+    "id": "F11",
+    "date": "Cycle 19 / Jour 121",
+    "message": "...plainte transmise concernant la répartition des quarts de maintenance, à traiter par la voie hiérarchique habituelle...",
+    "coordonnees": "Non exploitable — fragment purement administratif",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "isolé",
+    "type": "faux",
+    "client": "Liana Merian",
+    "ligne": 52
+  },
+  {
+    "id": "R35",
+    "date": "Cycle 19 / Jour 128",
+    "client": "Voth Kastel",
+    "message": "Confirmation de fin de contrat, dernier paiement joint, canal à libérer.",
+    "coordonnees": "Canal local, zone de fret",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 53
+  },
+  {
+    "id": "F12",
+    "date": "Cycle 19 / Jour 140",
+    "message": "...ordre de rassemblement transmis à l'ensemble de la flotte. Préparatifs engagés pour une opération de confirmation au sol...",
+    "coordonnees": "Grille L-14, sous-secteur 4, position stationnaire",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "significatif",
+    "type": "faux",
+    "client": "Agrippa Aldrete",
+    "ligne": 54
+  },
+  {
+    "id": "R10",
+    "date": "Cycle 19 / Jour 158",
+    "client": "Rask Kettren",
+    "message": "Confirmation de fin de contrat, dernier paiement joint, canal à libérer.",
+    "coordonnees": "Quai 2, station Kessel-Tho",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 55
+  },
+  {
+    "id": "R53",
+    "date": "Cycle 19 / Jour 158",
+    "client": "Renna Rusk",
+    "message": "Réservation du canal habituel pour la semaine, facturation groupée en fin de cycle.",
+    "coordonnees": "Quai 3, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 56
+  },
+  {
+    "id": "R52",
+    "date": "Cycle 19 / Jour 165",
+    "client": "Ambre Karnas",
+    "message": "Confirmation de fin de contrat, dernier paiement joint, canal à libérer.",
+    "coordonnees": "Quai visiteur, aile est",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 57
+  },
+  {
+    "id": "F13",
+    "date": "Cycle 19 / Jour 166",
+    "message": "...chatter administratif sans intérêt, demande de formulaire manquant pour clôture de dossier logistique...",
+    "coordonnees": "Non exploitable — fragment purement administratif",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "isolé",
+    "type": "faux",
+    "client": "Ulic Qel-Droma",
+    "ligne": 58
+  },
+  {
+    "id": "R2",
+    "date": "Cycle 19 / Jour 172",
+    "client": "Corin Vantry",
+    "message": "Extension de plage horaire demandée pour opérations de nuit, tarif majoré accepté.",
+    "coordonnees": "Zone d'amarrage principale",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 59
+  },
+  {
+    "id": "F14",
+    "date": "Cycle 19 / Jour 178",
+    "message": "...autorisation de frappe en attente de confirmation finale du commandement. Flotte maintenue en position, prête à exécution sur ordre...",
+    "coordonnees": "Grille L-14, sous-secteur 4, position stationnaire",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "significatif",
+    "type": "faux",
+    "client": "Liana Merian",
+    "ligne": 60
+  },
+  {
+    "id": "R58",
+    "date": "Cycle 19 / Jour 179",
+    "client": "Toma Ossik",
+    "message": "Demande de créneau supplémentaire pour un affrètement ponctuel, durée deux jours.",
+    "coordonnees": "Quai visiteur, aile est",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 61
+  },
+  {
+    "id": "F15",
+    "date": "Cycle 19 / Jour 199",
+    "message": "...signal perdu peu après le début de la transmission. Brouillage renforcé du secteur détecté. Dernière portion exploitable : « ...si confirmation reçue, exécution immédiate... »",
+    "coordonnees": "Grille L-14, sous-secteur 4 — dernière position connue avant coupure",
+    "auteur": "Technicienne T. Wrey",
+    "sous_type": "significatif",
+    "type": "faux",
+    "client": "Agrippa Aldrete",
+    "ligne": 62
+  },
+  {
+    "id": "R26",
+    "date": "Cycle 19 / Jour 214",
+    "client": "Quinn Vantry",
+    "message": "Extension de plage horaire demandée pour opérations de nuit, tarif majoré accepté.",
+    "coordonnees": "Quai 4, station Kessel-Tho",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 63
+  },
+  {
+    "id": "R7",
+    "date": "Cycle 19 / Jour 216",
+    "client": "Kael Kettren",
+    "message": "Extension de plage horaire demandée pour opérations de nuit, tarif majoré accepté.",
+    "coordonnees": "Canal local, zone de fret",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 64
+  },
+  {
+    "id": "R55",
+    "date": "Cycle 19 / Jour 234",
+    "client": "Vella Rusk",
+    "message": "Coordination d'un transfert de cargaison discret, créneau court mais précis exigé.",
+    "coordonnees": "Quai visiteur, aile est",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 65
+  },
+  {
+    "id": "R1",
+    "date": "Cycle 19 / Jour 242",
+    "client": "Renard Solveig",
+    "message": "Besoin d'un canal discret pour coordination de livraison, dossier urgent.",
+    "coordonnees": "Zone d'amarrage secondaire",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 66
+  },
+  {
+    "id": "R33",
+    "date": "Cycle 19 / Jour 245",
+    "client": "Renna Rusk",
+    "message": "Demande de créneau supplémentaire pour un affrètement ponctuel, durée deux jours.",
+    "coordonnees": "Quai visiteur, aile est",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 67
+  },
+  {
+    "id": "R15",
+    "date": "Cycle 19 / Jour 251",
+    "client": "Halden Solveig",
+    "message": "Confirmation de fin de contrat, dernier paiement joint, canal à libérer.",
+    "coordonnees": "Zone d'amarrage principale",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 68
+  },
+  {
+    "id": "R18",
+    "date": "Cycle 19 / Jour 253",
+    "client": "Vella Rusk",
+    "message": "Extension de plage horaire demandée pour opérations de nuit, tarif majoré accepté.",
+    "coordonnees": "Quai 5, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 69
+  },
+  {
+    "id": "R39",
+    "date": "Cycle 19 / Jour 283",
+    "client": "Orla Ferrin",
+    "message": "Besoin d'un canal discret pour coordination de livraison, dossier urgent.",
+    "coordonnees": "Canal local, zone de fret",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 70
+  },
+  {
+    "id": "R49",
+    "date": "Cycle 19 / Jour 291",
+    "client": "Silo Yannis",
+    "message": "Paiement en retard de deux jours, merci de maintenir le canal actif jusqu'à régularisation.",
+    "coordonnees": "Quai 2, station Kessel-Tho",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 71
+  },
+  {
+    "id": "R30",
+    "date": "Cycle 19 / Jour 303",
+    "client": "Vex Kastel",
+    "message": "Ouverture d'un nouveau canal pour une opération encore à préciser, acompte versé.",
+    "coordonnees": "Quai 5, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 72
+  },
+  {
+    "id": "R32",
+    "date": "Cycle 19 / Jour 304",
+    "client": "Ambre Karnas",
+    "message": "Demande de créneau supplémentaire pour un affrètement ponctuel, durée deux jours.",
+    "coordonnees": "Quai 1, station Kessel-Tho",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 73
+  },
+  {
+    "id": "R34",
+    "date": "Cycle 19 / Jour 307",
+    "client": "Bram Vantry",
+    "message": "Demande de canal secondaire en doublon, activité en hausse ce cycle-ci.",
+    "coordonnees": "Quai 4, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 74
+  },
+  {
+    "id": "R8",
+    "date": "Cycle 19 / Jour 309",
+    "client": "Silo Yannis",
+    "message": "Réservation du canal habituel pour la semaine, facturation groupée en fin de cycle.",
+    "coordonnees": "Quai 3, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 75
+  },
+  {
+    "id": "R21",
+    "date": "Cycle 19 / Jour 315",
+    "client": "Bron Ferrin",
+    "message": "Ouverture d'un nouveau canal pour une opération encore à préciser, acompte versé.",
+    "coordonnees": "Quai 3, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 76
+  },
+  {
+    "id": "R37",
+    "date": "Cycle 19 / Jour 317",
+    "client": "Dray Ferrin",
+    "message": "Changement de fréquence demandé suite à interférences répétées sur le canal habituel.",
+    "coordonnees": "Poste d'amarrage temporaire, secteur B",
+    "auteur": "Technicienne T. Wrey",
+    "type": "réel",
+    "ligne": 77
+  },
+  {
+    "id": "R29",
+    "date": "Cycle 19 / Jour 328",
+    "client": "Quinn Threnn",
+    "message": "Signalement d'une coupure de canal la semaine dernière, demande de compensation.",
+    "coordonnees": "Quai 5, station Kessel-Tho",
+    "auteur": "Administrateur J. Kallan",
+    "type": "réel",
+    "ligne": 78
+  }
+]
