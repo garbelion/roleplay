@@ -13,11 +13,12 @@ Priorités : **Bloquant** > **Haute** > **Moyenne** > **Basse**.
 
 ## Bloquant
 
-- [ ] **1. Rédiger la section 3 — Personnages pré-tirés** (4 à 6 fiches).
-  Sans PJ, le scénario n'est pas jouable. Cellule / équipage ayant capté le signal
-  de Tana. Pour chaque fiche : identité, motivations, atouts utiles à une enquête
-  d'infiltration (contacts, technique, discrétion, baratin, force).
-  Format **système D6** (voir #8) : ajouter les stat-blocks correspondants.
+- [x] **1. Rédiger la section 3 — Personnages pré-tirés** (4 à 6 fiches). ✅ FAIT
+  6 pré-tirés (équipage du *Murmure*) avec stat-blocks **Star Wars D6 (WEG R&E)**,
+  18D attributs / ~7D compétences : Renna (meneuse), Dax (slicer), Yssha (infiltration),
+  Bren (pilote), Holt (ex-impérial/force), Ithra (médecin-érudite, lien Alderaan).
+  Synergies scénario intégrées (slicer↔journal, Ithra↔indice a & Tana, Yssha↔Skarn,
+  Holt↔ISB, Bren↔exfil). Rendu 2 colonnes vérifié.
 
 ## Haute
 
