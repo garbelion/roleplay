@@ -59,15 +59,15 @@ describe("IntrusionShell.vue", () => {
     }
   })
 
-  it("affiche les blocs en ordre anti-chronologique (le plus récent en tête)", async () => {
+  it("empile les blocs en ordre chronologique (le plus récent en bas, comme un shell)", async () => {
     setSessionConfig({ intrusion: "boot" })
     const wrapper = mountShell()
     setSessionConfig({ intrusion: "public_ok" })
     await wrapper.vm.$nextTick()
 
     const blocks = wrapper.findAll(".intrusion-block")
-    expect(blocks[0].attributes("data-state")).toBe("public_ok") // le plus récent d'abord
-    expect(blocks[1].attributes("data-state")).toBe("boot")
+    expect(blocks[0].attributes("data-state")).toBe("boot") // l'historique reste en tête
+    expect(blocks[1].attributes("data-state")).toBe("public_ok") // le plus récent en bas
   })
 
   it("teinte le bloc d'un écran d'échec (refus) et pas celui d'un succès", () => {

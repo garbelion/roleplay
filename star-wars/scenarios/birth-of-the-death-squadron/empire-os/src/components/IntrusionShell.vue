@@ -10,8 +10,9 @@
       </div>
       <!-- Fin de session (expiration / connexion perdue) : bannière d'erreur en tête, cause affichée. -->
       <div v-if="errorReason" class="intrusion-error" role="alert">{{ errorText }}</div>
-      <!-- Une seule console qui accumule l'historique, le plus récent en tête (anti-chronologique). -->
-      <div class="intrusion-console">
+      <!-- Une seule console qui accumule l'historique en ordre chronologique (récent en bas) ;
+           on défile automatiquement vers la queue à mesure que les lignes arrivent. -->
+      <div class="intrusion-console" ref="console">
         <div
           v-for="block in blocks"
           :key="block.id"
@@ -72,7 +73,7 @@ export default {
             bannerText: withBanner ? asciiBanner(e.banniere).join("\n") : "",
           }
         })
-        .reverse() // le plus récent en tête
+      // Ordre chronologique : historique en tête, écran courant en bas (défilement shell).
     },
   },
   created() {
@@ -85,6 +86,10 @@ export default {
     // Changement d'état (push MJ) : on AJOUTE le nouvel écran et on l'anime — l'historique reste.
     state() {
       if (this.pushScreen(this.state)) this.animate()
+    },
+    // À chaque ligne révélée ou nouveau bloc, on suit la queue (défilement « shell »).
+    blocks() {
+      this.$nextTick(() => this.scrollToBottom())
     },
   },
   beforeUnmount() { this.stop() },
@@ -113,6 +118,11 @@ export default {
     },
     stop() {
       if (this._timer) { clearInterval(this._timer); this._timer = null }
+    },
+    // Colle la console à sa queue (dernière ligne visible), à la manière d'un vrai shell.
+    scrollToBottom() {
+      const el = this.$refs.console
+      if (el) el.scrollTop = el.scrollHeight
     },
   },
 }
@@ -169,7 +179,7 @@ export default {
   text-transform: uppercase;
   text-align: center;
 }
-/* Corps : la console qui accumule et défile (le plus récent en tête). */
+/* Corps : la console qui accumule et défile (le plus récent en bas, défilement auto). */
 .intrusion-console {
   flex: 1;
   min-height: 0;
@@ -211,10 +221,10 @@ export default {
 /* Écran d'échec : le bloc bascule en rouge impérial. */
 .intrusion-block.refus .intrusion-line,
 .intrusion-block.refus .intrusion-banner { color: var(--danger); }
-/* Les blocs plus anciens s'estompent (profondeur d'historique). */
-.intrusion-block:not(:first-child) { opacity: 0.5; }
+/* Les blocs plus anciens s'estompent (profondeur d'historique) ; le courant (en bas) reste vif. */
+.intrusion-block:not(:last-child) { opacity: 0.5; }
 @keyframes intrusion-in {
-  from { opacity: 0; transform: translateY(-4px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 </style>
