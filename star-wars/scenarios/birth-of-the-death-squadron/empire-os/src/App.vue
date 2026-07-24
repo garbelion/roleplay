@@ -1,6 +1,10 @@
 <template>
-  <!-- Route MJ (#/mj) : back-office, séparé de l'OS joueur. -->
-  <MjPanel v-if="isMj" :ops="mjOps" />
+  <!-- Route MJ (#/mj) : back-office, séparé de l'OS joueur. L'OS est verrouillé façon kiosque
+       (overflow:hidden global, cf. index.html) ; la console MJ, elle, est un formulaire long :
+       il lui faut son propre conteneur défilant, sinon son bas est inatteignable sur mobile. -->
+  <div v-if="isMj" class="mj-route">
+    <MjPanel :ops="mjOps" />
+  </div>
 
   <!-- Amorçage : on attend le premier settle de l'état de session avant de router
        (évite un replay du défilement d'intrusion au refresh). -->
@@ -177,6 +181,15 @@ const closeTerminal = () => {
 </script>
 
 <style scoped>
+/* Conteneur défilant de la console MJ (le reste de l'appli ne défile pas, cf. index.html).
+   `min-height: 0` est indispensable : sans lui, un enfant de flex refuse de rétrécir sous la
+   taille de son contenu et le débordement redevient inatteignable. */
+.mj-route {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 .dos-window {
   position: relative; /* ancre l'overlay de notifications */
   height: 100%;
