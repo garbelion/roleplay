@@ -168,10 +168,17 @@ nomenclature « (d) » & index handouts & front-matter D6 (moyenne), fiche-solut
 - [x] Vérification visuelle : page de titre (PNG) + rendu 2 colonnes/schémas/encarts (PNG de contrôle) OK, 9 pages, accents corrects
 - [x] Commit + push sur la branche
 
-## 10. Comment régénérer le .docx
+## 10. Génération du .docx — PIPELINE RETIRÉ (gel)
 
-Le contenu source (texte) est `docs/scenario_fusion_draft.md`. Le `.docx` est produit
-par le script docx-js **versionné** `docs/generate_docx.js`.
+> **⚠ Obsolète.** Le scénario est passé en **édition manuelle** du `.docx` (workflow
+> hybride, phase de gel). Les générateurs `docs/generate_docx.js` et
+> `docs/generate_fiches.js` ont été **supprimés** pour éviter tout écrasement
+> accidentel ; ils restent récupérables dans l'historique git. `scenario_fusion_draft.md`
+> n'est plus « la source » mais une archive du contenu au moment du gel. Voir `README.md`.
+> La procédure ci-dessous n'est conservée que pour mémoire (refonte complète éventuelle).
+
+Le contenu source (texte) est `docs/scenario_fusion_draft.md`. Le `.docx` était produit
+par le script docx-js `docs/generate_docx.js`.
 Pour reprendre/modifier la mise en forme :
 1. Éditer le texte dans `scenario_fusion_draft.md` (source de vérité du contenu).
 2. Reporter les changements dans `generate_docx.js` (helpers `md/P/B/H1/H2/schema/encart`).
