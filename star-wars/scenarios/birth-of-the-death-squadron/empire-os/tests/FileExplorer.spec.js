@@ -1007,14 +1007,20 @@ describe("FileExplorer.vue - Point 8: Rendu .docx inline (mammoth)", () => {
 
     const file = wrapper.vm.currentDirectory.children.find(f => f.name === 'note.docx')
     wrapper.vm.openFile(file)
-    // La modale charge le .docx (import dynamique de mammoth + conversion) : on laisse
-    // la chaîne asynchrone se dérouler avant d'inspecter le rendu.
-    await flushPromises()
-    await new Promise(resolve => setTimeout(resolve, 100))
-    await flushPromises()
-
+    // La modale charge le .docx (import dynamique de mammoth + conversion) : chaîne
+    // asynchrone dont la durée dépend de l'environnement — au premier import « à froid »,
+    // mammoth peut dépasser un délai fixe court (échec CI observé avec setTimeout(100)).
+    // On boucle donc en flushant les promesses jusqu'au rendu, avec un plafond de sécurité,
+    // plutôt que d'attendre un délai arbitraire (flaky). On re-cherche l'élément à chaque
+    // tour : la modale n'est rendue qu'après le premier flush (mise à jour Vue asynchrone).
+    let modalText = ''
+    for (let i = 0; i < 100 && !modalText.includes('RAPPORT IMPERIAL CONFIDENTIEL'); i++) {
+      await flushPromises()
+      await new Promise(resolve => setTimeout(resolve, 20))
+      modalText = wrapper.find('.file-modal').text()
+    }
     const modal = wrapper.find('.file-modal')
-    expect(modal.text()).toContain('RAPPORT IMPERIAL CONFIDENTIEL')
+    expect(modalText).toContain('RAPPORT IMPERIAL CONFIDENTIEL')
     expect(modal.text().toLowerCase()).not.toContain('téléchargez') // pas le mode summary
   })
   // Le routage .docx (full -> inline, sinon résumé « journal verrouillé ») est désormais
