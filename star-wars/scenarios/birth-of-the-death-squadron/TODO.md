@@ -79,12 +79,12 @@ Priorités : **Bloquant** > **Haute** > **Moyenne** > **Basse**.
   space opera, pitch) + encart **« À lire aux joueurs »** (accroche prête à lire :
   l'annonce du Courtier, l'arrivée du Murmure) en tête de la Présentation.
 
-- [ ] **10. Reporter les 6 pré-tirés sur la feuille FDPJ.**
-  Produire une **fiche remplie par personnage** au format `FDPJ RV v.3.8.2`
-  (Renna, Dax, Yssha, Bren, Holt, Ithra) : attributs, compétences, équipement,
-  citation. Les **stats dérivées** (Initiative, Ténacité/Vitalité, Pénalité de
-  coordination) sont calculées **par l'utilisateur**. Voir #1 (stats sources,
-  ~18D compétences, système « visions de légendes »).
+- [x] **10. Reporter les 6 pré-tirés sur la feuille FDPJ.** ✅ FAIT
+  Document compagnon **`docs/pretires_fiches.docx`** (généré par
+  `docs/generate_fiches.js`) : une **fiche remplie par personnage** (bandeau
+  nom/rôle, motivation, citation, attributs & compétences « visions de légendes »,
+  équipement, PP/PF). Les **stats dérivées** (Initiative, Ténacité/Vitalité,
+  Pénalité de coordination) sont laissées en blanc, à remplir par l'utilisateur.
 
 ## Basse
 
