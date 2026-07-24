@@ -74,9 +74,10 @@ Priorités : **Bloquant** > **Haute** > **Moyenne** > **Basse**.
     fait les calculs, sans exécutable. Bonus : skill « Bureaucratie impériale » de
     l'horloge ISB renommée **Administration** (cohérence « visions de légendes »).
 
-- [ ] **8. Ajouter le front-matter.**
-  Durée estimée, nombre de joueurs, ton, mention **système D6**, et un encadré
-  d'accroche prêt à lire pour les joueurs (comment ils reçoivent le signal).
+- [x] **8. Ajouter le front-matter.** ✅ FAIT
+  Encart **« En bref »** (système visions de légendes, 3-6 joueurs, ~3-4 h, ton
+  space opera, pitch) + encart **« À lire aux joueurs »** (accroche prête à lire :
+  l'annonce du Courtier, l'arrivée du Murmure) en tête de la Présentation.
 
 - [ ] **10. Reporter les 6 pré-tirés sur la feuille FDPJ.**
   Produire une **fiche remplie par personnage** au format `FDPJ RV v.3.8.2`
@@ -87,10 +88,10 @@ Priorités : **Bloquant** > **Haute** > **Moyenne** > **Basse**.
 
 ## Basse
 
-- [ ] **9. Fiche-solution récap MJ + trim de la présentation.**
-  Aide-mémoire « 4 indices → clés → résultat » en un coup d'œil. Alléger la
-  présentation (phrases longues) et vérifier que les schémas rendus aident
-  réellement à la spatialisation.
+- [x] **9. Fiche-solution récap MJ + trim.** ✅ FAIT
+  Encart **« Fiche-solution — la chaîne d'un coup d'œil »** (a/b/c/d → clés →
+  résultat) dans la Présentation. Trim léger du pitch (phrase la plus longue
+  resserrée). Schémas de lieux jugés suffisants pour la spatialisation.
 
 ---
 

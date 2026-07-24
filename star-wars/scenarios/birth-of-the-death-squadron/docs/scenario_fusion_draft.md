@@ -31,6 +31,21 @@
 
 # 1. PRÉSENTATION
 
+> **En bref.**
+> - **Système** — Star Wars D6, variante *« visions de légendes »*.
+> - **Joueurs** — 3 à 6, avec les pré-tirés fournis (§3).
+> - **Durée** — une session dense (~3-4 h) ; le casse ≈ la durée de la session.
+> - **Ton** — space opera : enquête et infiltration feutrées, tension montante, final sous chrono.
+> - **Pitch** — sur une station-relais impériale aux confins de Kessel, une réfugiée d'Alderaan a percé la naissance de l'Escadron de la Mort ; les PJ doivent extraire sa preuve avant l'ISB.
+
+> **À lire aux joueurs — l'accroche.**
+> *Depuis des semaines, une annonce codée tourne sur un canal privé du secteur Kessel.
+> Un intermédiaire — le Courtier — vous l'a fait suivre : sous la brocante banale, une
+> ligne sur deux hurle un avertissement. « Le Faucheur est de sortie. » Quelqu'un, sur
+> une station-relais impériale perdue aux confins de Kessel, sait ce que l'Empire
+> tuerait pour enterrer — et vous supplie de faire vite. Votre cargo, le Murmure, sort
+> de l'hyperespace en vue de Kessel-Tho. L'horloge tourne déjà.*
+
 ## Le pitch
 
 Un signal de détresse chiffré a fini par atteindre les personnages-joueurs. Il ne
@@ -40,13 +55,12 @@ en bordure du secteur de Kessel, une technicienne du nom de **Tana Wrey** a
 intercepté, quart après quart, les fragments d'une opération militaire de très
 grande ampleur : le **Projet Faucheur**.
 
-Traquée par ses propres soupçons autant que par ceux de son supérieur, Tana s'est
-effacée derrière un alias — **Doiron**, tenancière d'une modeste échoppe du quai.
-Elle a dispersé aux quatre coins de la station les clés qui permettent de lire ce
-qu'elle a caché, de sorte que personne — pas même elle — ne puisse tout livrer sous
-la contrainte. Les PJ devront gagner sa confiance, reconstituer ces clés en résolvant
-quatre énigmes physiques, et exfiltrer l'information **avant** qu'une équipe du Bureau
-de Sécurité Impériale (ISB), déjà en route, ne remonte la trace du signal jusqu'à eux.
+Traquée par les soupçons de son supérieur, Tana s'est effacée derrière un alias —
+**Doiron**, marchande du quai. Elle a dispersé aux quatre coins de la station les clés
+de ce qu'elle a caché : personne — pas même elle — ne peut tout livrer sous la
+contrainte. Aux PJ de gagner sa confiance, de reconstituer ces clés (quatre énigmes
+physiques) et d'exfiltrer l'information **avant** qu'une équipe du **Bureau de Sécurité
+Impériale (ISB)**, déjà en route, ne remonte jusqu'à eux.
 
 ## Le contexte : le Projet Faucheur
 
@@ -97,6 +111,14 @@ paramètres, Bafouille calcule.*
 > `d_journal_*`), jamais « (d) ». Dans les sources, la lettre d de l'énigme du mess
 > et celle du handout du journal coïncident par hasard — ce document lève l'ambiguïté
 > en nommant le trésor par son nom.
+
+> **Fiche-solution — la chaîne d'un coup d'œil (MJ).**
+> - **(a)** Centre culturel → 3 alias : *Ulic Qel-Droma · Liana Merian · Agrippa Aldrete* → cible **18 entrées** sur 78.
+> - **(b)** Galerie de maintenance → **ORPHELINS** (fresque + carré de Polybe LOTUS) → clé **Coordonnées**.
+> - **(c)** Centre sportif → **JENESUISPLUSSEULEICI** (pentaminos, casier 12-3-20) → clé **Messages**.
+> - **(d)** Mess → **RépubliqueRetour** + **Argon2** (3 paires d'annonces) → **clé maître**.
+> - **Bafouille assemble** → RépubliqueRetour + Argon2 + ORPHELINS = *Coordonnées* ; + JENESUISPLUSSEULEICI = *Messages*.
+> - **Résultat** → le journal-trésor en clair : Projet Faucheur + coordonnées de la base **L-14**.
 
 ## La menace : l'horloge ISB (la triangulation)
 
