@@ -19,6 +19,26 @@ export function glitchLevel(level) {
   return GLITCH[level] || 0
 }
 
+// Profil de « décrochage » par niveau : la liaison tient, puis lâche par salves. Plus la
+// qualité se dégrade, plus les salves emportent de macroblocs (blocks) et se rapprochent
+// (periodMs). `blocking` capte le clic — réservé au niveau critique (cf. ROADMAP §5.7).
+// `durationMs` est la durée VISIBLE de la salve : rapportée à `periodMs`, elle donne la part
+// de temps où l'écran est dégradé — à critique elle domine, pour qu'on ne puisse pas se
+// contenter d'attendre l'accalmie pour lire.
+const BURSTS = {
+  moyenne:  { blocks: 5,  periodMs: 4200, durationMs: 500, blocking: false }, // ~12 % du temps
+  faible:   { blocks: 11, periodMs: 2600, durationMs: 830, blocking: false }, // ~32 %
+  critique: { blocks: 18, periodMs: 1500, durationMs: 870, blocking: true },  // ~58 %
+}
+
+/**
+ * Profil de salve pour un niveau de qualité (null si aucune perturbation).
+ * @returns {{blocks:number, periodMs:number, durationMs:number, blocking:boolean}|null}
+ */
+export function glitchBurst(level) {
+  return BURSTS[level] || null
+}
+
 /**
  * Sens d'un changement de qualité, pour l'annoncer en console.
  * @returns {'amelioration'|'degradation'|null}  null si égal ou niveau inconnu.
