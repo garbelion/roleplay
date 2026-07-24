@@ -76,6 +76,7 @@ import { startSessionClock, resetSessionClock, heureMs, isSessionExpired, format
 import { ALERT_LABELS } from "./transfer-duration.js";
 import { connectionChangeLog, isConnectionLost } from "./connection.js";
 import { pushLog } from "./session-log.js";
+import { withBase } from "./base-url.js";
 
 // Routage minimal par hash : #/mj => back-office MJ, sinon l'OS joueur.
 const route = ref(window.location.hash);
@@ -151,7 +152,7 @@ onMounted(async () => {
   timer = setInterval(tickClock, 1000);
   window.addEventListener("hashchange", onHashChange);
   try {
-    const res = await fetch("/file-system.json");
+    const res = await fetch(withBase("file-system.json"));
     fileSystem.value = await res.json();
     // Réglages de session statiques (défauts) puis connexion live (Supabase Realtime) :
     // possédées ici pour survivre à la bascule intrusion <-> OS.

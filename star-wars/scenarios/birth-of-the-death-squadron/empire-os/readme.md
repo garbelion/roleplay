@@ -133,6 +133,27 @@ Développement en **TDD** (rouge → vert), refactor guidé par revue de code (e
 
 ## Déploiement
 
-Hébergement **statique** (Netlify / Vercel / GitHub Pages) : `npm run build`, puis publier `dist/`.
-Le chunk `mammoth` (~0,5 Mo) est chargé **à la demande** (uniquement à l'ouverture d'un `.docx`
-en aperçu inline).
+Hébergement **statique** : `npm run build`, puis publier `dist/`. Le chunk `mammoth` (~0,5 Mo)
+est chargé **à la demande** (uniquement à l'ouverture d'un `.docx` en aperçu inline).
+
+### Chemin de base (`base`)
+
+Les données (`file-system.json`, `/fichiers/…`) sont servies à côté du bundle : leurs URL
+passent donc par `withBase()` (`src/base-url.js`), qui les préfixe avec `import.meta.env.BASE_URL`.
+Résultat, la même build fonctionne **à la racine d'un domaine** comme **sous un sous-chemin**.
+
+- **Racine d'un (sous-)domaine** (Netlify, Vercel, Cloudflare Pages, `xxx.pages.dev`) : rien à
+  faire, `base: './'` (config par défaut) suffit.
+- **Sous-chemin** (GitHub Pages project site, servi sous `/<repo>/`) : builder avec le base
+  correspondant, p. ex. `npx vite build --base=/roleplay/`. Le config n'est pas modifié (`dev`
+  et les autres hébergeurs gardent `./`).
+
+### GitHub Pages (automatisé)
+
+Le workflow [`.github/workflows/deploy-empire-os.yml`](../../../../.github/workflows/deploy-empire-os.yml)
+(à la racine du monorepo) build et publie sur Pages à chaque push `main` touchant ce dossier :
+`npm ci` → tests → `vite build --base=/roleplay/` → publication de `dist/`.
+
+Réglage manuel unique : **Settings → Pages → Source : GitHub Actions** (repo public requis pour
+Pages sans plan payant). Site servi sous `https://<user>.github.io/roleplay/` (back-office MJ sur
+`…/roleplay/#/mj`). Adapter `--base` si le repo est renommé.

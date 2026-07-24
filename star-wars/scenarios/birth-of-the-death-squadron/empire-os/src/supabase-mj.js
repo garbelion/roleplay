@@ -4,6 +4,7 @@
 
 import { SESSION_TABLE, SESSION_COLUMNS, mapRow, toRow } from './supabase-source.js'
 import { loadSupabaseClient } from './supabase-client.js'
+import { withBase } from './base-url.js'
 
 /**
  * Construit les opérations MJ { signIn, fetchState, updateState } sur un client Supabase.
@@ -30,7 +31,7 @@ export function createMjOps(client) {
  * importe le SDK (dynamique) et crée le client + les ops. Config absente => null (page inerte).
  */
 export async function createMjOpsFromConfig() {
-  const res = await fetch('/file-system.json')
+  const res = await fetch(withBase('file-system.json'))
   const fs = await res.json()
   const cfg = fs?.session?.supabase
   if (!cfg?.url || !cfg?.anonKey) return null

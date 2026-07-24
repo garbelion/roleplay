@@ -89,6 +89,7 @@ import { sessionState } from '../session-store.js';
 import { startPropaganda } from '../propaganda.js';
 import { assignPaths } from '../file-tree.js';
 import { previewKindFor, fileUrl } from '../file-preview.js';
+import { withBase } from '../base-url.js';
 import BottomDock from './BottomDock.vue';
 import FilePreviewModal from './FilePreviewModal.vue';
 
@@ -244,7 +245,7 @@ export default {
     },
     async loadFileSystem() {
       try {
-        const response = await fetch('/file-system.json')
+        const response = await fetch(withBase('file-system.json'))
         // Les chemins sont dérivés de la structure (jamais stockés dans le JSON).
         this.fileSystem = assignPaths(await response.json())
         // Point d'entrée piloté par la donnée : le MJ décide où l'on atterrit

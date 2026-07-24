@@ -1,0 +1,68 @@
+name: Deploy empire-os to GitHub Pages
+
+# Build de l'accessoire narratif "Sienar Imperial Terminal" (codename empire-os) et
+# publication sur GitHub Pages. Le site est servi sous un sous-chemin (/roleplay/), d'où
+# le build avec --base=/roleplay/ : les chemins d'assets ET de données (file-system.json,
+# /fichiers/…) sont alors préfixés par ce base (cf. src/base-url.js).
+
+on:
+  push:
+    branches: [main]
+    # Ne rebuild que si le projet empire-os change (le repo est un monorepo de roleplay).
+    paths:
+      - 'star-wars/scenarios/birth-of-the-death-squadron/empire-os/**'
+      - '.github/workflows/deploy-empire-os.yml'
+  workflow_dispatch: {}
+
+# Permissions minimales requises par le déploiement Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Une seule publication à la fois ; on ne coupe pas un déploiement en cours.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: star-wars/scenarios/birth-of-the-death-squadron/empire-os
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: star-wars/scenarios/birth-of-the-death-squadron/empire-os/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Test
+        run: npm run test:unit -- --run
+
+      - name: Build
+        # --base doit correspondre au nom du repo (site servi sous /roleplay/).
+        run: npx vite build --base=/roleplay/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: star-wars/scenarios/birth-of-the-death-squadron/empire-os/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
