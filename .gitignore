@@ -56,4 +56,7 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 *package-lock.json
+# Exception : le lockfile d'empire-os DOIT être versionné, sinon `npm ci` échoue en CI
+# (workflow deploy-empire-os.yml). Cf. HANDOFF-deploiement.md.
+!star-wars/scenarios/birth-of-the-death-squadron/empire-os/package-lock.json
 **/.~lock.*.docx#
