@@ -22,6 +22,12 @@ Héberger gratuitement l'accessoire narratif `empire-os` (SPA statique Vue 3 / V
   ET les données préfixés `/roleplay/`.
 - **`vite.config.js` non modifié** (`base: './'`) : `npm run dev`, l'éditeur MJ (`fs:editor`),
   Netlify/Vercel restent intacts ; le base `/roleplay/` n'est passé **qu'au build CI**.
+- **Fix CI `npm ci` (2026-07-24).** Les 2 premiers runs échouaient au job `build` en ~13 s :
+  `package-lock.json` était exclu par la règle globale `*package-lock.json` du `.gitignore`
+  racine (résidu du template .NET/VS), donc absent après `checkout` → `npm ci` refuse de tourner
+  (annotation *« Some specified paths were not resolved »*), et `deploy` était toujours sauté.
+  Correctif : exception ciblée dans [`.gitignore`](../../../../.gitignore) (`!…/empire-os/package-lock.json`)
+  + versionnement du lockfile. Vérifié : `npm ci --dry-run` → « up to date » (lock ↔ package.json synchronisés).
 
 ### Note historique (ne pas « corriger »)
 
@@ -32,15 +38,17 @@ juste pour le message.
 
 ## Reste à faire (RAF)
 
-1. **Activer Pages** (action manuelle, hors CLI) : repo `garbelion/roleplay` → **Settings → Pages
-   → Source : GitHub Actions**. Tant que ce n'est pas fait, le job `deploy` du workflow échoue.
-   *Le repo doit être **public*** (ou plan GitHub payant) pour Pages. Publier `dist/` est sûr côté
-   énigme : aucun matériel de déchiffrement dans le bundle (invariant ROADMAP).
-2. **Vérifier le run** : onglet **Actions** du repo → workflow « Deploy empire-os to GitHub Pages ».
+1. ~~**Activer Pages**~~ ✅ **Fait le 2026-07-24** (Settings → Pages → Source : GitHub Actions ;
+   repo `garbelion/roleplay` public). Publier `dist/` est sûr côté énigme : aucun matériel de
+   déchiffrement dans le bundle (invariant ROADMAP).
+2. **Committer + pousser le lockfile** (correctif CI ci-dessus) : `.gitignore` + `package-lock.json`.
+   Le push touchant `empire-os` redéclenche le workflow. *Relecture Jacques avant commit.*
+3. **Vérifier le run** : onglet **Actions** du repo → workflow « Deploy empire-os to GitHub Pages ».
+   Le `build` doit désormais durer bien plus que ~13 s (`npm ci` + 281 tests + build).
    Relancer via *Run workflow* si besoin (`workflow_dispatch`).
-3. **Tester en ligne** : `https://garbelion.github.io/roleplay/` (OS joueur) et
+4. **Tester en ligne** : `https://garbelion.github.io/roleplay/` (OS joueur) et
    `…/roleplay/#/mj` (back-office MJ).
-4. **Supabase** : garder le projet sur l'offre gratuite avec les colonnes `intrusion` (text),
+5. **Supabase** : garder le projet sur l'offre gratuite avec les colonnes `intrusion` (text),
    `clock_start` (int), `bafouille` (bool) de `session_state`, sinon les fonctions live MJ ne
    répondent pas (cf. readme).
 
