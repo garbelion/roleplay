@@ -102,11 +102,10 @@ adaptées aux PNJ actuels) — **à valider en rédaction** :
 
 ## 8. Questions ouvertes / ambiguïtés relevées
 
-1. **Collision de la lettre (d)** : dans la source, « (d) » désigne À LA FOIS la 4e énigme
-   (annonces du mess) ET le journal chiffré (document d). → **Statut : À TRANCHER**
-   (retour utilisateur). La solution v1 (libellés conservés + encart d'avertissement) est
-   jugée insuffisante ; option pressentie = renommer le journal « document J » / « journal-trésor »
-   pour lever l'ambiguïté à la racine. Voir `TODO.md` #6.
+1. **Collision de la lettre (d)** : ~~À TRANCHER~~ → **RÉSOLU** (TODO #6). Le journal est
+   nommé **« le journal-trésor »** partout dans la prose (jamais « (d) ») ; les 4 énigmes
+   restent (a)–(d) ; encart « Convention de nommage ». Tableau des indices réordonné en
+   ordre de visite (a → d → b → c).
 2. **Système de jeu** : **variante D6 francophone « visions de légendes »** (retour
    utilisateur — *pas* le WEG standard). 6 attributs : **Coordination** (ex-Dextérité),
    Savoir, Perception, Mécanique, Technique, Vigueur ; compétences propres (Furtivité,

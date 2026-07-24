@@ -76,25 +76,27 @@ entière.
 Le point de départ est la **boutique de Doiron** (N1). Tana y a laissé un
 **message (0)** — un datapad — qui, une fois consulté, oriente vers **quatre
 contacts**. Chaque contact garde, sans le savoir, l'un des quatre **indices**
-physiques que Tana a dissimulés :
+physiques que Tana a dissimulés *(présentés dans l'ordre de visite le plus probable —
+l'ordre de résolution n'a pas d'importance mécanique)* :
 
 | Indice | Lieu | Contact | Ce qu'il donne |
 |---|---|---|---|
-| **(a)** Faux clients | Centre culturel | Maren Estil | Les 3 alias à cibler dans le journal |
+| **(a)** Faux clients | Centre culturel | Maren Estil | Les 3 alias à cibler dans le journal-trésor |
+| **(d)** Annonces du mess | Mess du personnel | Kessa Droman | Clé maître **RépubliqueRetour** + **Argon2** |
 | **(b)** Fresque | Galerie de maintenance | Dosh Kavarel | Phrase **ORPHELINS** (clé Coordonnées) |
 | **(c)** Pentaminos | Centre sportif | Grash Meloi | Phrase **JENESUISPLUSSEULEICI** (clé Messages) |
-| **(d)** Annonces du mess | Mess du personnel | Kessa Droman | Clé maître **RépubliqueRetour** + **Argon2** |
 
-Une fois les paramètres réunis, c'est le droïde **Bafouille** (ou l'outil
-`bafouille.exe` fourni au MJ) qui effectue les calculs et restitue en clair les
-**18 entrées** cachées de Tana parmi les 78 lignes du **journal (document d)**,
-isolé dans la **DMZ** du niveau 0. *Le jeu, c'est la résolution des énigmes — pas
-la cryptographie : les joueurs fournissent les paramètres, la machine calcule.*
+Une fois les paramètres réunis, c'est le droïde **Bafouille** qui effectue les
+calculs et restitue en clair les **18 entrées** cachées de Tana parmi les 78 lignes
+du **journal-trésor**, isolé dans la **DMZ** du niveau 0. *Le jeu, c'est la
+résolution des énigmes — pas la cryptographie : les joueurs fournissent les
+paramètres, Bafouille calcule.*
 
-> **⚠ Attention à la lettre « (d) ».** Dans les documents source, « (d) » désigne
-> **deux choses distinctes** : la **4ᵉ énigme** (les annonces du mess) **et** le
-> **journal chiffré** (document d, le trésor final). Ce document conserve les deux
-> libellés d'origine ; ne les confondez pas en jeu.
+> **Convention de nommage.** Les **quatre énigmes** sont **(a) à (d)** ; le journal
+> chiffré est toujours appelé **« le journal-trésor »** (fichiers source
+> `d_journal_*`), jamais « (d) ». Dans les sources, la lettre d de l'énigme du mess
+> et celle du handout du journal coïncident par hasard — ce document lève l'ambiguïté
+> en nommant le trésor par son nom.
 
 ## La menace : l'horloge ISB (la triangulation)
 
@@ -124,7 +126,7 @@ situation :
 
 **Ce qui peut la ralentir (−1, une fois chacun).**
 - **Désinformation active :** planter une fausse piste crédible — faire porter le rebond au *Long Sillage* déjà « suspecté » (rapport e), brouiller une borne WN, falsifier un registre.
-- **Holt Marek de l'intérieur :** exploiter les procédures ISB (faux ordre, lenteur administrative provoquée) — −1 sur un jet de *Bureaucratie impériale* réussi.
+- **Holt Marek de l'intérieur :** exploiter les procédures ISB (faux ordre, lenteur administrative provoquée) — −1 sur un jet d'*Administration* réussi.
 - **Diversion coûteuse :** provoquer un incident de station (cf. table d'événements §… ; ex. panne électrique C19/J133) qui accapare l'attention — gare aux dégâts collatéraux.
 
 **Signes à télégraphier** (faire *sentir* l'horloge sans montrer le chiffre) : une
@@ -146,7 +148,21 @@ quart — répit ambigu, car les comms des PJ sautent aussi.
 - **Les PNJ gardiens des indices ignorent leur sens.** Ils coopèrent si on les
   aborde avec tact et/ou si on leur montre le datapad (0).
 - **Les handouts (d)→(j) existent comme documents séparés** à distribuer selon les
-  fouilles des PJ ; ils ne sont pas reproduits ici.
+  fouilles des PJ (index ci-dessous) ; ils ne sont pas reproduits ici.
+
+## Les handouts (documents d → j)
+
+Sept documents à remettre aux joueurs selon leurs fouilles — non reproduits ici
+(fichiers du dossier `docs/`). Le **message initial de Tana** (« message 0 ») est,
+lui, reproduit en **annexe D**.
+
+- **(d) Le journal-trésor** *(`d_journal_*`)* — le journal de facturation de Kallan où Tana a caché ses 18 entrées. **Où :** serveur DMZ, via le casse (§5). *Le trésor.*
+- **(e) Note d'analyse de trafic** *(`e_note_analyse_trafic`)* — rapport de l'analyste Renn Okuda (signaux non identifiés ; le *Long Sillage* « suspecté »). **Où :** capitainerie / recoupements.
+- **(f) Audit CCS-4** *(`f_audit_ccs4`)* — audit sectoriel (conformité de la DMZ, bornes WN). **Où :** administration / réseau.
+- **(g) Journal de nuit** *(`g_journal_nuit`)* — journal de bord du contremaître Bregman (incidents récents, cf. Chronologie). **Où :** salle de passation.
+- **(h) Registre des antennes** *(`h_registre_antennes`)* — maintenance des antennes AD/HN (incidents cycles 13-19). **Où :** N4 / Kavarel.
+- **(i) Correspondance licence** *(`i_correspondance_licence`)* — l'échange qui révèle le pot-de-vin de Kallan — **la clé de la trace ISB** (§5). **Où :** bureau Kallan.
+- **(j) Manifeste de fret** *(`j_manifeste_fret`)* — mouvements de vaisseaux et équipages de passage (*Widowmaker*, *Bacta Express*…). **Où :** zone de fret / capitainerie.
 
 ---
 
@@ -472,7 +488,7 @@ casier 12-3-20 mis en avant → puzzle 3×20 → ligne centrale = phrase.]
 systèmes critiques isolés du réseau commercial courant, salle serveur froide et
 bruyante, accès contrôlé. C'est le point sensible et la fin logique du parcours.
 
-**Éléments-clés — LE JOURNAL (document d).**
+**Éléments-clés — LE JOURNAL-TRÉSOR.**
 - C'est **ici** qu'est stocké, isolé en DMZ, le **journal de facturation illégale**
   de l'administrateur **Kallan** — celui dans lequel Tana a dissimulé ses **18
   entrées** sous les trois faux alias. Kallan le **protège sans le savoir** (par
@@ -596,7 +612,7 @@ inévitable** lâche l'ISB aux trousses des PJ. Le tout se joue **au chrono**.
 
 ## Goulot 1 — Le casse
 
-Les données du journal (document d) sont sur le **serveur isolé** de la DMZ (N0). Les
+Les données du **journal-trésor** sont sur le **serveur isolé** de la DMZ (N0). Les
 PJ ont les compétences pour les tirer du réseau ; il leur faut surtout un **point
 d'accès** où se brancher. **Trois voies**, de la plus propre à la plus risquée :
 

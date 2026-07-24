@@ -147,14 +147,14 @@ encart(b, "La station Kessel-Tho", [
 ]);
 
 b.push(H2("Comment fonctionne l'enquête"));
-b.push(P("Le point de départ est la **boutique de Doiron** (N1). Tana y a laissé un **message (0)** — un datapad — qui, une fois consulté, oriente vers **quatre contacts**. Chaque contact garde, sans le savoir, l'un des quatre **indices** physiques que Tana a dissimulés :"));
-b.push(B("**(a) Faux clients** — Centre culturel (Maren Estil) : donne les **3 alias** à cibler dans le journal."));
+b.push(P("Le point de départ est la **boutique de Doiron** (N1). Tana y a laissé un **message (0)** — un datapad — qui, une fois consulté, oriente vers **quatre contacts**. Chaque contact garde, sans le savoir, l'un des quatre **indices** physiques que Tana a dissimulés *(présentés ici dans l'ordre de visite le plus probable — l'ordre de résolution n'a pas d'importance mécanique)* :"));
+b.push(B("**(a) Faux clients** — Centre culturel (Maren Estil) : donne les **3 alias** à cibler dans le journal-trésor."));
+b.push(B("**(d) Annonces du mess** — Mess (Kessa Droman) : clé maître **RépubliqueRetour** + **Argon2**."));
 b.push(B("**(b) Fresque** — Galerie de maintenance (Dosh Kavarel) : phrase **ORPHELINS** (clé des Coordonnées)."));
 b.push(B("**(c) Pentaminos** — Centre sportif (Grash Meloi) : phrase **JENESUISPLUSSEULEICI** (clé des Messages)."));
-b.push(B("**(d) Annonces du mess** — Mess (Kessa Droman) : clé maître **RépubliqueRetour** + **Argon2**."));
-b.push(P("Une fois les paramètres réunis, c'est le droïde **Bafouille** (ou l'outil `bafouille.exe` fourni au MJ) qui effectue les calculs et restitue en clair les **18 entrées** cachées de Tana parmi les 78 lignes du **journal (document d)**, isolé dans la **DMZ** du niveau 0. *Le jeu, c'est la résolution des énigmes — pas la cryptographie : les joueurs fournissent les paramètres, la machine calcule.*"));
-encart(b, "⚠ Attention à la lettre « (d) »", [
-  EP("Dans les documents source, « (d) » désigne **deux choses distinctes** : la **4ᵉ énigme** (les annonces du mess) **et** le **journal chiffré** (document d, le trésor final). Ce document conserve les deux libellés d'origine ; ne les confondez pas en jeu."),
+b.push(P("Une fois les paramètres réunis, c'est le droïde **Bafouille** qui effectue les calculs et restitue en clair les **18 entrées** cachées de Tana parmi les 78 lignes du **journal-trésor**, isolé dans la **DMZ** du niveau 0. *Le jeu, c'est la résolution des énigmes — pas la cryptographie : les joueurs fournissent les paramètres, Bafouille calcule.*"));
+encart(b, "Convention de nommage", [
+  EP("Les **quatre énigmes** sont **(a) à (d)** ; le journal chiffré est toujours appelé **« le journal-trésor »** (fichiers source `d_journal_*`), jamais « (d) ». Dans les sources, la lettre d de l'énigme du mess et celle du handout du journal coïncident par hasard — ce document lève l'ambiguïté en nommant le trésor par son nom."),
 ]);
 
 b.push(H2("La menace : l'horloge ISB (la triangulation)"));
@@ -172,7 +172,7 @@ b.push(B("**Bavure mineure (+1) :** une question de trop qui remonte (interroger
 b.push(B("**Bavure majeure (+2) :** effraction repérée (DMZ, bureau Kallan, terminal des transmissions) ; alarme déclenchée ; PNJ alarmé qui alerte la garnison ou l'ISB ; violence ou arme dégainée en public ; **trace numérique laissée au slicing** (échec critique en Sécurité / Programmation)."));
 keyHead("Ce qui peut la ralentir (−1, une fois chacun)")(b);
 b.push(B("**Désinformation active :** planter une fausse piste crédible — faire porter le rebond au *Long Sillage* déjà « suspecté » (rapport e), brouiller une borne WN, falsifier un registre."));
-b.push(B("**Holt Marek de l'intérieur :** exploiter les procédures ISB (faux ordre, lenteur administrative provoquée) — −1 sur un jet de *Bureaucratie impériale* réussi."));
+b.push(B("**Holt Marek de l'intérieur :** exploiter les procédures ISB (faux ordre, lenteur administrative provoquée) — −1 sur un jet d'*Administration* réussi."));
 b.push(B("**Diversion coûteuse :** provoquer un incident de station (cf. table d'événements ; ex. panne électrique C19/J133) qui accapare l'attention — gare aux dégâts collatéraux."));
 b.push(P("**Signes à télégraphier** *(faire sentir l'horloge sans montrer le chiffre)* : une silhouette grise (Skarn) aperçue deux fois ; le personnel plus nerveux, moins bavard ; un contrôle d'identité au quai qui n'y était pas la veille ; l'annonce que « les départs sont soumis à autorisation ». Chaque montée d'un cran mérite un signe concret."));
 b.push(P("**Pilotage & variantes.** Gardez le compteur caché ; laissez les joueurs lire la pression aux signes. One-shot tendu : démarrez au **cran 3**. Intro posée : **cran 1**. Une **tempête de rayonnements** (cf. table météo) peut geler l'avance passive d'un quart — répit ambigu, car les comms des PJ sautent aussi."));
@@ -181,7 +181,16 @@ b.push(H2("Conseils de conduite"));
 b.push(B("**Tana observe avant d'aider.** Elle jauge les PJ depuis sa boutique buggée ; sa coopération se mérite. Tant qu'elle n'a pas décidé, elle joue Doiron la marchande."));
 b.push(B("**Les quatre indices sont indépendants** : l'ordre de résolution n'a pas d'importance mécanique. L'ordre présenté ici est le plus probable, pas le seul."));
 b.push(B("**Les PNJ gardiens des indices ignorent leur sens.** Ils coopèrent si on les aborde avec tact et/ou si on leur montre le datapad (0)."));
-b.push(B("**Les handouts (d)→(j)** existent comme documents séparés à distribuer selon les fouilles des PJ ; ils ne sont pas reproduits ici."));
+b.push(B("**Les handouts (d)→(j)** existent comme documents séparés à distribuer selon les fouilles des PJ (index ci-dessous) ; ils ne sont pas reproduits ici."));
+b.push(H2("Les handouts (documents d → j)"));
+b.push(P("Sept documents à remettre aux joueurs selon leurs fouilles — non reproduits ici (fichiers du dossier `docs/`). Le **message initial de Tana** (« message 0 ») est, lui, reproduit en **annexe D**."));
+b.push(B("**(d) Le journal-trésor** *(`d_journal_*`)* — le journal de facturation de Kallan où Tana a caché ses 18 entrées. **Où :** serveur DMZ, via le casse (§5). *Le trésor.*"));
+b.push(B("**(e) Note d'analyse de trafic** *(`e_note_analyse_trafic`)* — rapport de l'analyste Renn Okuda (signaux non identifiés ; le *Long Sillage* « suspecté »). **Où :** capitainerie / recoupements."));
+b.push(B("**(f) Audit CCS-4** *(`f_audit_ccs4`)* — audit sectoriel (conformité de la DMZ, bornes WN). **Où :** administration / réseau."));
+b.push(B("**(g) Journal de nuit** *(`g_journal_nuit`)* — journal de bord du contremaître Bregman (incidents récents, cf. Chronologie). **Où :** salle de passation."));
+b.push(B("**(h) Registre des antennes** *(`h_registre_antennes`)* — maintenance des antennes AD/HN (incidents cycles 13-19). **Où :** N4 / Kavarel."));
+b.push(B("**(i) Correspondance licence** *(`i_correspondance_licence`)* — l'échange qui révèle le pot-de-vin de Kallan — **la clé de la trace ISB** (§5). **Où :** bureau Kallan."));
+b.push(B("**(j) Manifeste de fret** *(`j_manifeste_fret`)* — mouvements de vaisseaux et équipages de passage (*Widowmaker*, *Bacta Express*…). **Où :** zone de fret / capitainerie."));
 
 // ---- 2. CHRONOLOGIE ----
 b.push(H1("2. Chronologie des événements"));
@@ -384,7 +393,7 @@ lieu(b, "4.5", "Centre sportif *(N2 — indice c)*", [
 // 4.6 DMZ
 lieu(b, "4.6", "Locaux des ingénieurs & serveur DMZ *(N0 — le journal)*", [
   descP("Au plus bas de la station, la **zone démilitarisée (DMZ)** : systèmes critiques isolés du réseau commercial courant, salle serveur froide et bruyante, accès contrôlé. Le point sensible et la fin logique du parcours."),
-  keyHead("Éléments-clés — LE JOURNAL (document d)"),
+  keyHead("Éléments-clés — LE JOURNAL-TRÉSOR"),
   bul("C'est **ici** qu'est stocké, isolé en DMZ, le **journal de facturation illégale** de l'administrateur **Kallan** — celui dans lequel Tana a dissimulé ses **18 entrées** sous les trois faux alias. Kallan le **protège sans le savoir** (par intérêt : c'est aussi son registre de fréquences revendues au noir)."),
   bul("Une fois sur place avec les **quatre indices**, **Bafouille assemble** : RépubliqueRetour + Argon2 + **ORPHELINS** → clé des Coordonnées ; RépubliqueRetour + Argon2 + **JENESUISPLUSSEULEICI** → clé des Messages ; et (a) désigne **quelles 18 entrées** parmi 78 déchiffrer."),
   bul("Le résultat : les messages en clair du Projet Faucheur **et les coordonnées** de la base dissidente menacée (grille **L-14**, sous-secteur 4, proche de la balise Kessel Secondaire)."),
@@ -429,7 +438,7 @@ encart(b, "Encart — Équipages de passage (manifeste j & rapport e)", [
 b.push(H1("5. Le climax et les issues"));
 b.push(P("Le scénario culmine en **deux goulots** enchaînés : **le casse** (récupérer le journal), puis **l'extraction** (fuir la station). Entre les deux, une **trace inévitable** lâche l'ISB aux trousses des PJ. Le tout se joue **au chrono**."));
 b.push(H2("Goulot 1 — Le casse"));
-b.push(P("Les données du journal (document d) sont sur le **serveur isolé** de la DMZ (N0). Les PJ ont les compétences pour les tirer du réseau ; il leur faut surtout un **point d'accès** où se brancher. **Trois voies**, de la plus propre à la plus risquée :"));
+b.push(P("Les données du **journal-trésor** sont sur le **serveur isolé** de la DMZ (N0). Les PJ ont les compétences pour les tirer du réseau ; il leur faut surtout un **point d'accès** où se brancher. **Trois voies**, de la plus propre à la plus risquée :"));
 b.push(B("**Le tunnel de maintenance** *(le plus élégant)* — un point d'accès réseau s'y trouve, là même où ils ont décodé la fresque (indice b). Rappel de décor, aucune effraction."));
 b.push(B("**Convaincre Dosh Kavarel** — le technicien qui laisse Tana peindre ; voie sociale, discrète."));
 b.push(B("**L'effraction** — contourner un contrôle d'accès basique (badge + code) et éviter les caméras encore fonctionnelles."));

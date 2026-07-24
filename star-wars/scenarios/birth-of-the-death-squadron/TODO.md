@@ -61,18 +61,18 @@ Priorités : **Bloquant** > **Haute** > **Moyenne** > **Basse**.
 
 ## Moyenne
 
-- [ ] **6. Clarifier la nomenclature.**
-  - Trancher la collision « (d) » : énigme (d) du mess **vs** document (d) le
-    journal-trésor. Décision à acter (option pressentie : renommer le journal
-    « document J » / « le journal-trésor » pour lever l'ambiguïté à la racine).
-  - Aligner l'ordre du tableau des indices §1 (a, b, c, d) avec l'ordre de
-    visite des lieux §4 (a → d → b → c), ou signaler explicitement la divergence.
+- [x] **6. Clarifier la nomenclature.** ✅ FAIT
+  - Collision « (d) » tranchée : le journal est désormais **« le journal-trésor »**
+    partout dans la prose (jamais « (d) ») ; les 4 énigmes restent (a)–(d). Encart
+    « Convention de nommage » remplace l'ancien avertissement.
+  - Tableau des indices §1 réordonné dans l'**ordre de visite** (a → d → b → c).
 
-- [ ] **7. Combler les références orphelines.**
-  - Ajouter un **index des handouts (d)→(j)** : quel fichier, ce qu'il contient,
-    et « où on le trouve » en jeu.
-  - **Supprimer toute mention de `bafouille.exe`** (outil annulé). Bafouille
-    (le droïde) reste, mais plus de référence à un exécutable fourni au MJ.
+- [x] **7. Combler les références orphelines.** ✅ FAIT
+  - **Index des handouts (d)→(j)** ajouté en Présentation (fichier, contenu,
+    « où on le trouve » en jeu ; le message 0 = annexe D).
+  - **`bafouille.exe` supprimé** (générateur + brouillon) ; Bafouille le droïde
+    fait les calculs, sans exécutable. Bonus : skill « Bureaucratie impériale » de
+    l'horloge ISB renommée **Administration** (cohérence « visions de légendes »).
 
 - [ ] **8. Ajouter le front-matter.**
   Durée estimée, nombre de joueurs, ton, mention **système D6**, et un encadré
